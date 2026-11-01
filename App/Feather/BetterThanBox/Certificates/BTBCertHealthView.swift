@@ -161,7 +161,7 @@ struct BTBCertHealthView: View {
 				HStack(spacing: 6) {
 					Text(status.title).foregroundStyle(status.color)
 					Text("•")
-					Text(.localized("%lld signed apps", arguments: cert.signedApps?.count ?? 0))
+					Text(String.localized("%lld signed apps", arguments: cert.signedApps?.count ?? 0))
 				}
 				.font(.caption)
 			}

@@ -69,7 +69,7 @@ struct BTBSelfUpdateView: View {
 							_ = DownloadManager.shared.startDownload(from: ipa.browser_download_url)
 							_started = true
 						} label: {
-							Label(.localized("Download update (%@)", arguments: btbFormatBytes(ipa.size)), systemImage: "arrow.down.circle")
+							Label(String.localized("Download update (%@)", arguments: btbFormatBytes(ipa.size)), systemImage: "arrow.down.circle")
 						}
 						.disabled(_started)
 					} else {

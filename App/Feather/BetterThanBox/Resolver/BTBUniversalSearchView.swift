@@ -78,7 +78,7 @@ struct BTBUniversalSearchView: View {
 		if let v = resolved.best.version { parts.append("v\(v)") }
 		parts.append(resolved.best.sourceName)
 		if resolved.candidates.count > 1 {
-			parts.append(.localized("%lld sources", arguments: resolved.candidates.count))
+			parts.append(String.localized("%lld sources", arguments: resolved.candidates.count))
 		}
 		return parts.joined(separator: " • ")
 	}

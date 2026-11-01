@@ -35,8 +35,8 @@ final class BTBPlistNode: ObservableObject, Identifiable {
 	
 	var preview: String {
 		switch value {
-		case let d as NSDictionary: return .localized("%lld items", arguments: d.count)
-		case let a as NSArray: return .localized("%lld items", arguments: a.count)
+		case let d as NSDictionary: return String.localized("%lld items", arguments: d.count)
+		case let a as NSArray: return String.localized("%lld items", arguments: a.count)
 		case let n as NSNumber where CFGetTypeID(n) == CFBooleanGetTypeID(): return n.boolValue ? "YES" : "NO"
 		case let n as NSNumber: return n.stringValue
 		case let d as Date: return d.formatted()
@@ -357,7 +357,7 @@ struct BTBHexView: View {
 					Button { if _page > 0 { _page -= 1; _load() } } label: { Image(systemName: "chevron.left") }
 						.disabled(_page == 0)
 					Spacer()
-					Text(.localized("Page %lld of %lld", arguments: _page + 1, _pageCount)).font(.footnote)
+					Text(String.localized("Page %lld of %lld", arguments: _page + 1, _pageCount)).font(.footnote)
 					Spacer()
 					Button { if _page + 1 < _pageCount { _page += 1; _load() } } label: { Image(systemName: "chevron.right") }
 						.disabled(_page + 1 >= _pageCount)

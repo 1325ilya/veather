@@ -117,7 +117,7 @@ struct BTBStorageView: View {
 	private func _confirm(title: String, size: Int64, action: @escaping () -> Void) {
 		UIAlertController.showAlertWithCancel(
 			title: title,
-			message: .localized("%@ will be freed. Certificates, sources and settings are kept.", arguments: btbFormatBytes(size)),
+			message: String.localized("%@ will be freed. Certificates, sources and settings are kept.", arguments: btbFormatBytes(size)),
 			actions: [
 				UIAlertAction(title: .localized("Delete"), style: .destructive) { _ in
 					action()
@@ -220,7 +220,7 @@ struct BTBStorageCategoryView: View {
 						Button(role: .destructive) {
 							_deleteItems(_items.filter { _selection.contains($0.url) })
 						} label: {
-							Text(.localized("Delete Selected (%@)", arguments: btbFormatBytes(_selectedSize)))
+							Text(String.localized("Delete Selected (%@)", arguments: btbFormatBytes(_selectedSize)))
 						}
 					}
 				}
@@ -242,7 +242,7 @@ struct BTBStorageCategoryView: View {
 	private func _delete(all: Bool) {
 		UIAlertController.showAlertWithCancel(
 			title: category.title,
-			message: .localized("%@ will be freed. Certificates, sources and settings are kept.", arguments: btbFormatBytes(_total)),
+			message: String.localized("%@ will be freed. Certificates, sources and settings are kept.", arguments: btbFormatBytes(_total)),
 			actions: [
 				UIAlertAction(title: .localized("Delete"), style: .destructive) { _ in
 					BTBStorageManager.shared.clean(category)
@@ -257,7 +257,7 @@ struct BTBStorageCategoryView: View {
 		let size = items.reduce(0) { $0 + $1.size }
 		UIAlertController.showAlertWithCancel(
 			title: .localized("Delete"),
-			message: .localized("%@ will be freed. Certificates, sources and settings are kept.", arguments: btbFormatBytes(size)),
+			message: String.localized("%@ will be freed. Certificates, sources and settings are kept.", arguments: btbFormatBytes(size)),
 			actions: [
 				UIAlertAction(title: .localized("Delete"), style: .destructive) { _ in
 					var errors: [String] = []

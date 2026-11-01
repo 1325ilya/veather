@@ -47,7 +47,7 @@ enum BTBPreflight {
 		if extensions > 0 && !options.btb_removeExtensions {
 			issues.append(.init(
 				level: .info,
-				title: .localized("%lld app extensions", arguments: extensions),
+				title: String.localized("%lld app extensions", arguments: extensions),
 				detail: .localized("If installation fails with a free/limited certificate, enable \"Remove App Extensions\".")
 			))
 		}
@@ -73,7 +73,7 @@ enum BTBPreflight {
 						issues.append(.init(
 							level: .warning,
 							title: .localized("Profile is not a wildcard"),
-							detail: .localized("The profile is for %@, the app will be signed as %@. Set the bundle ID to match or use a wildcard profile.", arguments: pattern, bundleID)
+							detail: String.localized("The profile is for %@, the app will be signed as %@. Set the bundle ID to match or use a wildcard profile.", arguments: pattern, bundleID)
 						))
 					}
 				}

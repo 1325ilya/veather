@@ -21,21 +21,6 @@ jobs:
     timeout-minutes: 60
     permissions:
       contents: write
-    strategy:
-      fail-fast: false
-      matrix:
-        # Xcode crashes while registering Swift packages (IDESwiftPackageCore,
-        # "count of array (32) differs from count of index set (31)").
-        # Several workarounds are tried in parallel; any green one publishes the IPA.
-        include:
-          - variant: noresolved
-            xcode: '26.3.0'
-          - variant: workspace
-            xcode: '26.3.0'
-          - variant: clonedir
-            xcode: '26.3.0'
-          - variant: noresolved-26.6
-            xcode: '26.6.0'
     defaults:
       run:
         working-directory: App
@@ -45,29 +30,18 @@ jobs:
 
       - name: Select Xcode
         run: |
-          XCODE=/Applications/Xcode_${{ matrix.xcode }}.app
-          [ -d "$XCODE" ] || XCODE=$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)
+          XCODE=$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)
           echo "Using $XCODE"
           sudo xcode-select -s "$XCODE"
           xcodebuild -version
 
       - name: Prepare
         run: |
+          # Package.resolved is not committed: the upstream one pinned packages no
+          # manifest uses and crashed Xcode's package graph (IDESwiftPackageCore).
           # repos/ holds reference submodules that are not checked out here
           defaults write com.apple.dt.Xcode IDESourceControlEnableSourceControl_10_0 -bool NO
           rm -f ../.gitmodules
-          case "${{ matrix.variant }}" in
-            noresolved*)
-              # Package.resolved pins packages no manifest uses any more; let Xcode resolve fresh
-              rm -f Feather.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
-              ;;
-            workspace)
-              echo "XCODE_CONTAINER=-workspace Feather.xcworkspace" >> "$GITHUB_ENV"
-              ;;
-            clonedir)
-              echo "XCODEBUILD_EXTRA=-clonedSourcePackagesDirPath $RUNNER_TEMP/spm -scmProvider system" >> "$GITHUB_ENV"
-              ;;
-          esac
 
       - name: Build unsigned IPA
         env:
@@ -87,7 +61,7 @@ jobs:
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
-          name: BetterThanBox-${{ github.run_number }}-${{ matrix.variant }}
+          name: BetterThanBox-${{ github.run_number }}
           path: App/packages/BetterThanBox.ipa
           if-no-files-found: error
 

@@ -38,7 +38,7 @@ struct BTBResolvedApp: Identifiable {
 	var reason: String {
 		if isPinned { return .localized("Chosen manually") }
 		if candidates.count == 1 { return .localized("Only source") }
-		return .localized("Newest version among %lld sources", arguments: candidates.count)
+		return String.localized("Newest version among %lld sources", arguments: candidates.count)
 	}
 }
 
