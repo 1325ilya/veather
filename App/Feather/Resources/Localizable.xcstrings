@@ -22025,6 +22025,358 @@
           }
         }
       }
+    },
+    "Address or search" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Адрес или поиск"
+          }
+        }
+      }
+    },
+    "App Lock (Face ID)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Блокировка (Face ID)"
+          }
+        }
+      }
+    },
+    "Background Checks" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Фоновые проверки"
+          }
+        }
+      }
+    },
+    "Browser" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Браузер"
+          }
+        }
+      }
+    },
+    "Browser (download IPA from sites)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Браузер (скачать IPA с сайтов)"
+          }
+        }
+      }
+    },
+    "Certificate expires soon: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сертификат скоро истечёт: %@"
+          }
+        }
+      }
+    },
+    "Certificate revoked: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сертификат отозван: %@"
+          }
+        }
+      }
+    },
+    "Change App Lock" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Изменить блокировку приложения"
+          }
+        }
+      }
+    },
+    "Copy Address" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скопировать адрес"
+          }
+        }
+      }
+    },
+    "Create Empty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Создать пустой"
+          }
+        }
+      }
+    },
+    "Create from App's Entitlements" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Создать из entitlements приложения"
+          }
+        }
+      }
+    },
+    "Delete Preset" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить пресет"
+          }
+        }
+      }
+    },
+    "Downloading %@ into the Library" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ загружается в библиотеку"
+          }
+        }
+      }
+    },
+    "Edit Entitlements" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Редактировать entitlements"
+          }
+        }
+      }
+    },
+    "Every few hours iOS lets BetterThanBox look for updates of your library apps (in your sources) and for revoked or expiring certificates, and you get a notification. iOS decides the exact time; Low Power Mode pauses it." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Раз в несколько часов iOS даёт BetterThanBox проверить обновления приложений из библиотеки (в ваших источниках) и отозванные или истекающие сертификаты — и присылает уведомление. Точное время выбирает iOS; режим энергосбережения приостанавливает проверки."
+          }
+        }
+      }
+    },
+    "File Type" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Тип файла"
+          }
+        }
+      }
+    },
+    "File name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Имя файла"
+          }
+        }
+      }
+    },
+    "Find IPA links" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Найти IPA-ссылки"
+          }
+        }
+      }
+    },
+    "IPA links" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IPA-ссылки"
+          }
+        }
+      }
+    },
+    "Keychain Isolation" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Изоляция keychain"
+          }
+        }
+      }
+    },
+    "No IPA links on this page." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "На этой странице нет IPA-ссылок."
+          }
+        }
+      }
+    },
+    "Only on Wi-Fi" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Только по Wi-Fi"
+          }
+        }
+      }
+    },
+    "Placeholders: {name}, {version}, {bundle}, {date} (yyyy-MM-dd_HH-mm), {timestamp}." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подстановки: {name}, {version}, {bundle}, {date} (yyyy-MM-dd_HH-mm), {timestamp}."
+          }
+        }
+      }
+    },
+    "Preset Name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Название пресета"
+          }
+        }
+      }
+    },
+    "Presets" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пресеты"
+          }
+        }
+      }
+    },
+    "Run Check Now" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Проверить сейчас"
+          }
+        }
+      }
+    },
+    "Save Current as Preset…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сохранить текущие как пресет…"
+          }
+        }
+      }
+    },
+    "Set as Home Page" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сделать домашней страницей"
+          }
+        }
+      }
+    },
+    "Signed %lld of %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подписано %lld из %lld"
+          }
+        }
+      }
+    },
+    "Unlock" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разблокировать"
+          }
+        }
+      }
+    },
+    "Unlock BetterThanBox" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разблокировать BetterThanBox"
+          }
+        }
+      }
+    },
+    "Updates: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Обновления: %@"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
