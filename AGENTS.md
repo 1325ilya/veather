@@ -16,9 +16,13 @@
   - `Logs/` — просмотр OSLogStore, экспорт с редакцией.
   - `Certificates/` — «Здоровье сертификатов», OCSP-перепроверка, фоновая проверка раз в 6 ч.
   - `Files/` — файловый менеджер, plist/text-редакторы, hex-просмотр/патч; доступен из Settings и из карточки приложения в Library.
-  - `Signing/BTBSigningExtras.swift` — опции `btb_*` в `Options` (удаление расширений/Watch, снятие ограничений устройств, keep UISupportedDevices, fix icons, thin to arm64); ad-hoc включён; min iOS 10–18.
-- Встроенные твики (замена команд бота, `App/Tweaks/` + `BTBBuiltinTweaks.swift`) лежат в `git stash` («WIP: built-in tweaks»), не закоммичены — ждут решения пользователя.
-- Сборка: `.github/workflows/build.yml`, runner `macos-26`. Xcode падал на регистрации SwiftPM-пакетов (`IDESwiftPackageCore … count of array (32) differs from count of index set (31)`); в CI матрица обходных путей (удалить Package.resolved / workspace / clonedSourcePackagesDirPath / Xcode 26.6). Готовый IPA — артефакт и релиз `nightly-dev`.
+  - `Signing/` — `BTBSigningExtras` (опции `btb_*`: удаление расширений/Watch, снятие ограничений устройств, keep UISupportedDevices, fix icons, thin to arm64, изоляция keychain), `BTBCloneWizard` (2–20 клонов), `BTBPreflight` (проверки до подписи + `BTBMachOInspector`: шифрование/arm64), `BTBSigningPresets`, `BTBBulkSigner`, `BTBKeychainIsolation`, `BTBArchiveNaming` (.ipa/.tipa + шаблон имени), `BTBBuiltinTweaks` (внедрение дилиба твиков). ad-hoc включён.
+  - `Backup/` — бэкап/восстановление сертификатов+источников+настроек в .btbbackup (zip с паролем).
+  - `Security/BTBAppLock` — Face ID на вход. `Background/BTBBackgroundRefresh` — фоновые проверки обновлений/сертификатов + уведомления. `Update/BTBSelfUpdate` — самообновление из релиза nightly-dev. `Intents/` — Shortcuts.
+  - `Browser/` — встроенный WKWebView-браузер: тап по .ipa/.tipa/itms-services → в менеджер загрузок; «Find IPA links». `AppStore/` — поиск по публичному iTunes API (инфо/скриншоты), сам IPA из источников пользователя через резолвер. `Tools/` — IPSW-браузер (ipsw.me), конструктор AltStore-репозиториев. `Logs/BTBActivityLog` — история import/sign/install/fail.
+- Встроенные твики: `App/Tweaks/*` (ObjC, один `BTBTweaks.dylib`, собирается `make tweaks` → `App/_tweakbuild/`, копируется в .app, в Xcode-группу НЕ входит). Включаются per-app через Info.plist `BTBEnabledTweaks`. Это noads/nowifi/norev/ipadui/noupd/sideload/backup. `/iap` и `/rc` (обход оплаты) — НЕ реализованы сознательно.
+- ⚠️-пункты: решение по каждому в конце TODO.md («✅ Делаю» оставлено, вредные — обход отзыва/взлом p12/краденые сертификаты/обход оплаты/пиратство — удалены по просьбе пользователя).
+- Сборка: `.github/workflows/build.yml`, runner `macos-26`, Xcode новейший. Фикс крэша Xcode на SwiftPM — **НЕ коммитить `Package.resolved`** (стоковый из Feather ломал граф пакетов). Готовый IPA — артефакт и релиз `nightly-dev` (в теле релиза «Build N» = CFBundleVersion).
 - Локально собрать нельзя (Linux) — проверка только через CI. Статус прогонов: `curl https://api.github.com/repos/1325ilya/BetterThanBox/actions/runs?per_page=1`.
 
 ## Что уже сделано
