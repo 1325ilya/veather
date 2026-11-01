@@ -87,6 +87,9 @@ struct SettingsView: View {
 					NavigationLink(destination: InstallationView()) {
 						Label(.localized("Installation"), systemImage: "arrow.down.circle")
 					}
+					NavigationLink(destination: BTBBackgroundSettingsView()) {
+						Label(.localized("Background Checks"), systemImage: "bell.badge")
+					}
 					NavigationLink(destination: BTBStorageView()) {
 						Label(.localized("Storage"), systemImage: "internaldrive")
 					}

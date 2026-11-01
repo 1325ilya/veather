@@ -159,6 +159,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 	) -> Bool {
 		_createPipeline()
 		_createDocumentsDirectories()
+		BTBBackgroundRefresh.register()
+		BTBBackgroundRefresh.schedule()
 		ResetView.clearWorkCache()
 		DispatchQueue.global(qos: .utility).async {
 			BTBStorageManager.shared.runAutoCleanRules()
