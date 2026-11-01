@@ -54,6 +54,7 @@ struct SettingsView: View {
 					NavigationLink(destination: AppIconView(currentIcon: $_currentIcon)) {
 						Label(.localized("App Icon"), systemImage: "app.badge")
 					}
+					BTBAppLockToggle()
 				}
                 
 				NBSection(.localized("Certificates")) {

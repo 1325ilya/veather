@@ -69,6 +69,12 @@ struct SourcesView: View {
 						} label: {
 							Label(.localized("Source Health"), systemImage: "stethoscope")
 						}
+						
+						NavigationLink {
+							BTBBrowserView()
+						} label: {
+							Label(.localized("Browser (download IPA from sites)"), systemImage: "safari")
+						}
 					}
 					
 					NBSection(

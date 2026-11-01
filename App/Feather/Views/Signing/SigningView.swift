@@ -50,6 +50,7 @@ struct SigningView: View {
 		NBNavigationView("", displayMode: .inline) {
 			Form {
 				BTBPreflightSection(app: app, options: _temporaryOptions, certificate: _selectedCert())
+				BTBSigningPresetsSection(options: $_temporaryOptions)
 				_customizationOptions(for: app)
 				_cert()
 				_customizationProperties(for: app)

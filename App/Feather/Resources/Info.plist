@@ -122,6 +122,8 @@
 			</array>
 		</dict>
 	</array>
+	<key>NSFaceIDUsageDescription</key>
+	<string>BetterThanBox uses Face ID to protect your certificates when App Lock is on.</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>localdevvpn</string>
