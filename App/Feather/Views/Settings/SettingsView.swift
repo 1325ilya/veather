@@ -41,24 +41,26 @@ struct SettingsView: View {
 	var body: some View {
 		NBNavigationView(.localized("Settings")) {
 			Form {
+				_header()
+				
 				#if !NIGHTLY && !DEBUG
 					SettingsDonationCellView(site: _donationsUrl)
 				#endif
-                
-				_feedback()
-                
+				
 				Section {
+					NavigationLink(destination: BTBSelfUpdateView()) {
+						BTBRowLabel(.localized("Check for Updates"), systemImage: "arrow.down.circle.fill", color: .blue)
+					}
 					NavigationLink(destination: AppearanceView()) {
-						Label(.localized("Appearance"), systemImage: "paintbrush")
+						BTBRowLabel(.localized("Appearance"), systemImage: "paintbrush.fill", color: .indigo)
 					}
 					NavigationLink(destination: AppIconView(currentIcon: $_currentIcon)) {
-						Label(.localized("App Icon"), systemImage: "app.badge")
+						BTBRowLabel(.localized("App Icon"), systemImage: "app.badge.fill", color: .orange)
 					}
 					BTBAppLockToggle()
 				}
-                
+				
 				NBSection(.localized("Certificates")) {
-                    
 					if let cert = selectedCertificate {
 						CertificatesCellView(cert: cert)
 					} else {
@@ -67,68 +69,48 @@ struct SettingsView: View {
 							.foregroundColor(.disabled())
 					}
 					NavigationLink(destination: CertificatesView()) {
-						Label(.localized("Certificates"), systemImage: "checkmark.seal")
+						BTBRowLabel(.localized("Certificates"), systemImage: "checkmark.seal.fill", color: .green)
 					}
 					NavigationLink(destination: BTBCertHealthView()) {
-						Label(.localized("Certificate Health"), systemImage: "heart.text.square")
+						BTBRowLabel(.localized("Certificate Health"), systemImage: "heart.text.square.fill", color: .pink)
 					}
-                 
 				} footer: {
 					Text(.localized("Add and manage certificates used for signing applications."))
 				}
-                
-				NBSection(.localized("Tools")) {
-					NavigationLink(destination: BTBTweakVaultView()) {
-						Label(.localized("Tweak Vault"), systemImage: "tray.full")
+				
+				NBSection(.localized("Signing & Installing")) {
+					NavigationLink(destination: ConfigurationView()) {
+						BTBRowLabel(.localized("Signing Options"), systemImage: "signature", color: .purple)
 					}
-					NavigationLink(destination: BTBRepoBuilderView()) {
-						Label(.localized("Repository Builder"), systemImage: "hammer")
+					NavigationLink(destination: InstallationView()) {
+						BTBRowLabel(.localized("Installation"), systemImage: "arrow.down.app.fill", color: .blue)
 					}
-					NavigationLink(destination: BTBIPSWView()) {
-						Label(.localized("IPSW"), systemImage: "cpu")
+					NavigationLink(destination: ArchiveView()) {
+						BTBRowLabel(.localized("Archive & Compression"), systemImage: "archivebox.fill", color: .brown)
 					}
-					NavigationLink(destination: BTBDeviceInfoView()) {
-						Label(.localized("Device Info"), systemImage: "iphone")
-					}
-					NavigationLink(destination: BTBTaskCenterView()) {
-						Label(.localized("Task Center"), systemImage: "list.bullet.rectangle")
+					NavigationLink(destination: BTBBackgroundSettingsView()) {
+						BTBRowLabel(.localized("Background Checks"), systemImage: "bell.badge.fill", color: .red)
 					}
 				}
 				
-				NBSection(.localized("Features")) {
-					NavigationLink(destination: ConfigurationView()) {
-						Label(.localized("Signing Options"), systemImage: "signature")
-					}
-					NavigationLink(destination: ArchiveView()) {
-						Label(.localized("Archive & Compression"), systemImage: "archivebox")
-					}
-					NavigationLink(destination: InstallationView()) {
-						Label(.localized("Installation"), systemImage: "arrow.down.circle")
-					}
-					NavigationLink(destination: BTBBackgroundSettingsView()) {
-						Label(.localized("Background Checks"), systemImage: "bell.badge")
+				NBSection(.localized("Data")) {
+					NavigationLink(destination: BTBBackupView()) {
+						BTBRowLabel(.localized("Backup & Restore"), systemImage: "externaldrive.fill.badge.timemachine", color: .green)
 					}
 					NavigationLink(destination: BTBStorageView()) {
-						Label(.localized("Storage"), systemImage: "internaldrive")
-					}
-					NavigationLink(destination: BTBBackupView()) {
-						Label(.localized("Backup & Restore"), systemImage: "externaldrive.badge.timemachine")
-					}
-					NavigationLink(destination: BTBActivityView()) {
-						Label(.localized("Activity"), systemImage: "clock.arrow.circlepath")
-					}
-					NavigationLink(destination: BTBLogsView()) {
-						Label(.localized("Logs"), systemImage: "text.alignleft")
+						BTBRowLabel(.localized("Storage"), systemImage: "internaldrive.fill", color: .gray)
 					}
 				} footer: {
-					Text(.localized("Configure the apps way of installing, its zip compression levels, and custom modifications to apps."))
+					Text(.localized("More tools — file manager, logs, IPSW, tweak vault — are on the Tools tab."))
 				}
-                
+				
 				_directories()
-                
+				
+				_feedback()
+				
 				Section {
 					NavigationLink(destination: ResetView()) {
-						Label(.localized("Reset"), systemImage: "trash")
+						BTBRowLabel(.localized("Reset"), systemImage: "trash.fill", color: .red)
 					}
 				} footer: {
 					Text(.localized("Reset the applications sources, certificates, apps, and general contents."))
@@ -140,45 +122,94 @@ struct SettingsView: View {
 
 // MARK: - View extension
 extension SettingsView {
+	private var _build: String {
+		Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? ""
+	}
+	
 	@ViewBuilder
-	private func _feedback() -> some View {
+	private func _header() -> some View {
 		Section {
 			NavigationLink(destination: AboutView()) {
-				Label {
-					Text(verbatim: .localized("About %@", arguments: Bundle.main.name))
-				} icon: {
-					FRAppIconView(size: 23)
+				HStack(spacing: 14) {
+					FRAppIconView(size: 58)
+					VStack(alignment: .leading, spacing: 4) {
+						Text(verbatim: Bundle.main.name)
+							.font(.title3.weight(.bold))
+						Text(verbatim: String.localized("Version %@ (%@)", arguments: Bundle.main.version, _build))
+							.font(.footnote)
+							.foregroundStyle(.secondary)
+						_certificateStatus()
+					}
 				}
+				.padding(.vertical, 6)
 			}
-            
-			NavigationLink(destination: BTBSelfUpdateView()) {
-				Label(.localized("Check for Updates"), systemImage: "arrow.triangle.2.circlepath")
+		}
+	}
+	
+	@ViewBuilder
+	private func _certificateStatus() -> some View {
+		if let cert = selectedCertificate {
+			if cert.revoked {
+				_statusPill(.localized("Certificate revoked"), icon: "xmark.octagon.fill", color: .red)
+			} else if let info = cert.expiration?.expirationInfo() {
+				_statusPill(info.formatted, icon: info.icon, color: info.color)
 			}
-			Button(.localized("Submit Feedback"), systemImage: "safari") {
+		} else {
+			_statusPill(.localized("No certificate"), icon: "exclamationmark.triangle.fill", color: .orange)
+		}
+	}
+	
+	private func _statusPill(_ text: String, icon: String, color: Color) -> some View {
+		Label {
+			Text(verbatim: text)
+		} icon: {
+			Image(systemName: icon)
+		}
+		.font(.caption.weight(.semibold))
+		.foregroundStyle(color)
+		.padding(.horizontal, 8)
+		.padding(.vertical, 3)
+		.background(Capsule().fill(color.opacity(0.14)))
+	}
+	
+	@ViewBuilder
+	private func _feedback() -> some View {
+		NBSection(.localized("Support")) {
+			Button {
 				UIApplication.open(URL(string: "\(_githubUrl)/issues/new/choose")!)
+			} label: {
+				BTBRowLabel(.localized("Submit Feedback"), systemImage: "exclamationmark.bubble.fill", color: .orange)
 			}
-			Button(.localized("GitHub Repository"), systemImage: "safari") {
+			Button {
 				UIApplication.open(_githubUrl)
+			} label: {
+				BTBRowLabel(.localized("GitHub Repository"), systemImage: "chevron.left.forwardslash.chevron.right", color: Color(white: 0.22))
 			}
 		} footer: {
 			Text(.localized("If any issues occur within the app please report it via the GitHub repository. When submitting an issue, make sure to submit detailed information."))
 		}
 	}
-    
+	
 	@ViewBuilder
 	private func _directories() -> some View {
-		NBSection(.localized("Misc")) {
+		NBSection(.localized("Folders")) {
 			NavigationLink(destination: BTBFileBrowserView(root: URL.documentsDirectory, title: .localized("Files"))) {
-				Label(.localized("File Manager"), systemImage: "folder.badge.gearshape")
+				BTBRowLabel(.localized("File Manager"), systemImage: "folder.fill.badge.gearshape", color: .cyan)
 			}
-			Button(.localized("Open Documents"), systemImage: "folder") {
+			Button {
 				UIApplication.open(URL.documentsDirectory.toSharedDocumentsURL()!)
+			} label: {
+				BTBRowLabel(.localized("Open Documents"), systemImage: "folder.fill", color: .blue)
 			}
-			Button(.localized("Open Archives"), systemImage: "folder") {
+			Button {
 				UIApplication.open(FileManager.default.archives.toSharedDocumentsURL()!)
+			} label: {
+				BTBRowLabel(.localized("Open Archives"), systemImage: "archivebox.fill", color: .brown)
 			}
-			Button(.localized("Open Certificates"), systemImage: "folder") {
+			Button {
 				UIApplication.open(FileManager.default.certificates.toSharedDocumentsURL()!)
+			} label: {
+				BTBRowLabel(.localized("Open Certificates"), systemImage: "person.text.rectangle.fill", color: .green)
 			}
 		} footer: {
 			Text(.localized("All of the apps files are contained in the documents directory, here are some quick links to these."))

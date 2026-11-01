@@ -23224,6 +23224,281 @@
           }
         }
       }
+    },
+    "Search Sources" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поиск по источникам"
+          }
+        }
+      }
+    },
+    "Download IPA files from websites" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скачивание IPA с сайтов"
+          }
+        }
+      }
+    },
+    "Newest version across all sources" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Самая новая версия во всех источниках"
+          }
+        }
+      }
+    },
+    "Check which sources respond" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Какие источники отвечают"
+          }
+        }
+      }
+    },
+    "Your .dylib, .deb and .cyan files" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ваши файлы .dylib, .deb и .cyan"
+          }
+        }
+      }
+    },
+    "Downloads and signing queue" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Загрузки и очередь подписи"
+          }
+        }
+      }
+    },
+    "Make your own source JSON" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Свой JSON-источник"
+          }
+        }
+      }
+    },
+    "Browse and edit app files" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Просмотр и правка файлов"
+          }
+        }
+      }
+    },
+    "See what takes space, clean up" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Что занимает место, очистка"
+          }
+        }
+      }
+    },
+    "Expiry and status of certificates" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Срок и статус сертификатов"
+          }
+        }
+      }
+    },
+    "Firmware for this device" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прошивки для этого устройства"
+          }
+        }
+      }
+    },
+    "Model, iOS version, UDID" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Модель, версия iOS, UDID"
+          }
+        }
+      }
+    },
+    "History of imports and signing" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "История импорта и подписи"
+          }
+        }
+      }
+    },
+    "Diagnostics for bug reports" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Диагностика для баг-репортов"
+          }
+        }
+      }
+    },
+    "Get Apps" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Приложения"
+          }
+        }
+      }
+    },
+    "Modify & Sign" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Изменение и подпись"
+          }
+        }
+      }
+    },
+    "Files & Data" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Файлы и данные"
+          }
+        }
+      }
+    },
+    "Diagnostics" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Диагностика"
+          }
+        }
+      }
+    },
+    "Signing & Installing" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подпись и установка"
+          }
+        }
+      }
+    },
+    "Data" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Данные"
+          }
+        }
+      }
+    },
+    "More tools — file manager, logs, IPSW, tweak vault — are on the Tools tab." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Остальные инструменты — файлы, журналы, IPSW, твики — на вкладке «Инструменты»."
+          }
+        }
+      }
+    },
+    "Version %@ (%@)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Версия %@ (%@)"
+          }
+        }
+      }
+    },
+    "No certificate" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет сертификата"
+          }
+        }
+      }
+    },
+    "Support" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поддержка"
+          }
+        }
+      }
+    },
+    "Folders" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Папки"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

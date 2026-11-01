@@ -109,7 +109,7 @@ struct BTBAppLockToggle: View {
 				}
 			}
 		)) {
-			Label(.localized("App Lock (Face ID)"), systemImage: "faceid")
+			BTBRowLabel(.localized("App Lock (Face ID)"), systemImage: "faceid", color: .green)
 		}
 	}
 }

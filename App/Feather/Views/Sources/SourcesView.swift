@@ -39,7 +39,19 @@ struct SourcesView: View {
 					NavigationLink {
 						BTBBrowserView()
 					} label: {
-						Label(.localized("Browser (download IPA from sites)"), systemImage: "safari")
+						BTBRowLabel(.localized("Browser"), systemImage: "safari.fill", color: .blue, subtitle: .localized("Download IPA files from websites"))
+					}
+					if !_sources.isEmpty {
+						NavigationLink {
+							BTBUniversalSearchView()
+						} label: {
+							BTBRowLabel(.localized("Search Sources"), systemImage: "magnifyingglass", color: .indigo, subtitle: .localized("Newest version across all sources"))
+						}
+						NavigationLink {
+							BTBSourceHealthView()
+						} label: {
+							BTBRowLabel(.localized("Source Health"), systemImage: "stethoscope", color: .teal, subtitle: .localized("Check which sources respond"))
+						}
 					}
 				}
 				if !_filteredSources.isEmpty {
@@ -64,19 +76,6 @@ struct SourcesView: View {
 							)
 						}
 						.buttonStyle(.plain)
-						
-						NavigationLink {
-							BTBUniversalSearchView()
-						} label: {
-							Label(.localized("Search All Sources (newest version)"), systemImage: "magnifyingglass.circle")
-						}
-						
-						NavigationLink {
-							BTBSourceHealthView()
-						} label: {
-							Label(.localized("Source Health"), systemImage: "stethoscope")
-						}
-
 					}
 					
 					NBSection(
