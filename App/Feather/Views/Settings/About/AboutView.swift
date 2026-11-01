@@ -21,9 +21,11 @@ extension AboutView {
 // MARK: - View
 struct AboutView: View {
 	@State private var _credits: [CreditsModel] = [
-		.init(name: "C", desc: "Developer", github: "claration"),
-		.init(name: "Asami", desc: "Developer", github: "Nyasami"),
-		.init(name: "Lakhan Lothiyi", desc: "AltStore Repositories", github: "llsc12"),
+		.init(name: "BetterThanBox", desc: "BetterThanBox project", github: "1325ilya/BetterThanBox"),
+		.init(name: "C", desc: "Feather developer", github: "claration"),
+		.init(name: "Asami", desc: "Feather developer", github: "Nyasami"),
+		.init(name: "Lakhan Lothiyi", desc: "AltStore repositories", github: "llsc12"),
+		.init(name: "zhlynn", desc: "zsign signing engine", github: "zhlynn"),
 	]
 	
 	// MARK: Body
@@ -31,19 +33,29 @@ struct AboutView: View {
 		NBList(.localized("About")) {
 			Section {
 				VStack {
-					FRAppIconView(size: 72)
+					FRAppIconView(size: 84)
+						.shadow(color: Color.accentColor.opacity(0.35), radius: 14, y: 6)
 					
-					Text(Bundle.main.exec)
-						.font(.largeTitle)
-						.bold()
-						.foregroundStyle(Color.accentColor)
+					Text(verbatim: "BetterThanBox")
+						.font(.largeTitle.weight(.bold))
+						.foregroundStyle(Color.accentColor.gradient)
+						.padding(.top, 6)
+					
+					Text(.localized("Sign and install apps right on your iPhone"))
+						.font(.subheadline)
+						.foregroundStyle(.secondary)
+						.multilineTextAlignment(.center)
 					
 					HStack(spacing: 4) {
 						Text(.localized("Version"))
 						Text(Bundle.main.version)
+						if let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String {
+							Text(verbatim: "(\(build))")
+						}
 					}
-					.font(.footnote)
-					.foregroundStyle(.secondary)
+					.font(.footnote.monospacedDigit())
+					.foregroundStyle(.tertiary)
+					.padding(.top, 2)
 				}
 			}
 			.frame(maxWidth: .infinity)
@@ -79,8 +91,8 @@ extension AboutView {
 			HStack {
 				FRIconCellView(
 					title: name ?? github,
-					subtitle: desc ?? "",
-					iconUrl: URL(string: "https://github.com/\(github).png")!,
+					subtitle: desc.map { String.localized($0) } ?? "",
+					iconUrl: URL(string: "https://github.com/\(github.split(separator: "/").first.map(String.init) ?? github).png")!,
 					size: 45,
 					isCircle: true
 				)

@@ -23729,6 +23729,56 @@
           }
         }
       }
+    },
+    "BetterThanBox project" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Проект BetterThanBox"
+          }
+        }
+      }
+    },
+    "Feather developer" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разработчик Feather"
+          }
+        }
+      }
+    },
+    "AltStore repositories" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Репозитории AltStore"
+          }
+        }
+      }
+    },
+    "zsign signing engine" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Движок подписи zsign"
+          }
+        }
+      }
+    },
+    "Sign and install apps right on your iPhone" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подпись и установка приложений прямо на iPhone"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
