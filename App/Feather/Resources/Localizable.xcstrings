@@ -23779,6 +23779,66 @@
           }
         }
       }
+    },
+    "Tip: in the Files app, tap Share on an .ipa and choose BetterThanBox." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Совет: в приложении «Файлы» нажмите «Поделиться» на .ipa и выберите BetterThanBox."
+          }
+        }
+      }
+    },
+    "Paste Link" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вставить ссылку"
+          }
+        }
+      }
+    },
+    "Link" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ссылка"
+          }
+        }
+      }
+    },
+    "No Link in Clipboard" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В буфере нет ссылки"
+          }
+        }
+      }
+    },
+    "Copy a link to an .ipa file first, then tap Paste Link." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сначала скопируйте ссылку на .ipa, затем нажмите «Вставить ссылку»."
+          }
+        }
+      }
+    },
+    "Not signed yet" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ещё не подписано"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

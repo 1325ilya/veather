@@ -11,6 +11,7 @@ import NimbleViews
 
 // MARK: - View
 struct LibraryView: View {
+	@Environment(\.horizontalSizeClass) private var horizontalSizeClass
 	@StateObject var downloadManager = DownloadManager.shared
 	@StateObject var updateManager = UpdateManager.shared
 	
@@ -74,6 +75,17 @@ struct LibraryView: View {
 		NBNavigationView(.localized("Library")) {
 			NBListAdaptable {
 				if
+					horizontalSizeClass == .compact,
+					_searchText.isEmpty,
+					!_editMode.isEditing,
+					!(_signedApps.isEmpty && _importedApps.isEmpty)
+				{
+					Section {
+						_quickImportRow()
+					}
+				}
+				
+				if
 					!_filteredSignedApps.isEmpty,
 					_selectedScope == .all || _selectedScope == .signed
 				{
@@ -128,16 +140,36 @@ struct LibraryView: View {
 					_filteredImportedApps.isEmpty
 				{
 					if #available(iOS 17, *) {
-						ContentUnavailableView {
-							Label(.localized("No Apps"), systemImage: "questionmark.app.fill")
-						} description: {
-							Text(.localized("Get started by importing your first IPA file."))
-						} actions: {
-							Menu {
-								_importActions()
-							} label: {
-								NBButton(.localized("Import"), style: .text)
+						if _searchText.isEmpty {
+							ContentUnavailableView {
+								Label(.localized("No Apps"), systemImage: "square.stack.3d.up.fill")
+							} description: {
+								Text(.localized("Get started by importing your first IPA file."))
+								+ Text(verbatim: "\n\n")
+								+ Text(.localized("Tip: in the Files app, tap Share on an .ipa and choose BetterThanBox."))
+							} actions: {
+								VStack(spacing: 10) {
+									Button {
+										_isImportingPresenting = true
+									} label: {
+										Label(.localized("Import from Files"), systemImage: "folder.fill")
+											.frame(minWidth: 200)
+									}
+									.buttonStyle(.borderedProminent)
+									.controlSize(.large)
+									
+									Button {
+										_isDownloadingPresenting = true
+									} label: {
+										Label(.localized("Import from URL"), systemImage: "link")
+											.frame(minWidth: 200)
+									}
+									.buttonStyle(.bordered)
+									.controlSize(.large)
+								}
 							}
+						} else {
+							ContentUnavailableView.search(text: _searchText)
 						}
 					}
 				}
@@ -259,6 +291,53 @@ extension LibraryView {
 		Button(.localized("Import from URL"), systemImage: "globe") {
 			_isDownloadingPresenting = true
 		}
+		Button(.localized("Paste Link"), systemImage: "doc.on.clipboard") {
+			_importFromClipboard()
+		}
+	}
+	
+	@ViewBuilder
+	private func _quickImportRow() -> some View {
+		HStack(spacing: 10) {
+			Button {
+				_isImportingPresenting = true
+			} label: {
+				BTBQuickTile(title: .localized("Files"), systemImage: "folder.fill", color: .blue)
+			}
+			Button {
+				_isDownloadingPresenting = true
+			} label: {
+				BTBQuickTile(title: .localized("Link"), systemImage: "link", color: .green)
+			}
+			Button {
+				_importFromClipboard()
+			} label: {
+				BTBQuickTile(title: .localized("Paste Link"), systemImage: "doc.on.clipboard.fill", color: .orange)
+			}
+		}
+		.buttonStyle(BTBPressableStyle())
+		.listRowSeparator(.hidden)
+		.listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 10, trailing: 16))
+	}
+	
+	private func _importFromClipboard() {
+		let pasteboard = UIPasteboard.general
+		let text = pasteboard.string?.trimmingCharacters(in: .whitespacesAndNewlines)
+		let candidate = pasteboard.url ?? text.flatMap { URL(string: $0) }
+		guard
+			let url = candidate,
+			let scheme = url.scheme?.lowercased(),
+			scheme == "http" || scheme == "https"
+		else {
+			UINotificationFeedbackGenerator().notificationOccurred(.warning)
+			UIAlertController.showAlertWithOk(
+				title: .localized("No Link in Clipboard"),
+				message: .localized("Copy a link to an .ipa file first, then tap Paste Link.")
+			)
+			return
+		}
+		UINotificationFeedbackGenerator().notificationOccurred(.success)
+		_ = downloadManager.startDownload(from: url, id: "FeatherManualDownload_\(UUID().uuidString)")
 	}
 }
 

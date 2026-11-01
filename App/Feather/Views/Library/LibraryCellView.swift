@@ -86,6 +86,23 @@ struct LibraryCellView: View {
 		.onTapGesture {
 			if isEditing {
 				_toggleSelection()
+			} else {
+				selectedInfoAppPresenting = AnyApp(base: app)
+			}
+		}
+		.swipeActions(edge: .leading, allowsFullSwipe: true) {
+			if !isEditing {
+				if app.isSigned {
+					Button(.localized("Install"), systemImage: "square.and.arrow.down") {
+						selectedInstallAppPresenting = AnyApp(base: app)
+					}
+					.tint(.green)
+				} else {
+					Button(.localized("Sign"), systemImage: "signature") {
+						selectedSigningAppPresenting = AnyApp(base: app)
+					}
+					.tint(.accentColor)
+				}
 			}
 		}
 		.swipeActions {
@@ -124,11 +141,16 @@ struct LibraryCellView: View {
 	}
 	
 	private var _desc: String {
-		if let version = app.version, let id = app.identifier {
-			return "\(version) • \(id)"
-		} else {
-			return .localized("Unknown")
+		var parts: [String] = []
+		if let version = app.version, !version.isEmpty {
+			parts.append(version)
 		}
+		if app.isSigned {
+			parts.append(certRevoked ? .localized("Revoked") : .localized("Signed"))
+		} else {
+			parts.append(.localized("Not signed yet"))
+		}
+		return parts.joined(separator: " · ")
 	}
 }
 
