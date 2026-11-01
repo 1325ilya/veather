@@ -59,9 +59,14 @@ struct SettingsView: View {
 					if let cert = selectedCertificate {
 						CertificatesCellView(cert: cert)
 					} else {
-						Text(.localized("No Certificate"))
-							.font(.footnote)
-							.foregroundColor(.disabled())
+						NavigationLink(destination: CertificatesView()) {
+							BTBRowLabel(
+								.localized("Add a Certificate"),
+								systemImage: "exclamationmark.shield.fill",
+								color: .orange,
+								subtitle: .localized("Signing needs your certificate (.p12 + .mobileprovision). Tap to add one.")
+							)
+						}
 					}
 					NavigationLink(destination: CertificatesView()) {
 						BTBRowLabel(.localized("Certificates"), systemImage: "checkmark.seal.fill", color: .green)

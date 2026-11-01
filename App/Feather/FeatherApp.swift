@@ -34,6 +34,7 @@ struct FeatherApp: App {
 				VariedTabbarView()
 					.environment(\.managedObjectContext, storage.context)
 					.onOpenURL(perform: _handleURL)
+					.btbWelcomeOnFirstLaunch()
 					.transition(.move(edge: .top).combined(with: .opacity))
 			}
 			.animation(.smooth, value: downloadManager.manualDownloads.description)

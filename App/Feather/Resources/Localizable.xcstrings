@@ -23859,6 +23859,96 @@
           }
         }
       }
+    },
+    "Welcome to BetterThanBox" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добро пожаловать в BetterThanBox"
+          }
+        }
+      }
+    },
+    "Add an app" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавьте приложение"
+          }
+        }
+      }
+    },
+    "Tap + in Library, paste a link, or share an .ipa from the Files app." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нажмите + в Библиотеке, вставьте ссылку или поделитесь .ipa из «Файлов»."
+          }
+        }
+      }
+    },
+    "Add your certificate" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавьте свой сертификат"
+          }
+        }
+      }
+    },
+    "Import your .p12 and .mobileprovision once — they stay on this device." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Импортируйте .p12 и .mobileprovision один раз — они хранятся только на этом устройстве."
+          }
+        }
+      }
+    },
+    "Sign and install" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подпишите и установите"
+          }
+        }
+      }
+    },
+    "Tap Sign next to the app, then Install. Done." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нажмите «Подписать» рядом с приложением, затем «Установить». Готово."
+          }
+        }
+      }
+    },
+    "Get Started" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Начать"
+          }
+        }
+      }
+    },
+    "Add Certificate Now" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавить сертификат сейчас"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
