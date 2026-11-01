@@ -22377,6 +22377,116 @@
           }
         }
       }
+    },
+    "App Store" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Store"
+          }
+        }
+      }
+    },
+    "App Store (find & info)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Store (поиск и инфо)"
+          }
+        }
+      }
+    },
+    "Get the IPA" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Получить IPA"
+          }
+        }
+      }
+    },
+    "Name or App Store link" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Название или ссылка App Store"
+          }
+        }
+      }
+    },
+    "Not found in your sources. Add a source that offers this app, then it appears here with the newest version." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет в ваших источниках. Добавьте источник с этим приложением — и оно появится здесь с самой новой версией."
+          }
+        }
+      }
+    },
+    "Nothing found." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ничего не найдено."
+          }
+        }
+      }
+    },
+    "Open in App Store" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Открыть в App Store"
+          }
+        }
+      }
+    },
+    "Rating" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Рейтинг"
+          }
+        }
+      }
+    },
+    "Results" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Результаты"
+          }
+        }
+      }
+    },
+    "Search Apple's catalogue by name, or paste an App Store link. BetterThanBox shows the app info only; the installable file comes from the sources you added or from the App Store itself." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поиск по каталогу Apple по названию или по ссылке App Store. BetterThanBox показывает только информацию о приложении; сам файл берётся из добавленных вами источников или из самого App Store."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

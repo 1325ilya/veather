@@ -35,6 +35,18 @@ struct SourcesView: View {
 	var body: some View {
 		NBNavigationView(.localized("Sources")) {
 			NBListAdaptable {
+				Section {
+					NavigationLink {
+						BTBAppStoreView()
+					} label: {
+						Label(.localized("App Store (find & info)"), systemImage: "bag")
+					}
+					NavigationLink {
+						BTBBrowserView()
+					} label: {
+						Label(.localized("Browser (download IPA from sites)"), systemImage: "safari")
+					}
+				}
 				if !_filteredSources.isEmpty {
 					Section {
 						NavigationLink {
@@ -69,12 +81,7 @@ struct SourcesView: View {
 						} label: {
 							Label(.localized("Source Health"), systemImage: "stethoscope")
 						}
-						
-						NavigationLink {
-							BTBBrowserView()
-						} label: {
-							Label(.localized("Browser (download IPA from sites)"), systemImage: "safari")
-						}
+
 					}
 					
 					NBSection(
