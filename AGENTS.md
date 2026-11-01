@@ -5,7 +5,21 @@
 ## Цель пользователя
 Собрать лучшее из всех iOS-подписчиков/сайдлоадеров (аналоги GBox, KSign, ESign и т.п.) — найти у каждого уникальные функции, которых нет у других, выписать в TODO и **в будущем** реализовать в собственном приложении «BetterThanBox».
 
-**Сейчас реализацию НЕ начинать.** Пользователь сказал: «выпиши в todo лист, но пока что не делай». Следующий шаг — ждать указания (какую базу брать, какие пункты ⚠️ включать).
+**Реализация идёт.** Пользователь: «реализуй, за основу бери Feather, билдь через GitHub Actions», затем «делай всё, у меня iOS 27, чтобы было готово». Пункты ⚠️ по-прежнему не включать без явного решения.
+
+## Реализация (статус)
+- Код приложения: `App/` — копия Feather (GPL-3.0, claration/feather @7078b05), Zsign и IDeviceKitten встроены как обычные папки. Display name BetterThanBox, bundle id `com.betterthanbox.app`, URL-схемы `betterthanbox://` и `feather://`.
+- Xcode-проект использует file-system synchronized groups: **новые .swift-файлы в `App/Feather/` подхватываются автоматически**, pbxproj править не нужно.
+- Свой код — в `App/Feather/BetterThanBox/` (префикс `BTB`):
+  - `Resolver/` — поиск по всем источникам пользователя, выбор самой новой версии, закрепление источника (Sources → «Search All Sources»).
+  - `Storage/` — экран «Хранилище», категории, очистка, автоправила; защищённый набор (сертификаты, Application Support/Core Data, Preferences) проверяется в `BTBStorageManager.remove`.
+  - `Logs/` — просмотр OSLogStore, экспорт с редакцией.
+  - `Certificates/` — «Здоровье сертификатов», OCSP-перепроверка, фоновая проверка раз в 6 ч.
+  - `Files/` — файловый менеджер, plist/text-редакторы, hex-просмотр/патч; доступен из Settings и из карточки приложения в Library.
+  - `Signing/BTBSigningExtras.swift` — опции `btb_*` в `Options` (удаление расширений/Watch, снятие ограничений устройств, keep UISupportedDevices, fix icons, thin to arm64); ad-hoc включён; min iOS 10–18.
+- Встроенные твики (замена команд бота, `App/Tweaks/` + `BTBBuiltinTweaks.swift`) лежат в `git stash` («WIP: built-in tweaks»), не закоммичены — ждут решения пользователя.
+- Сборка: `.github/workflows/build.yml`, runner `macos-26`. Xcode падал на регистрации SwiftPM-пакетов (`IDESwiftPackageCore … count of array (32) differs from count of index set (31)`); в CI матрица обходных путей (удалить Package.resolved / workspace / clonedSourcePackagesDirPath / Xcode 26.6). Готовый IPA — артефакт и релиз `nightly-dev`.
+- Локально собрать нельзя (Linux) — проверка только через CI. Статус прогонов: `curl https://api.github.com/repos/1325ilya/BetterThanBox/actions/runs?per_page=1`.
 
 ## Что уже сделано
 1. Найдено и склонировано 26 open-source репозиториев (shallow clone) в `repos/`, оформлены как git-сабмодули (`.gitmodules`). README.md в корне описывает клонирование через `--recurse-submodules --shallow-submodules`.
@@ -19,7 +33,7 @@
 
 ## Git-состояние
 - Ветка: `claude/ios-signers-collection` (удалённый репозиторий был пуст, `master` без коммитов). PR не создавался и не запрашивался.
-- Коммиты: сабмодули + README, затем TODO.md. После этого коммита добавлен AGENTS.md и правка TODO.md (удалён LiveContainer) — закоммитить и запушить: `git push -u origin claude/ios-signers-collection`.
+- Пушить: `git push -u origin claude/ios-signers-collection`.
 - Stop-hook `~/.claude/stop-hook-git-check.sh` требует, чтобы не оставалось незакоммиченных/неотслеживаемых файлов — коммитить сразу после правок.
 - Атрибуция коммитов: добавлять в конец сообщения строки Co-Authored-By и Claude-Session из системного напоминания актуальной сессии. PR не создавать без явной просьбы.
 
