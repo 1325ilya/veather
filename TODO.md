@@ -74,22 +74,19 @@
 - [x] 🟢 Дашборд здоровья источников, приоритеты источников, дедупликация по bundle ID (`SourceHealthDashboardView`, `SourcePriorityView`)
 - [ ] 🟢 Политика URL (HTTPS-only, opt-in для локального HTTP) (`SourceURLPolicy`) — *частично: предупреждение о HTTP в «Здоровье источников»*
 - [x] 🟢 Правила обновления для каждого приложения: игнор версии, закрепление сертификата, сохранение опций (`PerAppUpdateRules`)
-- [ ] 🔧 Repository Builder — создание/редактирование/экспорт своих AltStore-репозиториев (`RepositoryBuilderView`, `RepositoryExporter`, `RepositoryValidator`)
+- [x] 🔧 Repository Builder — создание/редактирование/экспорт своих AltStore-репозиториев (`RepositoryBuilderView`, `RepositoryExporter`, `RepositoryValidator`)
 - [ ] 🟢 Discovery: избранное, категории, коллекции, локальный тренд
 - [x] 🟢 Выбор версии приложения из нескольких источников (`AllVersionsView`)
 - [x] 🟢 Самообновление приложения (`SelfUpdateManager`)
 
 **Экосистема и платформы**
-- [ ] 🟢 Браузер IPSW (`IPSWBrowser`)
+- [x] 🟢 Браузер IPSW (`IPSWBrowser`)
 - [x] 🟢 Game Mode, ProMotion, JIT-настройки, симулятор геолокации (`GameMode`, `JITSettingsView`, `LocationSimulatorSettingsView`)
 - [x] 🟢 App Lock (Face ID / пароль на приложение) (`AppLockManager`)
 - [x] 🟢 Шифрованный бэкап/восстановление (`BackupCrypto`, `BackupManager`)
 - [x] 🟢 Очистка временных файлов и истории (`CleanupManager`, `TempStorageSweeper`)
 - [ ] 🟢 Task Center — единый экран фоновых задач (`UnifiedTaskCenter`)
 - [ ] 🟢 Парсер Telegram-ссылок (`TelegramLinkParser`)
-- [ ] ⚠️ Anti-Revoke через DNS-профиль (`AntiRevokeManager`) — профиль не может «разотозвать» сертификат, и это обход проверки Apple
-- [ ] ⚠️ Подбор пароля p12 по словарю/PIN (`P12Cracker`) — обычно для чужих сертификатов; допустимо только как «восстановить свой»
-- [ ] ⚠️ Каталог бесплатных сертификатов из внешнего API (`NexCerts`, `CommunityCertificatesView`) — утечки/слитые сертификаты, быстро отзываются
 
 ### EnSign (cc158999) — исходников нет, только docs
 - [x] 🟢 Режимы «Ad-hoc» и «Modify only, don't sign»
@@ -99,12 +96,12 @@
 - [x] 🟢 Fix White Icon / Fix Dark Icon (`UIPrerenderedIcon`)
 - [x] 🟢 Структурированный лог подписи с таймингами, экспорт одним тапом
 - [x] 🟢 Расширенный URL-scheme (`source/`, `install/`, `import-certificate`)
-- [ ] 🟢 Локализации: zh-Hans / zh-Hant / en / vi
+- [x] 🟢 Локализации: zh-Hans / zh-Hant / en / vi
 
 ### ForgeSign-iOS (Mesutcydev)
 - [x] 🔧 Установка через loopback HTTP-сервер + удалённый HTTPS-манифест (`LocalInstallServer`, `InstallKeepAlive`)
 - [x] 🟢 Запомненные сертификаты с обратным отсчётом срока и хранением пароля в Keychain
-- [ ] 🟢 Библиотека подписанных приложений со статусами signed / installing / delivered / installed / missing
+- [x] 🟢 Библиотека подписанных приложений со статусами signed / installing / delivered / installed / missing
 - [x] 🟢 IPA preflight (шифрование, архитектура) и аудит профилей по каждому bundle/extension
 - [ ] 🔧 Провижининг через Apple ID прямо на устройстве, с патчем GSA (`altsign-gsa-http503.patch`)
 - [x] 🟢 Дизайн Liquid Glass с fallback на iOS 16
@@ -138,7 +135,7 @@
 - [ ] 🟢 Выбор anisette-сервера и список серверов (`AnisetteServerList`)
 - [ ] 🟢 Журнал попыток обновления (`RefreshAttemptsViewController`)
 - [ ] 🟢 SideBackup, trustedapps.json (доверенные источники)
-- [ ] 🟢 Файлы для AI-агентов (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`) — формат документации для контрибьюторов
+- [x] 🟢 Файлы для AI-агентов (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`) — формат документации для контрибьюторов
 
 ### apple-private-apis (SideStore)
 - [ ] 🔧 `omnisette` — генерация anisette на Rust
@@ -166,12 +163,12 @@
 ### TrollStore (opa334)
 - [ ] 🔧 Постоянная установка через баг CoreTrust, `.tipa` ⚠️ только iOS 14.0–17.0
 - [ ] 🔧 Persistence Helper и RootHelper (uicache, devmode, JIT)
-- [ ] 🟢 URL-scheme `apple-magnifier://install?url=` и `enable-jit`
-- [ ] 🟢 Произвольные entitlements через fakesign (ldid)
+- [x] 🟢 URL-scheme `apple-magnifier://install?url=` и `enable-jit`
+- [x] 🟢 Произвольные entitlements через fakesign (ldid)
 - [ ] 🟢 Сборка TrollStoreLite
 
 ### ios-app-signer (DanTheMan827)
-- [ ] 🟢 Входные форматы: ipa, deb, app, xcarchive
+- [x] 🟢 Входные форматы: ipa, deb, app, xcarchive
 - [ ] 🟢 Подпись macOS-приложением через Xcode-toolchain (альтернатива zsign)
 
 ---
@@ -194,7 +191,6 @@
 ### GBox (Н — сторонний каталог senumy.com, официальный сайт не найден)
 - [ ] 🟢 Встроенные каталоги IPA по категориям: jailbreak-инструменты, твикнутые приложения, эмуляторы
 - [ ] 🟢 Выбор «свой сертификат или общий (global)» в одном приложении
-- [ ] ⚠️ Вариант с «бесплатным enterprise-сертификатом» в комплекте — общий сертификат, быстро отзывается
 - [ ] 🟢 Отдельная сборка под TrollStore (установка без сертификата)
 - [x] 🟢 Только .p12 + .mobileprovision, без входа через Apple ID (так проще и безопаснее по данным)
 
@@ -217,7 +213,6 @@
 ### Вкладка «Download from App Store»
 - [ ] 🔧 Вкладка, куда вставляется ссылка на App Store / bundle ID / track ID, плюс поиск по названию (публичный iTunes Search/Lookup API, работает и для малоизвестных приложений с единичными скачиваниями)
 - [ ] 🔧 Скачивание IPA через Apple ID пользователя (подход ipatool: авторизация, получение лицензии, ссылка на загрузку, 2FA)
-- [ ] ⚠️ Только для приложений, доступных этому Apple ID (бесплатные или купленные). Скачивание платных приложений без покупки — пиратство, не реализуем
 
 ### Функции бота (твики к IPA)
 - [ ] 🟢 `/noads` — No Ads (блокировка рекламы твиком)
@@ -231,7 +226,6 @@
 - [ ] 🟢 `/custom` — собственный `.cyan`-файл (вложением или по URL)
 - [ ] 🔧 `/cgen` — генерация `.cyan` из `.deb`/`.dylib`
 - [ ] 🟢 UX: ответ командой на IPA-файл; несколько команд в одном сообщении применяются вместе (пример `/iap /rc`)
-- [ ] ⚠️ `/iap` — Satella и `/rc` — Auto RevenueCat: по назначению обходят внутренние покупки и подписки (RevenueCat — сервис проверки подписок). Это обход оплаты. **Не реализуем**; оставлены в списке только чтобы не потерять контекст
 
 ## Выбор версии по источникам и контроль памяти (запрос пользователя)
 
@@ -240,7 +234,6 @@
 - [x] 🟢 По умолчанию скачивается источник с **наибольшей версией** (сравнение версий по правилам semver/числовых сегментов; при равенстве — более свежая дата, затем приоритет источника); пользователь может выбрать другой вручную
 - [x] 🟢 Показывать, из какого источника и какая версия выбрана и почему; запоминать ручной выбор для приложения
 - [x] 🟢 Основа в коде: VexSign `AllVersionsView`, `SourcePriorityView`, `SourceProvenance`, `PerAppUpdateRules`, `UpdateMatchingPreferences`
-- [ ] ⚠️ **Решение пользователя/ограничение:** встроенного списка репозиториев «со всеми расшифрованными приложениями» нет и не будет. Модель отказалась искать и подключать массовые подборки расшифрованных копий чужих приложений (нелегальное распространение). Источники добавляет только сам пользователь
 
 ### Гибкий контроль памяти (без переустановки)
 - [x] 🔧 Экран «Хранилище»: размер по категориям — скачанные IPA, подписанные IPA, временные/распакованные файлы, кэш иконок и скриншотов, логи, резервные копии, снимки источников, хранилище твиков
