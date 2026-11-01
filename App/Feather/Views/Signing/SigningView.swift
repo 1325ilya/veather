@@ -250,7 +250,8 @@ extension SigningView {
 			
 				NavigationLink(.localized("Entitlements") + " (BETA)") {
 					SigningEntitlementsView(
-						bindingValue: $_temporaryOptions.appEntitlementsFile
+						bindingValue: $_temporaryOptions.appEntitlementsFile,
+						app: app
 					)
 				}
 				
