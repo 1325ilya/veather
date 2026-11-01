@@ -13,6 +13,7 @@ struct BTBUniversalSearchView: View {
 	@State private var _query = ""
 	@State private var _onlyDuplicates = false
 	@State private var _refreshToken = UUID()
+	@AppStorage(BTBUpdateRules.allSourcesKey) private var _updatesFromAllSources = true
 	
 	@FetchRequest(
 		entity: AltSource.entity(),
@@ -31,6 +32,9 @@ struct BTBUniversalSearchView: View {
 			Section {
 				Toggle(isOn: $_onlyDuplicates) {
 					Label(.localized("Only apps found in several sources"), systemImage: "square.on.square")
+				}
+				Toggle(isOn: $_updatesFromAllSources) {
+					Label(.localized("Library updates from all sources"), systemImage: "arrow.triangle.2.circlepath")
 				}
 			} footer: {
 				Text(.localized("Searches every source you added. By default the source with the highest version is used; tap an app to pick another source manually."))

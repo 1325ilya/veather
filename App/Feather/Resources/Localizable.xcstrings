@@ -22003,6 +22003,28 @@
           }
         }
       }
+    },
+    "Skip This Version" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пропустить эту версию"
+          }
+        }
+      }
+    },
+    "Library updates from all sources" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Обновления библиотеки из всех источников"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

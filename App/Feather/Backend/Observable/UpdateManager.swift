@@ -36,6 +36,12 @@ final class UpdateManager: ObservableObject {
 	
 	private init() {}
 	
+	/// BetterThanBox: hide this update until a newer version appears.
+	func skip(_ update: AppUpdate) {
+		BTBUpdateRules.ignore(bundleID: update.bundleIdentifier, version: update.remoteVersion)
+		updates[update.localUUID] = nil
+	}
+	
 	func update(for app: AppInfoPresentable) -> AppUpdate? {
 		guard let uuid = app.uuid else { return nil }
 		return updates[uuid]
@@ -156,52 +162,69 @@ final class UpdateManager: ObservableObject {
 				continue
 			}
 			
+			// BetterThanBox: look for the app in every source (or only the one it came
+			// from, if the user turned that off), honour a pinned source, and only
+			// report versions that are actually newer than the installed one.
+			let searchAllSources = UserDefaults.standard.object(forKey: BTBUpdateRules.allSourcesKey) as? Bool ?? true
+			let wantedID = sourceAppIdentifier.lowercased()
+			var candidates: [(source: AltSource, sourceURL: URL, repository: ASRepository, app: ASRepository.App)] = []
+			
 			for (source, repository) in repositories {
 				guard let sourceURL = source.sourceURL else {
 					continue
 				}
 				
-				guard _matchesStoredRepository(storedSourceURL: storedSourceURL, sourceURL: sourceURL) else {
+				let isOrigin = _matchesStoredRepository(storedSourceURL: storedSourceURL, sourceURL: sourceURL)
+				guard isOrigin || searchAllSources else {
 					continue
 				}
 				
-				guard let remoteApp = repository.apps.first(where: { $0.id == sourceAppIdentifier }) else {
+				guard let remoteApp = repository.apps.first(where: { $0.id?.lowercased() == wantedID }) else {
 					continue
 				}
 				
-				guard let remoteVersion = remoteApp.currentVersion, !remoteVersion.isEmpty else {
+				let normalized = BTBSourceResolver.normalized(remoteApp)
+				guard
+					let remoteVersion = normalized.currentVersion,
+					!remoteVersion.isEmpty,
+					normalized.currentDownloadUrl != nil
+				else {
 					continue
 				}
 				
-				guard remoteVersion != sourceAppVersion else {
-					continue
-				}
-				
-				guard let downloadURL = remoteApp.currentDownloadUrl else {
-					continue
-				}
-				
-				guard let provenance = SourceAppProvenance(
-					sourceURL: sourceURL,
-					repository: repository,
-					app: remoteApp
-				) else {
-					continue
-				}
-				
-				foundUpdates[localUUID] = AppUpdate(
-					id: localUUID,
-					localUUID: localUUID,
-					localVersion: sourceAppVersion ?? localApp.version,
-					remoteVersion: remoteVersion,
-					appName: remoteApp.currentName,
-					bundleIdentifier: sourceAppIdentifier,
-					downloadURL: downloadURL,
-					sourceURL: sourceURL,
-					sourceProvenance: provenance
-				)
-				break
+				candidates.append((source, sourceURL, repository, normalized))
 			}
+			
+			let pinned = BTBSourceResolver.pinnedSource(for: wantedID)
+			let best = candidates.first(where: { pinned != nil && ($0.source.identifier ?? "") == pinned })
+				?? candidates.max(by: { BTBVersionCompare.compare($0.app.currentVersion, $1.app.currentVersion) == .orderedAscending })
+			
+			guard
+				let best,
+				let remoteVersion = best.app.currentVersion,
+				let downloadURL = best.app.currentDownloadUrl,
+				BTBVersionCompare.isNewer(remoteVersion, than: sourceAppVersion ?? localApp.version),
+				!BTBUpdateRules.isIgnored(bundleID: wantedID, version: remoteVersion),
+				let provenance = SourceAppProvenance(
+					sourceURL: best.sourceURL,
+					repository: best.repository,
+					app: best.app
+				)
+			else {
+				continue
+			}
+			
+			foundUpdates[localUUID] = AppUpdate(
+				id: localUUID,
+				localUUID: localUUID,
+				localVersion: sourceAppVersion ?? localApp.version,
+				remoteVersion: remoteVersion,
+				appName: best.app.currentName,
+				bundleIdentifier: sourceAppIdentifier,
+				downloadURL: downloadURL,
+				sourceURL: best.sourceURL,
+				sourceProvenance: provenance
+			)
 		}
 		
 		return foundUpdates

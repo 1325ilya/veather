@@ -179,6 +179,9 @@ extension LibraryCellView {
 					_startUpdateDownload(update)
 				}
 			}
+			Button(.localized("Skip This Version"), systemImage: "forward") {
+				updateManager.skip(update)
+			}
 		}
 		
 		if app.isSigned {
