@@ -23959,6 +23959,46 @@
           }
         }
       }
+    },
+    "Certificate Problem" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Проблема с сертификатом"
+          }
+        }
+      }
+    },
+    "%lld apps were signed with a revoked or expired certificate. Re-sign them with your current certificate, then install again." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Приложений, подписанных отозванным или истёкшим сертификатом: %lld. Переподпишите их текущим сертификатом и установите заново."
+          }
+        }
+      }
+    },
+    "Open each app in Library and tap Install." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Откройте каждое приложение в Библиотеке и нажмите «Установить»."
+          }
+        }
+      }
+    },
+    "Re-sign All" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Переподписать все"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

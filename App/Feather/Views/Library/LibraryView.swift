@@ -51,6 +51,25 @@ struct LibraryView: View {
 		filteredAndSortedApps(from: _importedApps)
 	}
 	
+	// MARK: Self-heal (apps whose certificate is revoked or expired)
+	private var _healthyCertificate: CertificatePair? {
+		let index = UserDefaults.standard.integer(forKey: "feather.selectedCert")
+		guard
+			let cert = Storage.shared.getCertificate(for: index),
+			!cert.revoked,
+			(cert.expiration ?? .distantFuture) > Date()
+		else { return nil }
+		return cert
+	}
+	
+	private var _appsNeedingResign: [Signed] {
+		guard let healthy = _healthyCertificate else { return [] }
+		return _signedApps.filter { app in
+			guard let cert = Storage.shared.getCertificate(from: app), cert.objectID != healthy.objectID else { return false }
+			return cert.revoked || (cert.expiration ?? .distantFuture) <= Date()
+		}
+	}
+	
 	// MARK: Fetch
 	@FetchRequest(
 		entity: Signed.entity(),
@@ -74,6 +93,15 @@ struct LibraryView: View {
 	var body: some View {
 		NBNavigationView(.localized("Library")) {
 			NBListAdaptable {
+				if _searchText.isEmpty, !_editMode.isEditing {
+					let broken = _appsNeedingResign
+					if !broken.isEmpty {
+						Section {
+							_resignBanner(broken)
+						}
+					}
+				}
+				
 				if
 					horizontalSizeClass == .compact,
 					_searchText.isEmpty,
@@ -298,6 +326,41 @@ extension LibraryView {
 		Button(.localized("Paste Link"), systemImage: "doc.on.clipboard") {
 			_importFromClipboard()
 		}
+	}
+	
+	@ViewBuilder
+	private func _resignBanner(_ apps: [Signed]) -> some View {
+		VStack(alignment: .leading, spacing: 12) {
+			BTBRowLabel(
+				.localized("Certificate Problem"),
+				systemImage: "exclamationmark.shield.fill",
+				color: .red,
+				subtitle: .localized("%lld apps were signed with a revoked or expired certificate. Re-sign them with your current certificate, then install again.", arguments: apps.count)
+			)
+			Button {
+				_bulkProgress = (0, apps.count)
+				BTBBulkSigner.sign(apps, progress: { _bulkProgress = ($0, $1) }) { ok, errors in
+					_bulkProgress = nil
+					UINotificationFeedbackGenerator().notificationOccurred(errors.isEmpty ? .success : .warning)
+					UIAlertController.showAlertWithOk(
+						title: String.localized("Signed %lld of %lld", arguments: ok, apps.count),
+						message: errors.isEmpty ? String.localized("Open each app in Library and tap Install.") : errors.joined(separator: "\n")
+					)
+				}
+			} label: {
+				Label(
+					_bulkProgress.map { String.localized("Signing %lld of %lld", arguments: $0.0, $0.1) } ?? String.localized("Re-sign All"),
+					systemImage: "arrow.triangle.2.circlepath"
+				)
+				.font(.subheadline.weight(.semibold))
+				.frame(maxWidth: .infinity)
+			}
+			.buttonStyle(.borderedProminent)
+			.tint(.red)
+			.controlSize(.large)
+			.disabled(_bulkProgress != nil)
+		}
+		.padding(.vertical, 6)
 	}
 	
 	@ViewBuilder
