@@ -13,6 +13,8 @@ import NimbleViews
 struct ArchiveView: View {
 	@AppStorage("Feather.compressionLevel") private var _compressionLevel: Int = ZipCompression.DefaultCompression.rawValue
 	@AppStorage("Feather.useShareSheetForArchiving") private var _useShareSheet: Bool = false
+	@AppStorage("BTB.archive.extension") private var _archiveExtension: String = "ipa"
+	@AppStorage("BTB.archive.nameTemplate") private var _nameTemplate: String = "{name}_{version}_{date}"
 	
 	// MARK: Body
 	var body: some View {
@@ -23,6 +25,18 @@ struct ArchiveView: View {
 						Text(level.label).tag(level)
 					}
 				}
+			}
+			
+			Section {
+				Picker(.localized("File Type"), systemImage: "doc.zipper", selection: $_archiveExtension) {
+					Text(verbatim: ".ipa").tag("ipa")
+					Text(verbatim: ".tipa (TrollStore)").tag("tipa")
+				}
+				TextField(.localized("File name"), text: $_nameTemplate)
+					.textInputAutocapitalization(.never)
+					.autocorrectionDisabled()
+			} footer: {
+				Text(.localized("Placeholders: {name}, {version}, {bundle}, {date} (yyyy-MM-dd_HH-mm), {timestamp}."))
 			}
 			
 			Section {

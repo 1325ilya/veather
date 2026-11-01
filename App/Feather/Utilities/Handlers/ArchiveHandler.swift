@@ -70,7 +70,11 @@ final class ArchiveHandler: NSObject {
 	}
 	
 	func moveToArchive(_ package: URL, shouldOpen: Bool = false) async throws -> URL? {
-		let appendingString = "\(_app.name!)_\(_app.version!)_\(Int(Date().timeIntervalSince1970)).ipa"
+		let appendingString = BTBArchiveNaming.fileName(
+			name: _app.name ?? "App",
+			version: _app.version ?? "",
+			bundleID: _app.identifier ?? ""
+		)
 		let dest = _fileManager.archives.appendingPathComponent(appendingString)
 		
 		try? _fileManager.moveItem(
