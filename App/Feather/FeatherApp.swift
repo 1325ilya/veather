@@ -159,6 +159,9 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 		_createPipeline()
 		_createDocumentsDirectories()
 		ResetView.clearWorkCache()
+		DispatchQueue.global(qos: .utility).async {
+			BTBStorageManager.shared.runAutoCleanRules()
+		}
 		_addDefaultCertificates()
 		return true
 	}
