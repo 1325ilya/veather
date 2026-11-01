@@ -37,11 +37,6 @@ struct SourcesView: View {
 			NBListAdaptable {
 				Section {
 					NavigationLink {
-						BTBAppStoreView()
-					} label: {
-						Label(.localized("App Store (find & info)"), systemImage: "bag")
-					}
-					NavigationLink {
 						BTBBrowserView()
 					} label: {
 						Label(.localized("Browser (download IPA from sites)"), systemImage: "safari")

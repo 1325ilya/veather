@@ -19,7 +19,7 @@
   - `Signing/` — `BTBSigningExtras` (опции `btb_*`: удаление расширений/Watch, снятие ограничений устройств, keep UISupportedDevices, fix icons, thin to arm64, изоляция keychain), `BTBCloneWizard` (2–20 клонов), `BTBPreflight` (проверки до подписи + `BTBMachOInspector`: шифрование/arm64), `BTBSigningPresets`, `BTBBulkSigner`, `BTBKeychainIsolation`, `BTBArchiveNaming` (.ipa/.tipa + шаблон имени), `BTBBuiltinTweaks` (внедрение дилиба твиков). ad-hoc включён.
   - `Backup/` — бэкап/восстановление сертификатов+источников+настроек в .btbbackup (zip с паролем).
   - `Security/BTBAppLock` — Face ID на вход. `Background/BTBBackgroundRefresh` — фоновые проверки обновлений/сертификатов + уведомления. `Update/BTBSelfUpdate` — самообновление из релиза nightly-dev. `Intents/` — Shortcuts.
-  - `Browser/` — встроенный WKWebView-браузер: тап по .ipa/.tipa/itms-services → в менеджер загрузок; «Find IPA links». `AppStore/` — поиск по публичному iTunes API (инфо/скриншоты), сам IPA из источников пользователя через резолвер. `Tools/` — IPSW-браузер (ipsw.me), конструктор AltStore-репозиториев. `Logs/BTBActivityLog` — история import/sign/install/fail.
+  - `Browser/` — встроенный WKWebView-браузер: тап по .ipa/.tipa/itms-services → в менеджер загрузок; «Find IPA links». `Tools/` — IPSW-браузер (ipsw.me), конструктор AltStore-репозиториев. `Logs/BTBActivityLog` — история import/sign/install/fail.
 - Встроенные твики: `App/Tweaks/*` (ObjC, один `BTBTweaks.dylib`, собирается `make tweaks` → `App/_tweakbuild/`, копируется в .app, в Xcode-группу НЕ входит). Включаются per-app через Info.plist `BTBEnabledTweaks`. Это noads/nowifi/norev/ipadui/noupd/sideload/backup. `/iap` и `/rc` (обход оплаты) — НЕ реализованы сознательно.
 - ⚠️-пункты: решение по каждому в конце TODO.md («✅ Делаю» оставлено, вредные — обход отзыва/взлом p12/краденые сертификаты/обход оплаты/пиратство — удалены по просьбе пользователя).
 - Сборка: `.github/workflows/build.yml`, runner `macos-26`, Xcode новейший. Фикс крэша Xcode на SwiftPM — **НЕ коммитить `Package.resolved`** (стоковый из Feather ломал граф пакетов). Готовый IPA — артефакт и релиз `nightly-dev` (в теле релиза «Build N» = CFBundleVersion).
@@ -93,7 +93,7 @@
 - [x] 🟢 Окно логов с историей (`LogsManager`, `LogsView`)
 - [x] 🟢 Выбор акцентного цвета (`AccentColorManager`)
 - [ ] 🔧 «Server Pack» — формат раздачи SSL-/сертификатных наборов для OTA-установки (`ServerPackModel`)
-- [x] 🔧 Отдельный «Appstore»-таб, выделенный из общих Sources
+- [~] 🔧 Отдельный «Appstore»-таб, выделенный из общих Sources — *убрано по решению пользователя*
 
 ### BatSign (8yy)
 - [ ] 🔧 Автообновление в фоне: расписание (час…сутки), только Wi-Fi, ночное окно, «пропустить версию», «заморозить обновления», тихая установка через туннель (`AutoUpdateManager`, `BSBackgroundTasks`, `BSContinuedProcessing`) — *частично: фоновая проверка + уведомления (BTBBackgroundRefresh), без тихой установки*
@@ -103,7 +103,7 @@
 - [x] 🟢 Дашборд здоровья сертификатов: кольца срока, статус отзыва, «Renew All»
 - [x] 🔧 Install Ledger / Install Watcher: журнал установок и отслеживание, что приложение реально установилось (`BSInstallLedger`, `BSInstallWatcher`)
 - [x] 🔧 Download Rescue — дозагрузка после обрыва (`DownloadRescue`)
-- [x] 🟢 Поиск приложения через App Store lookup (`AppStoreLookup`) и показ значка/скриншотов (`BSArtwork`, `BSShotCache`)
+- [~] 🟢 Поиск приложения через App Store lookup (`AppStoreLookup`) и показ значка/скриншотов (`BSArtwork`, `BSShotCache`) — *убрано по решению пользователя*
 - [x] 🟢 Shortcuts / App Intents для подписи (`SignIntents`)
 - [x] 🟢 Экраны Storage, Activity log, Backup/Restore, Discover, Updates, Tweak Vault
 - [x] 🟢 Tweak Vault: сохранённые .deb/.dylib, внедрение в один тап
@@ -278,7 +278,7 @@
 Источник: список команд `/help` бота (твики применяются к IPA конвейером `.cyan`). Что делает каждая команда, знаем **только по названию** — перед реализацией проверять.
 
 ### Вкладка «Download from App Store»
-- [x] 🔧 Вкладка, куда вставляется ссылка на App Store / bundle ID / track ID, плюс поиск по названию (публичный iTunes Search/Lookup API, работает и для малоизвестных приложений с единичными скачиваниями)
+- [~] 🔧 Вкладка, куда вставляется ссылка на App Store / bundle ID / track ID, плюс поиск по названию (публичный iTunes Search/Lookup API, работает и для малоизвестных приложений с единичными скачиваниями) — *убрано по решению пользователя*
 - [ ] 🔧 Скачивание IPA через Apple ID пользователя (подход ipatool: авторизация, получение лицензии, ссылка на загрузку, 2FA)
 
 ### Функции бота (твики к IPA)
@@ -315,7 +315,7 @@
 ## Пункты с ⚠️ — решение по каждому (моим фильтром, а не огулом)
 
 **✅ Делаю (законно / безопасно):**
-- [x] 🔧 Вкладка App Store: поиск и инфо через публичный iTunes Search/Lookup API (значок, скриншоты, версия, ссылка). Только просмотр каталога; сам IPA берём из **твоих источников** через резолвер. Без входа в Apple ID, без расшифровки, без скачивания платного — этого и не было смысла, вредная часть убрана.
+- [~] 🔧 Вкладка App Store: поиск и инфо через публичный iTunes Search/Lookup API (значок, скриншоты, версия, ссылка). Только просмотр каталога; сам IPA берём из **твоих источников** через резолвер. Без входа в Apple ID, без расшифровки, без скачивания платного — этого и не было смысла, вредная часть убрана. — *убрано по решению пользователя*
 - [x] 🔧 `.tipa`-вывод для TrollStore — **готово** (экспорт .tipa). Сам установщик через баг CoreTrust работает только iOS 14.0–17.0, на твоей iOS 27 невозможен физически — поэтому установщик не делаю, только экспорт.
 - [x] 🟢 Четыре способа установки — у нас уже есть server/itms-services и IDevice; enterprise-способ (общий enterprise-сертификат) не делаю, см. ниже.
 
