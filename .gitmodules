@@ -1,0 +1,78 @@
+[submodule "repos/8yy_BatSign"]
+	path = repos/8yy_BatSign
+	url = https://github.com/8yy/BatSign.git
+[submodule "repos/Dadoum_Sideloader"]
+	path = repos/Dadoum_Sideloader
+	url = https://github.com/Dadoum/Sideloader.git
+[submodule "repos/DanTheMan827_ios-app-signer"]
+	path = repos/DanTheMan827_ios-app-signer
+	url = https://github.com/DanTheMan827/ios-app-signer.git
+[submodule "repos/Mesutcydev_ForgeSign-iOS"]
+	path = repos/Mesutcydev_ForgeSign-iOS
+	url = https://github.com/Mesutcydev/ForgeSign-iOS.git
+[submodule "repos/NyaMisty_AltServer-Linux"]
+	path = repos/NyaMisty_AltServer-Linux
+	url = https://github.com/NyaMisty/AltServer-Linux.git
+[submodule "repos/Nyasami_Ksign"]
+	path = repos/Nyasami_Ksign
+	url = https://github.com/Nyasami/Ksign.git
+[submodule "repos/ProStore-iOS_ProSign"]
+	path = repos/ProStore-iOS_ProSign
+	url = https://github.com/ProStore-iOS/ProSign.git
+[submodule "repos/ProStore-iOS_ProStore"]
+	path = repos/ProStore-iOS_ProStore
+	url = https://github.com/ProStore-iOS/ProStore.git
+[submodule "repos/ProcursusTeam_ldid"]
+	path = repos/ProcursusTeam_ldid
+	url = https://github.com/ProcursusTeam/ldid.git
+[submodule "repos/SWING1993_ABox_iOS"]
+	path = repos/SWING1993_ABox_iOS
+	url = https://github.com/SWING1993/ABox_iOS.git
+[submodule "repos/SideStore_SideStore"]
+	path = repos/SideStore_SideStore
+	url = https://github.com/SideStore/SideStore.git
+[submodule "repos/SideStore_apple-private-apis"]
+	path = repos/SideStore_apple-private-apis
+	url = https://github.com/SideStore/apple-private-apis.git
+[submodule "repos/altstoreio_AltStore"]
+	path = repos/altstoreio_AltStore
+	url = https://github.com/altstoreio/AltStore.git
+[submodule "repos/cc158999_EnSign"]
+	path = repos/cc158999_EnSign
+	url = https://github.com/cc158999/EnSign.git
+[submodule "repos/claration_feather"]
+	path = repos/claration_feather
+	url = https://github.com/claration/feather.git
+[submodule "repos/claration_impactor"]
+	path = repos/claration_impactor
+	url = https://github.com/claration/impactor.git
+[submodule "repos/iRayanKhan_TanaraSign"]
+	path = repos/iRayanKhan_TanaraSign
+	url = https://github.com/iRayanKhan/TanaraSign.git
+[submodule "repos/ihateios_SignOs"]
+	path = repos/ihateios_SignOs
+	url = https://github.com/ihateios/SignOs.git
+[submodule "repos/nab138_iloader"]
+	path = repos/nab138_iloader
+	url = https://github.com/nab138/iloader.git
+[submodule "repos/opa334_TrollStore"]
+	path = repos/opa334_TrollStore
+	url = https://github.com/opa334/TrollStore.git
+[submodule "repos/pwnapplehat_iPASide"]
+	path = repos/pwnapplehat_iPASide
+	url = https://github.com/pwnapplehat/iPASide.git
+[submodule "repos/raynmahbub_VexSign"]
+	path = repos/raynmahbub_VexSign
+	url = https://github.com/raynmahbub/VexSign.git
+[submodule "repos/togettoyou_ipashare"]
+	path = repos/togettoyou_ipashare
+	url = https://github.com/togettoyou/ipashare.git
+[submodule "repos/vyvir_althea"]
+	path = repos/vyvir_althea
+	url = https://github.com/vyvir/althea.git
+[submodule "repos/xhzq233_altsign-cli"]
+	path = repos/xhzq233_altsign-cli
+	url = https://github.com/xhzq233/altsign-cli.git
+[submodule "repos/zhlynn_zsign"]
+	path = repos/zhlynn_zsign
+	url = https://github.com/zhlynn/zsign.git
