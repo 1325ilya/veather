@@ -77,6 +77,15 @@ struct SettingsView: View {
 					Text(.localized("Add and manage certificates used for signing applications."))
 				}
                 
+				NBSection(.localized("Tools")) {
+					NavigationLink(destination: BTBRepoBuilderView()) {
+						Label(.localized("Repository Builder"), systemImage: "hammer")
+					}
+					NavigationLink(destination: BTBIPSWView()) {
+						Label(.localized("IPSW"), systemImage: "cpu")
+					}
+				}
+				
 				NBSection(.localized("Features")) {
 					NavigationLink(destination: ConfigurationView()) {
 						Label(.localized("Signing Options"), systemImage: "signature")
