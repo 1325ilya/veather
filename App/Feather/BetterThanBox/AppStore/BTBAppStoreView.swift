@@ -40,10 +40,20 @@ struct BTBStoreApp: Decodable, Identifiable, Hashable {
 enum BTBAppStoreAPI {
 	private struct Response: Decodable { let results: [BTBStoreApp] }
 
+	/// iTunes accepts only ISO 3166-1 alpha-2 codes. Locales like en_001 have a
+	/// numeric UN M.49 region ("001") which makes the API answer 400, so fall back to "us".
 	static var country: String {
-		UserDefaults.standard.string(forKey: "BTB.appStore.country")
-			?? Locale.current.region?.identifier.lowercased()
-			?? "us"
+		if let custom = UserDefaults.standard.string(forKey: "BTB.appStore.country"), _isAlpha2(custom) {
+			return custom.lowercased()
+		}
+		if let region = Locale.current.region?.identifier, _isAlpha2(region) {
+			return region.lowercased()
+		}
+		return "us"
+	}
+
+	private static func _isAlpha2(_ code: String) -> Bool {
+		code.count == 2 && code.allSatisfy { $0.isASCII && $0.isLetter }
 	}
 
 	/// A pasted App Store link contains the numeric track id after "id".
