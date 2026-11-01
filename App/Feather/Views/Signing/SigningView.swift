@@ -51,10 +51,10 @@ struct SigningView: View {
 	var body: some View {
 		NBNavigationView("", displayMode: .inline) {
 			Form {
-				BTBPreflightSection(app: app, options: _temporaryOptions, certificate: _selectedCert())
-				BTBSigningPresetsSection(options: $_temporaryOptions)
 				_customizationOptions(for: app)
 				_cert()
+				BTBPreflightSection(app: app, options: _temporaryOptions, certificate: _selectedCert())
+				BTBSigningPresetsSection(options: $_temporaryOptions)
 				_customizationProperties(for: app)
 				
 				Section {
@@ -248,9 +248,16 @@ extension SigningView {
 					)
 				}
 			} else {
-				Text(.localized("No Certificate"))
-					.font(.footnote)
-					.foregroundColor(.disabled())
+				NavigationLink {
+					CertificatesView(selectedCert: $_temporaryCertificate)
+				} label: {
+					BTBRowLabel(
+						.localized("Add a Certificate"),
+						systemImage: "exclamationmark.shield.fill",
+						color: .orange,
+						subtitle: .localized("Signing needs your certificate (.p12 + .mobileprovision). Tap to add one.")
+					)
+				}
 			}
 		}
 	}

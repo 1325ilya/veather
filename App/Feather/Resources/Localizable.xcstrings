@@ -23839,6 +23839,26 @@
           }
         }
       }
+    },
+    "Add a Certificate" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавить сертификат"
+          }
+        }
+      }
+    },
+    "Signing needs your certificate (.p12 + .mobileprovision). Tap to add one." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Для подписи нужен ваш сертификат (.p12 + .mobileprovision). Нажмите, чтобы добавить."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
