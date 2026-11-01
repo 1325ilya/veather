@@ -23719,6 +23719,16 @@
           }
         }
       }
+    },
+    "BetterThanBox is based on Feather and is distributed under the GPL-3.0 license." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "BetterThanBox основан на Feather и распространяется по лицензии GPL-3.0."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

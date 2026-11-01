@@ -34,7 +34,6 @@ struct SettingsView: View {
 	}
 
     
-	private let _donationsUrl = "https://github.com/sponsors/claration"
 	private let _githubUrl = "https://github.com/1325ilya/BetterThanBox"
     
 	// MARK: Body
@@ -42,11 +41,7 @@ struct SettingsView: View {
 		NBNavigationView(.localized("Settings")) {
 			Form {
 				_header()
-				
-				#if !NIGHTLY && !DEBUG
-					SettingsDonationCellView(site: _donationsUrl)
-				#endif
-				
+
 				Section {
 					NavigationLink(destination: BTBSelfUpdateView()) {
 						BTBRowLabel(.localized("Check for Updates"), systemImage: "arrow.down.circle.fill", color: .blue)
