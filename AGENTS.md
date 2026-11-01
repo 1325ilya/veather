@@ -136,7 +136,7 @@
 **Источники и обновления**
 - [ ] 🔧 Offline-каталог источников, условная синхронизация по ETag/Last-Modified, сохранение last-known-good (`RepositorySnapshotCache`, `RepositorySyncEngine`)
 - [x] 🟢 Дашборд здоровья источников, приоритеты источников, дедупликация по bundle ID (`SourceHealthDashboardView`, `SourcePriorityView`)
-- [x] 🟢 Политика URL (HTTPS-only, opt-in для локального HTTP) (`SourceURLPolicy`)
+- [ ] 🟢 Политика URL (HTTPS-only, opt-in для локального HTTP) (`SourceURLPolicy`) — *частично: предупреждение о HTTP в «Здоровье источников»*
 - [x] 🟢 Правила обновления для каждого приложения: игнор версии, закрепление сертификата, сохранение опций (`PerAppUpdateRules`)
 - [ ] 🔧 Repository Builder — создание/редактирование/экспорт своих AltStore-репозиториев (`RepositoryBuilderView`, `RepositoryExporter`, `RepositoryValidator`)
 - [ ] 🟢 Discovery: избранное, категории, коллекции, локальный тренд
