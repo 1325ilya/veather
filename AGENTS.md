@@ -82,7 +82,7 @@
 - [x] 🟢 Hex-редактор файлов внутри IPA (`HexEditorView`)
 - [x] 🟢 Редактор plist (`PlistEditorView`) и текстовый редактор (`TextEditorView`) в файловом менеджере
 - [x] 🟢 Встроенный менеджер файлов с QuickLook, превью изображений, экспортом (`FilesView`, `FilesViewModel`)
-- [ ] 🟢 Встроенный WebView-загрузчик IPA со страниц (`WebViewSheet`, `DownloaderView`, `IPADownloadManager`)
+- [x] 🟢 Встроенный WebView-загрузчик IPA со страниц (`WebViewSheet`, `DownloaderView`, `IPADownloadManager`)
 - [ ] 🟢 Менеджер распаковки архивов с прогрессом (`ExtractManager`, `ExtractionService`)
 - [ ] 🔧 Массовая установка с превью и прогрессом (`BulkInstallPreviewView`, `BulkInstallProgressView`, `BulkSigningView`)
 - [x] 🟢 Экран управления dylib приложения (`DylibsView`)
@@ -92,7 +92,7 @@
 - [ ] 🔧 Отдельный «Appstore»-таб, выделенный из общих Sources
 
 ### BatSign (8yy)
-- [ ] 🔧 Автообновление в фоне: расписание (час…сутки), только Wi-Fi, ночное окно, «пропустить версию», «заморозить обновления», тихая установка через туннель (`AutoUpdateManager`, `BSBackgroundTasks`, `BSContinuedProcessing`)
+- [ ] 🔧 Автообновление в фоне: расписание (час…сутки), только Wi-Fi, ночное окно, «пропустить версию», «заморозить обновления», тихая установка через туннель (`AutoUpdateManager`, `BSBackgroundTasks`, `BSContinuedProcessing`) — *частично: фоновая проверка + уведомления (BTBBackgroundRefresh), без тихой установки*
 - [ ] 🔧 Live Activity / Dynamic Island с прогрессом, скоростью и ETA (`LiveActivityController`, `BatSignLiveActivity`, `DownloadActivityAttributes`)
 - [ ] 🔧 Serial-очередь подписи и «Pending Sign» (`BSPendingSign`, `BSBulkSign`, `AutoSignManager`)
 - [ ] 🔧 Self-Heal: обнаружить отозванный сертификат и автоматически переподписать приложения лучшим живым (`CertHealthView`)
@@ -116,12 +116,12 @@
 
 ### VexSign (raynmahbub) — самый большой, 554 файла
 **Подпись и установка**
-- [ ] 🔧 Пакетная подпись и очереди установки с настройками для каждого приложения (`BatchSignView`, `BatchJobRunner`, `InstallQueue`)
-- [ ] 🟢 Именованные профили подписи / пресеты (`NamedSigningProfileStore`, `SigningProfileStore`)
+- [x] 🔧 Пакетная подпись и очереди установки с настройками для каждого приложения (`BatchSignView`, `BatchJobRunner`, `InstallQueue`)
+- [x] 🟢 Именованные профили подписи / пресеты (`NamedSigningProfileStore`, `SigningProfileStore`)
 - [x] 🟢 Preflight перед подписью и перед установкой (`PreflightChecks`, `InstallPreflight`, `NestedBundleAudit`, `ProfileCompatibility`)
-- [ ] 🟢 Редактор entitlements с билдером (`EntitlementBuilder`, `SigningEntitlementsEditorView`) и чтением из Mach-O (`MachOEntitlements`)
-- [ ] 🔧 Локальный HTTPS для `itms-services` со своим CA/TLS (`LocalCAProfile`, `LocalTLSIdentity`, `OTAExporter`)
-- [ ] 🔧 Установка через AFC / installd на спаренном устройстве (`DirectInstaller`)
+- [x] 🟢 Редактор entitlements с билдером (`EntitlementBuilder`, `SigningEntitlementsEditorView`) и чтением из Mach-O (`MachOEntitlements`)
+- [x] 🔧 Локальный HTTPS для `itms-services` со своим CA/TLS (`LocalCAProfile`, `LocalTLSIdentity`, `OTAExporter`)
+- [x] 🔧 Установка через AFC / installd на спаренном устройстве (`DirectInstaller`)
 - [ ] 🟢 Проверка сигнатур и целостности скачанного (`SignatureVerifier`, `DownloadIntegrity`, `BundleSignature`)
 - [x] 🟢 OCSP-проверка с верификацией респондера (`OCSP`, `OCSPResponderVerification`)
 - [x] 🟢 Mach-O thinning — удаление лишних архитектур
@@ -136,7 +136,7 @@
 **Источники и обновления**
 - [ ] 🔧 Offline-каталог источников, условная синхронизация по ETag/Last-Modified, сохранение last-known-good (`RepositorySnapshotCache`, `RepositorySyncEngine`)
 - [x] 🟢 Дашборд здоровья источников, приоритеты источников, дедупликация по bundle ID (`SourceHealthDashboardView`, `SourcePriorityView`)
-- [ ] 🟢 Политика URL (HTTPS-only, opt-in для локального HTTP) (`SourceURLPolicy`)
+- [x] 🟢 Политика URL (HTTPS-only, opt-in для локального HTTP) (`SourceURLPolicy`)
 - [x] 🟢 Правила обновления для каждого приложения: игнор версии, закрепление сертификата, сохранение опций (`PerAppUpdateRules`)
 - [ ] 🔧 Repository Builder — создание/редактирование/экспорт своих AltStore-репозиториев (`RepositoryBuilderView`, `RepositoryExporter`, `RepositoryValidator`)
 - [ ] 🟢 Discovery: избранное, категории, коллекции, локальный тренд
@@ -146,7 +146,7 @@
 **Экосистема и платформы**
 - [ ] 🟢 Браузер IPSW (`IPSWBrowser`)
 - [x] 🟢 Game Mode, ProMotion, JIT-настройки, симулятор геолокации (`GameMode`, `JITSettingsView`, `LocationSimulatorSettingsView`)
-- [ ] 🟢 App Lock (Face ID / пароль на приложение) (`AppLockManager`)
+- [x] 🟢 App Lock (Face ID / пароль на приложение) (`AppLockManager`)
 - [x] 🟢 Шифрованный бэкап/восстановление (`BackupCrypto`, `BackupManager`)
 - [x] 🟢 Очистка временных файлов и истории (`CleanupManager`, `TempStorageSweeper`)
 - [ ] 🟢 Task Center — единый экран фоновых задач (`UnifiedTaskCenter`)
@@ -157,9 +157,9 @@
 
 ### EnSign (cc158999) — исходников нет, только docs
 - [x] 🟢 Режимы «Ad-hoc» и «Modify only, don't sign»
-- [ ] 🟢 Вывод в TIPA (для TrollStore)
-- [ ] 🟢 Шаблон имени выходного файла + метка времени, APFS-клонирование при упаковке
-- [ ] 🟢 Keychain Isolation (раздельные access groups у подписанных приложений)
+- [x] 🟢 Вывод в TIPA (для TrollStore)
+- [x] 🟢 Шаблон имени выходного файла + метка времени, APFS-клонирование при упаковке
+- [x] 🟢 Keychain Isolation (раздельные access groups у подписанных приложений)
 - [x] 🟢 Fix White Icon / Fix Dark Icon (`UIPrerenderedIcon`)
 - [x] 🟢 Структурированный лог подписи с таймингами, экспорт одним тапом
 - [x] 🟢 Расширенный URL-scheme (`source/`, `install/`, `import-certificate`)
@@ -167,24 +167,24 @@
 
 ### ForgeSign-iOS (Mesutcydev)
 - [x] 🔧 Установка через loopback HTTP-сервер + удалённый HTTPS-манифест (`LocalInstallServer`, `InstallKeepAlive`)
-- [ ] 🟢 Запомненные сертификаты с обратным отсчётом срока и хранением пароля в Keychain
+- [x] 🟢 Запомненные сертификаты с обратным отсчётом срока и хранением пароля в Keychain
 - [ ] 🟢 Библиотека подписанных приложений со статусами signed / installing / delivered / installed / missing
 - [x] 🟢 IPA preflight (шифрование, архитектура) и аудит профилей по каждому bundle/extension
 - [ ] 🔧 Провижининг через Apple ID прямо на устройстве, с патчем GSA (`altsign-gsa-http503.patch`)
-- [ ] 🟢 Дизайн Liquid Glass с fallback на iOS 16
+- [x] 🟢 Дизайн Liquid Glass с fallback на iOS 16
 
 ### ABox (SWING1993)
 - [x] 🟢 Просмотр p12 и mobileprovision (поля, сроки)
 - [ ] 🔧 Class-dump заголовков из Mach-O прямо на устройстве
 - [x] 🟢 Инъекция и удаление dylib через optool
 - [ ] 🟢 Поддержка iOS 12+ (самая старая цель среди всех)
-- [ ] 🟢 Парсинг веб-страницы в поисках ссылки на IPA
+- [x] 🟢 Парсинг веб-страницы в поисках ссылки на IPA
 
 ### TanaraSign (iRayanKhan) — по README
 
 ### ProStore / ProSign (ProStore-iOS) — заброшены
 - [ ] 🟢 Загрузчик «официальных» сертификатов (`OfficialCertsDownloader`) ⚠️ та же оговорка, что у NexCerts
-- [ ] 🟢 Проверка сертификата (`certChecker`)
+- [x] 🟢 Проверка сертификата (`certChecker`)
 - [ ] 🟢 Сравнительная таблица возможностей в README как формат документации
 
 ---
