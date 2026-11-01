@@ -134,6 +134,8 @@ struct Options: Codable, Equatable {
 	var btb_fixIcons: Bool
 	/// Strip non-arm64 slices from fat Mach-O binaries
 	var btb_thinToArm64: Bool
+	/// Give the app its own keychain access group (TEAMID.bundleid)
+	var btb_keychainIsolation: Bool
 
 	// MARK: Experiments
 	
@@ -190,6 +192,7 @@ struct Options: Codable, Equatable {
 		btb_keepSupportedDevices: false,
 		btb_fixIcons: false,
 		btb_thinToArm64: false,
+		btb_keychainIsolation: false,
 		
 		// MARK: Experiments
 		

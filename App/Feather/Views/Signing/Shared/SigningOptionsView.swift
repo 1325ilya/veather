@@ -178,6 +178,12 @@ struct SigningOptionsView: View {
 				temporaryValue: temporaryOptions?.btb_fixIcons
 			)
 			_toggle(
+				.localized("Keychain Isolation"),
+				systemImage: "key",
+				isOn: $options.btb_keychainIsolation,
+				temporaryValue: temporaryOptions?.btb_keychainIsolation
+			)
+			_toggle(
 				.localized("Thin to arm64"),
 				systemImage: "scissors",
 				isOn: $options.btb_thinToArm64,

@@ -108,6 +108,20 @@ final class SigningHandler: NSObject {
 			try await _mergeEntitlements(for: movedAppPath, with: _options)
 		}
 		
+		if
+			_options.btb_keychainIsolation,
+			_options.signingOption == .default,
+			let bundleID = Bundle(url: movedAppPath)?.bundleIdentifier,
+			let isolated = try BTBKeychainIsolation.entitlementsFile(
+				certificate: appCertificate,
+				bundleID: bundleID,
+				existing: _options.appEntitlementsFile,
+				workDir: _uniqueWorkDir
+			)
+		{
+			_options.appEntitlementsFile = isolated
+		}
+		
 		let handler = ZsignHandler(appUrl: movedAppPath, options: _options, cert: appCertificate)
 		try await handler.disinject()
 		
