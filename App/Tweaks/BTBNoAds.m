@@ -85,10 +85,10 @@ static void BTBFailLoad(NSString *className, NSString *selectorName) {
 		void (^handler)(id, NSError *) = completion;
 		dispatch_async(dispatch_get_main_queue(), ^{ handler(nil, BTBAdBlockedError()); });
 	};
-	switch (args) {
-		case 3: BTBSwizzle(cls, sel, YES, ^(id self, id a, id b, id completion) { fail(completion); }); break;
-		case 4: BTBSwizzle(cls, sel, YES, ^(id self, id a, id b, id c, id completion) { fail(completion); }); break;
-		default: break;
+	if (args == 3) {
+		BTBSwizzle(cls, sel, YES, ^(id self, id a, id b, id completion) { fail(completion); });
+	} else if (args == 4) {
+		BTBSwizzle(cls, sel, YES, ^(id self, id a, id b, id c, id completion) { fail(completion); });
 	}
 }
 
@@ -98,10 +98,11 @@ static void BTBAnswerNo(NSString *className, NSString *selectorName, BOOL isClas
 	SEL sel = NSSelectorFromString(selectorName);
 	char ret = BTBReturnType(cls, sel, isClass);
 	if (ret != 'B' && ret != 'c') return;
-	switch (BTBArgumentCount(cls, sel, isClass)) {
-		case 0: BTBSwizzle(cls, sel, isClass, ^BOOL(id self) { return NO; }); break;
-		case 1: BTBSwizzle(cls, sel, isClass, ^BOOL(id self, id a) { return NO; }); break;
-		default: break;
+	int args = BTBArgumentCount(cls, sel, isClass);
+	if (args == 0) {
+		BTBSwizzle(cls, sel, isClass, ^BOOL(id self) { return NO; });
+	} else if (args == 1) {
+		BTBSwizzle(cls, sel, isClass, ^BOOL(id self, id a) { return NO; });
 	}
 }
 
