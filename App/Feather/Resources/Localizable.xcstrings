@@ -190,6 +190,12 @@
             "state" : "translated",
             "value" : "%lld个应用"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld прил."
+          }
         }
       }
     },
@@ -381,6 +387,12 @@
             "state" : "translated",
             "value" : "%lld天"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld дн."
+          }
         }
       }
     },
@@ -452,6 +464,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "隐藏了%lld个系统dylibs"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не показано обязательных системных dylib: %lld."
           }
         }
       }
@@ -597,6 +615,12 @@
             "state" : "translated",
             "value" : "%lld个软件源"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld источн."
+          }
         }
       }
     },
@@ -667,6 +691,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "💜感谢捐赠者们的贡献与一路以来的支持！"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "💜 Без спонсоров этого бы не было!"
           }
         }
       }
@@ -739,6 +769,12 @@
             "state" : "translated",
             "value" : "关于"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "О программе"
+          }
         }
       }
     },
@@ -798,6 +834,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "关于%@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "О %@"
           }
         }
       }
@@ -929,6 +971,12 @@
             "state" : "translated",
             "value" : "添加和管理用于签名应用的证书。"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавляйте сертификаты для подписи приложений и управляйте ими."
+          }
         }
       }
     },
@@ -1000,6 +1048,12 @@
             "state" : "translated",
             "value" : "添加软件源"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавить источник"
+          }
         }
       }
     },
@@ -1058,6 +1112,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "添加了本地化文本"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавляет локализованное описание приложения."
           }
         }
       }
@@ -1142,6 +1202,12 @@
             "state" : "translated",
             "value" : "高级"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дополнительно"
+          }
         }
       }
     },
@@ -1188,6 +1254,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "高级安装方式"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Расширенный способ установки"
           }
         }
       }
@@ -1260,6 +1332,12 @@
             "state" : "translated",
             "value" : "所有"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Все"
+          }
         }
       }
     },
@@ -1330,6 +1408,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "所有应用都存储于文档目录，可以通过以上链接访问。"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Все файлы приложения лежат в папке «Документы», вот быстрые ссылки на них."
           }
         }
       }
@@ -1403,6 +1487,12 @@
             "state" : "translated",
             "value" : "全部仓库"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Все репозитории"
+          }
         }
       }
     },
@@ -1473,6 +1563,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "替换图标"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Альтернативные иконки"
           }
         }
       }
@@ -1546,6 +1642,12 @@
             "state" : "translated",
             "value" : "优秀的应用"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отличное приложение"
+          }
         }
       }
     },
@@ -1617,6 +1719,12 @@
             "state" : "translated",
             "value" : "应用特性"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Возможности приложения"
+          }
         }
       }
     },
@@ -1663,6 +1771,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "应用图标"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Иконка приложения"
           }
         }
       }
@@ -1824,6 +1938,12 @@
             "state" : "translated",
             "value" : "AppID名称"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Имя AppID"
+          }
         }
       }
     },
@@ -1894,6 +2014,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "归档与压缩"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Архив и сжатие"
           }
         }
       }
@@ -2043,6 +2169,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "更小"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Лучшее"
           }
         }
       }
@@ -2204,6 +2336,12 @@
             "state" : "translated",
             "value" : "包"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Бандл"
+          }
         }
       }
     },
@@ -2262,6 +2400,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "在默认情况下，应用的本地化标题保持不变。此选项将取消这一限制。"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "По умолчанию локализованные названия приложения не меняются, эта опция меняет и их."
           }
         }
       }
@@ -2399,6 +2543,12 @@
             "state" : "translated",
             "value" : "分类"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Категория"
+          }
         }
       }
     },
@@ -2469,6 +2619,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "证书"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сертификат"
           }
         }
       }
@@ -2607,6 +2763,12 @@
             "state" : "translated",
             "value" : "证书更新成功。"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сертификаты обновлены."
+          }
         }
       }
     },
@@ -2678,6 +2840,12 @@
             "state" : "translated",
             "value" : "变更"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Изменить"
+          }
         }
       }
     },
@@ -2713,6 +2881,12 @@
             "state" : "translated",
             "value" : "修改昵称"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Изменить имя"
+          }
         }
       }
     },
@@ -2729,6 +2903,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sprawdź aktualizacje"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Проверить обновления"
           }
         }
       }
@@ -2788,6 +2968,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "检查是否吊销"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Проверить отзыв"
           }
         }
       }
@@ -2861,6 +3047,12 @@
             "state" : "translated",
             "value" : "从文件选择"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выбрать в Файлах"
+          }
         }
       }
     },
@@ -2933,6 +3125,12 @@
             "state" : "translated",
             "value" : "从相片选择"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выбрать в Фото"
+          }
         }
       }
     },
@@ -3004,6 +3202,12 @@
             "state" : "translated",
             "value" : "关闭"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Закрыть"
+          }
         }
       }
     },
@@ -3062,6 +3266,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已完成"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Завершено"
           }
         }
       }
@@ -3135,6 +3345,12 @@
             "state" : "translated",
             "value" : "压缩级别"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Уровень сжатия"
+          }
         }
       }
     },
@@ -3193,6 +3409,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "调整应用的安装方式、压缩等级并对应用自定义。"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Настройка способа установки, уровня сжатия zip и изменений приложений."
           }
         }
       }
@@ -3342,6 +3564,12 @@
             "state" : "translated",
             "value" : "复制下载连接"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скопировать ссылки загрузки"
+          }
         }
       }
     },
@@ -3478,6 +3706,12 @@
             "state" : "translated",
             "value" : "自定义主题颜色"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Свой цвет темы"
+          }
         }
       }
     },
@@ -3549,6 +3783,12 @@
             "state" : "translated",
             "value" : "自定义"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Оформление"
+          }
         }
       }
     },
@@ -3601,6 +3841,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "暗黑"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Тёмная"
           }
         }
       }
@@ -3672,6 +3918,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "日期"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дата"
           }
         }
       }
@@ -3755,6 +4007,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "添加日期"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дата добавления"
           }
         }
       }
@@ -3904,6 +4162,12 @@
             "state" : "translated",
             "value" : "应用的默认风格，只显示副标题。"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Стиль по умолчанию, только подзаголовок."
+          }
         }
       }
     },
@@ -4052,6 +4316,12 @@
             "state" : "translated",
             "value" : "签名后删除"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить после подписи"
+          }
         }
       }
     },
@@ -4098,6 +4368,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "描述"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Описание"
           }
         }
       }
@@ -4146,6 +4422,12 @@
             "state" : "translated",
             "value" : "开发者"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разработчик"
+          }
         }
       }
     },
@@ -4162,6 +4444,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Wyłącz Liquid Glass"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отключить Liquid Glass"
           }
         }
       }
@@ -4340,6 +4628,12 @@
             "state" : "translated",
             "value" : "Do you want to download and install this file?"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скачать и установить этот файл?"
+          }
         }
       }
     },
@@ -4392,6 +4686,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "是否向外部应用导出证书？导出的应用可以使用证书进行签名。"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Экспортировать сертификат во внешнее приложение? Оно сможет подписывать приложения вашим сертификатом."
           }
         }
       }
@@ -4638,6 +4938,12 @@
             "state" : "translated",
             "value" : "下载StosVPN"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скачать StosVPN"
+          }
         }
       }
     },
@@ -4654,6 +4960,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pobierz aktualizację"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скачать обновление"
           }
         }
       }
@@ -4732,6 +5044,12 @@
             "state" : "translated",
             "value" : "插件动态库"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dylib"
+          }
         }
       }
     },
@@ -4778,6 +5096,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "动态图标"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Динамические иконки"
           }
         }
       }
@@ -4837,6 +5161,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "启用液态玻璃"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Включить Liquid Glass"
           }
         }
       }
@@ -4909,6 +5239,12 @@
             "state" : "translated",
             "value" : "为了保护你的Apple ID不被Apple标记，启用保护后，你的包标识符后面会被加入随机的字符串。如果你使用签名服务则可以忽略。"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Любая защита добавляет случайную строку к bundle ID подписываемых приложений, чтобы Apple не пометила ваш Apple ID. При использовании сервиса подписи это можно не включать."
+          }
         }
       }
     },
@@ -4968,6 +5304,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "感觉%@怎么样？"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нравится %@?"
           }
         }
       }
@@ -5039,6 +5381,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "输入链接开始验证"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Введите URL, чтобы начать проверку."
           }
         }
       }
@@ -5187,6 +5535,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "输入软件源链接"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Введите URL источника"
           }
         }
       }
@@ -5348,6 +5702,12 @@
             "state" : "translated",
             "value" : "授权"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entitlements"
+          }
         }
       }
     },
@@ -5406,6 +5766,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "错误"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ошибка"
           }
         }
       }
@@ -5478,6 +5844,12 @@
             "state" : "translated",
             "value" : "可执行"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Исполняемый файл"
+          }
         }
       }
     },
@@ -5549,6 +5921,12 @@
             "state" : "translated",
             "value" : "当前的Dylibs"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Имеющиеся dylib"
+          }
         }
       }
     },
@@ -5607,6 +5985,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "实验性"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Эксперименты"
           }
         }
       }
@@ -5762,6 +6146,12 @@
             "state" : "translated",
             "value" : "过期于"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Истекает"
+          }
         }
       }
     },
@@ -5834,6 +6224,12 @@
             "state" : "translated",
             "value" : "导出"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Экспорт"
+          }
         }
       }
     },
@@ -5886,6 +6282,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "导出证书"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Экспорт сертификата"
           }
         }
       }
@@ -5958,6 +6360,12 @@
             "state" : "translated",
             "value" : "下载失败，请检查网络连接并重试。"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось скачать, проверьте интернет и попробуйте снова."
+          }
         }
       }
     },
@@ -6016,6 +6424,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "特性"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Рекомендуемые"
           }
         }
       }
@@ -6087,6 +6501,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "功能"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Функции"
           }
         }
       }
@@ -6237,6 +6657,12 @@
             "state" : "translated",
             "value" : "文件"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Файлы"
+          }
         }
       }
     },
@@ -6307,6 +6733,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "过滤"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Фильтр"
           }
         }
       }
@@ -6379,6 +6811,12 @@
             "state" : "translated",
             "value" : "强制本地化标题"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Принудительная локализация"
+          }
         }
       }
     },
@@ -6449,6 +6887,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "框架"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Фреймворки"
           }
         }
       }
@@ -6521,6 +6965,12 @@
             "state" : "translated",
             "value" : "框架和插件"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Фреймворки и плагины"
+          }
         }
       }
     },
@@ -6592,6 +7042,12 @@
             "state" : "translated",
             "value" : "完全本地化"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Полностью локально"
+          }
         }
       }
     },
@@ -6650,6 +7106,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "游戏模式"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Игровой режим"
           }
         }
       }
@@ -6781,6 +7243,12 @@
             "state" : "translated",
             "value" : "获取"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Загрузить"
+          }
         }
       }
     },
@@ -6851,6 +7319,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "通过捐赠加入我们的秘密Discord来获取有关未来更新、测试版和提升使用体验的资讯。"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Получите доступ к нашему секретному Discord за пожертвование: там мы обсуждаем будущие обновления, беты и улучшения."
           }
         }
       }
@@ -6924,6 +7398,12 @@
             "state" : "translated",
             "value" : "显示信息"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Информация"
+          }
         }
       }
     },
@@ -6982,6 +7462,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "添加你的第一个仓库"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Начните с добавления первого репозитория."
           }
         }
       }
@@ -7042,6 +7528,12 @@
             "state" : "translated",
             "value" : "导入你的第一个IPA文件"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Начните с импорта первого IPA-файла."
+          }
         }
       }
     },
@@ -7100,6 +7592,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "导入你的第一个证书"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Чтобы подписывать, импортируйте первый сертификат."
           }
         }
       }
@@ -7249,6 +7747,12 @@
             "state" : "translated",
             "value" : "来我们的GitHub仓库添加星标！"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зайдите на наш GitHub и поставьте звезду!"
+          }
         }
       }
     },
@@ -7319,6 +7823,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "心跳检测"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Heartbeat"
           }
         }
       }
@@ -7391,6 +7901,12 @@
             "state" : "translated",
             "value" : "帮助"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Помощь"
+          }
         }
       }
     },
@@ -7461,6 +7977,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "隐藏"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скрыто"
           }
         }
       }
@@ -7622,6 +8144,12 @@
             "state" : "translated",
             "value" : "标识符前缀"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Префикс идентификатора"
+          }
         }
       }
     },
@@ -7693,6 +8221,12 @@
             "state" : "translated",
             "value" : "标识符"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Идентификаторы"
+          }
         }
       }
     },
@@ -7742,6 +8276,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "idevice"
+          }
+        },
+        "ru" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "idevice"
@@ -7851,6 +8391,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "请在GitHub中报告错误。提交issue时请附上详细的信息。"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Если в приложении возникнет проблема, сообщите о ней в репозитории GitHub и опишите её подробно."
           }
         }
       }
@@ -8013,6 +8559,12 @@
             "state" : "translated",
             "value" : "导入证书文件"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Импорт файла сертификата"
+          }
         }
       }
     },
@@ -8084,6 +8636,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "从文件导入"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Импорт из Файлов"
           }
         }
       }
@@ -8157,6 +8715,12 @@
             "state" : "translated",
             "value" : "从链接导入"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Импорт по URL"
+          }
         }
       }
     },
@@ -8227,6 +8791,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "导入配对文件"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Импорт файла сопряжения"
           }
         }
       }
@@ -8299,6 +8869,12 @@
             "state" : "translated",
             "value" : "导入描述文件"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Импорт файла профиля"
+          }
         }
       }
     },
@@ -8369,6 +8945,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已导入"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Импортировано"
           }
         }
       }
@@ -8441,6 +9023,12 @@
             "state" : "translated",
             "value" : "内容"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Инфо"
+          }
         }
       }
     },
@@ -8488,6 +9076,12 @@
             "state" : "translated",
             "value" : "内容"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Информация"
+          }
         }
       }
     },
@@ -8528,6 +9122,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "注入到扩展"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Внедрять в расширения"
           }
         }
       }
@@ -8594,6 +9194,12 @@
             "state" : "translated",
             "value" : "注入目录"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Папка внедрения"
+          }
         }
       }
     },
@@ -8658,6 +9264,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "注入路径"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Путь внедрения"
           }
         }
       }
@@ -8801,6 +9413,12 @@
             "state" : "translated",
             "value" : "签名后安装"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Установить после подписи"
+          }
         }
       }
     },
@@ -8817,6 +9435,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zainstaluj bieżącą wersję"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Установить текущую версию"
           }
         }
       }
@@ -8876,6 +9500,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "安装"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Установка"
           }
         }
       }
@@ -8948,6 +9578,12 @@
             "state" : "translated",
             "value" : "安装类型"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Тип установки"
+          }
         }
       }
     },
@@ -9006,6 +9642,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在安装"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Установка"
           }
         }
       }
@@ -9077,6 +9719,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "iPad全屏"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iPad: на весь экран"
           }
         }
       }
@@ -9209,6 +9857,12 @@
             "state" : "translated",
             "value" : "加入我们的Discord"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Присоединяйтесь к Discord"
+          }
         }
       }
     },
@@ -9268,6 +9922,12 @@
             "state" : "translated",
             "value" : "学习如何设置仓库"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подробнее о настройке репозитория…"
+          }
         }
       }
     },
@@ -9296,6 +9956,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Daha Az"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Меньше"
           }
         }
       }
@@ -9381,6 +10047,12 @@
             "state" : "translated",
             "value" : "资源库"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Библиотека"
+          }
         }
       }
     },
@@ -9452,6 +10124,12 @@
             "state" : "translated",
             "value" : "资源库元素外观"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вид ячеек библиотеки"
+          }
         }
       }
     },
@@ -9505,6 +10183,12 @@
             "state" : "translated",
             "value" : "明亮"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Светлая"
+          }
         }
       }
     },
@@ -9515,6 +10199,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Merge Entitlements"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Объединить entitlements"
           }
         }
       }
@@ -9588,6 +10278,12 @@
             "state" : "translated",
             "value" : "最低版本要求"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Минимальная версия"
+          }
         }
       }
     },
@@ -9658,6 +10354,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "杂项"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прочее"
           }
         }
       }
@@ -9730,6 +10432,12 @@
             "state" : "translated",
             "value" : "自定义"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Изменение"
+          }
         }
       }
     },
@@ -9776,6 +10484,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "更多"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Больше"
           }
         }
       }
@@ -9860,6 +10574,12 @@
             "state" : "translated",
             "value" : "名称"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Имя"
+          }
         }
       }
     },
@@ -9930,6 +10650,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "添加新内容"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Новое"
           }
         }
       }
@@ -10092,6 +10818,12 @@
             "state" : "translated",
             "value" : "昵称（可选）"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Имя (необязательно)"
+          }
         }
       }
     },
@@ -10150,6 +10882,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无已安装的应用"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет приложений"
           }
         }
       }
@@ -10222,6 +10960,12 @@
             "state" : "translated",
             "value" : "无已安装的证书"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет сертификата"
+          }
         }
       }
     },
@@ -10281,6 +11025,12 @@
             "state" : "translated",
             "value" : "无已安装的证书"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет сертификатов"
+          }
         }
       }
     },
@@ -10327,6 +11077,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无已安装的授权。"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entitlements не указаны."
           }
         }
       }
@@ -10393,6 +11149,12 @@
             "state" : "translated",
             "value" : "未选择文件。"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Файлы не выбраны."
+          }
         }
       }
     },
@@ -10452,6 +11214,12 @@
             "state" : "translated",
             "value" : "未找到框架或插件。"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Фреймворки и плагины не найдены."
+          }
         }
       }
     },
@@ -10510,6 +11278,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未找到图标。"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Иконки не найдены."
           }
         }
       }
@@ -10582,6 +11356,12 @@
             "state" : "translated",
             "value" : "未找到配对文件，请导入。"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Файл сопряжения не найден, импортируйте его."
+          }
         }
       }
     },
@@ -10628,6 +11408,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未列出私有权限。"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разрешения не указаны."
           }
         }
       }
@@ -10688,6 +11474,12 @@
             "state" : "translated",
             "value" : "无已导入的仓库"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет репозиториев"
+          }
         }
       }
     },
@@ -10734,6 +11526,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "没有可复制的软件源"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет источников для копирования"
           }
         }
       }
@@ -10793,6 +11591,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "空"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет"
           }
         }
       }
@@ -10954,6 +11758,12 @@
             "state" : "translated",
             "value" : "只使用本地地址"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Использовать только localhost"
+          }
         }
       }
     },
@@ -11025,6 +11835,12 @@
             "state" : "translated",
             "value" : "打开"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Открыть"
+          }
         }
       }
     },
@@ -11083,6 +11899,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "开启一个[issue](https://github.com/khcrysalis/Feather/issues)"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Откройте [issue](https://github.com/khcrysalis/Feather/issues) на GitHub, если хотите, чтобы ваш источник попал в рекомендуемые."
           }
         }
       }
@@ -11155,6 +11977,12 @@
             "state" : "translated",
             "value" : "打开归档目录"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Открыть архивы"
+          }
         }
       }
     },
@@ -11226,6 +12054,12 @@
             "state" : "translated",
             "value" : "打开证书目录"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Открыть сертификаты"
+          }
         }
       }
     },
@@ -11296,6 +12130,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "打开文档目录"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Открыть документы"
           }
         }
       }
@@ -11445,6 +12285,12 @@
             "state" : "translated",
             "value" : "打包"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Упаковка"
+          }
         }
       }
     },
@@ -11515,6 +12361,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "配对文件指南"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Инструкция по файлу сопряжения"
           }
         }
       }
@@ -11652,6 +12504,12 @@
             "state" : "translated",
             "value" : "权限"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разрешения"
+          }
         }
       }
     },
@@ -11722,6 +12580,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "平台"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Платформа"
           }
         }
       }
@@ -11884,6 +12748,12 @@
             "state" : "translated",
             "value" : "请打开设置并导入可用的证书"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Перейдите в настройки и импортируйте действующий сертификат"
+          }
         }
       }
     },
@@ -11942,6 +12812,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "签名后配置"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "После подписи"
           }
         }
       }
@@ -12067,6 +12943,12 @@
             "state" : "translated",
             "value" : "PPQ检查"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PPQCheck"
+          }
         }
       }
     },
@@ -12139,6 +13021,12 @@
             "state" : "translated",
             "value" : "先前版本"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Предыдущие версии"
+          }
         }
       }
     },
@@ -12191,6 +13079,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pro Motion"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ProMotion"
           }
         }
       }
@@ -12250,6 +13144,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "继续"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Продолжить"
           }
         }
       }
@@ -12329,6 +13229,12 @@
             "state" : "translated",
             "value" : "属性"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Свойства"
+          }
         }
       }
     },
@@ -12399,6 +13305,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "保护"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Защита"
           }
         }
       }
@@ -12471,6 +13383,12 @@
             "state" : "translated",
             "value" : "描述文件对应所有设备"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Все устройства"
+          }
         }
       }
     },
@@ -12541,6 +13459,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "描述文件对应设备"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Устройства в профиле"
           }
         }
       }
@@ -12613,6 +13537,12 @@
             "state" : "translated",
             "value" : "重签名"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Переподписать"
+          }
         }
       }
     },
@@ -12671,6 +13601,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "准备"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Готово"
           }
         }
       }
@@ -12743,6 +13679,12 @@
             "state" : "translated",
             "value" : "删除"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удаление"
+          }
         }
       }
     },
@@ -12813,6 +13755,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "获取beta版来去除这些提示！"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Уберите такие уведомления, получив бета-доступ!"
           }
         }
       }
@@ -12962,6 +13910,12 @@
             "state" : "translated",
             "value" : "移除这项警告"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Убрать это уведомление"
+          }
         }
       }
     },
@@ -13110,6 +14064,12 @@
             "state" : "translated",
             "value" : "移除Watch占位符"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить заглушку Watch"
+          }
         }
       }
     },
@@ -13162,6 +14122,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "移除描述文件后，签名时就不会将其嵌入到App中，从而防止被检测到。"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Если удалить файл профиля, mobileprovision не будет встроен в приложение при подписи — это помогает избежать обнаружения."
           }
         }
       }
@@ -13221,6 +14187,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "使用ElleKit替换Substrate"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Заменить Substrate на ElleKit"
           }
         }
       }
@@ -13370,6 +14342,12 @@
             "state" : "translated",
             "value" : "仓库"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Репозитории"
+          }
         }
       }
     },
@@ -13428,6 +14406,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已经添加了这个仓库。"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Репозиторий уже добавлен."
           }
         }
       }
@@ -13577,6 +14561,12 @@
             "state" : "translated",
             "value" : "重置所有内容"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сбросить всё"
+          }
         }
       }
     },
@@ -13635,6 +14625,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "重置证书"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сбросить сертификаты"
           }
         }
       }
@@ -13695,6 +14691,12 @@
             "state" : "translated",
             "value" : "重置导入的应用"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сбросить импортированные приложения"
+          }
         }
       }
     },
@@ -13753,6 +14755,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "重置网络缓存"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сбросить сетевой кэш"
           }
         }
       }
@@ -13813,6 +14821,12 @@
             "state" : "translated",
             "value" : "重置设置"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сбросить настройки"
+          }
         }
       }
     },
@@ -13871,6 +14885,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "重置已签名的应用"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сбросить подписанные приложения"
           }
         }
       }
@@ -13931,6 +14951,12 @@
             "state" : "translated",
             "value" : "重置软件源"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сбросить источники"
+          }
         }
       }
     },
@@ -13990,6 +15016,12 @@
             "state" : "translated",
             "value" : "重置软件源、证书、应用和一般内容与设置。"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сброс источников, сертификатов, приложений и прочего содержимого."
+          }
         }
       }
     },
@@ -14048,6 +15080,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "重置工作缓存"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сбросить рабочий кэш"
           }
         }
       }
@@ -14120,6 +15158,12 @@
             "state" : "translated",
             "value" : "重置心跳检测   "
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Перезапустить Heartbeat"
+          }
         }
       }
     },
@@ -14191,6 +15235,12 @@
             "state" : "translated",
             "value" : "需要重启"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нужен перезапуск"
+          }
         }
       }
     },
@@ -14237,6 +15287,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已撤销"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отозван"
           }
         }
       }
@@ -14368,6 +15424,12 @@
             "state" : "translated",
             "value" : "截屏"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скриншоты"
+          }
         }
       }
     },
@@ -14440,6 +15502,12 @@
             "state" : "translated",
             "value" : "显示软件源中的所有应用"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Все приложения из ваших источников"
+          }
         }
       }
     },
@@ -14510,6 +15578,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "你应该已经设置好配对文件了！"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Похоже, у вас есть файл сопряжения!"
           }
         }
       }
@@ -14583,6 +15657,12 @@
             "state" : "translated",
             "value" : "选择替换图标"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выбрать альтернативную иконку"
+          }
         }
       }
     },
@@ -14655,6 +15735,12 @@
             "state" : "translated",
             "value" : "选择授权文件"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выбрать файл entitlements"
+          }
         }
       }
     },
@@ -14726,6 +15812,12 @@
             "state" : "translated",
             "value" : "半本地化"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Полулокально"
+          }
         }
       }
     },
@@ -14784,6 +15876,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在发送元数据"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отправка манифеста"
           }
         }
       }
@@ -14844,6 +15942,12 @@
             "state" : "translated",
             "value" : "正在发送负载"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отправка пакета"
+          }
         }
       }
     },
@@ -14903,6 +16007,12 @@
             "state" : "translated",
             "value" : "服务器"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сервер"
+          }
         }
       }
     },
@@ -14961,6 +16071,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "服务器（推荐）：\n使用本地托管的服务器和itms-services://来安装应用。\n\nIDevice（高级）：\n使用VPN和配对文件。写入AFC并手动调用installd，使用回调检测安装进度。\n优点：非常稳定，不需要SSL证书或设备外托管的服务器，而是在本地进行模拟。"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сервер (рекомендуется):\nИспользует локальный сервер и itms-services:// для установки приложений.\n\nIDevice (продвинутый):\nИспользует VPN и файл сопряжения. Записывает через AFC и вызывает installd, отслеживая прогресс установки.\nПреимущество: очень надёжно, не нужны SSL-сертификаты и внешний сервер — работает как компьютер."
           }
         }
       }
@@ -15033,6 +16149,12 @@
             "state" : "translated",
             "value" : "服务器与SSL"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сервер и SSL"
+          }
         }
       }
     },
@@ -15091,6 +16213,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "服务器类型"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Тип сервера"
           }
         }
       }
@@ -15176,6 +16304,12 @@
             "state" : "translated",
             "value" : "设置"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Настройки"
+          }
         }
       }
     },
@@ -15248,6 +16382,12 @@
             "state" : "translated",
             "value" : "导出时显示共享菜单"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показывать меню при экспорте"
+          }
         }
       }
     },
@@ -15318,6 +16458,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "支持我们"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поддержите нас"
           }
         }
       }
@@ -15390,6 +16536,12 @@
             "state" : "translated",
             "value" : "捐赠来支持我们！如果你不能捐赠，请帮我们多多宣传！"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поддержите проект пожертвованием! Если не можете — расскажите о нём другим."
+          }
         }
       }
     },
@@ -15461,6 +16613,12 @@
             "state" : "translated",
             "value" : "签名"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подписать"
+          }
         }
       }
     },
@@ -15531,6 +16689,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已签名"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подписано"
           }
         }
       }
@@ -15608,6 +16772,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "签名"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подпись"
           }
         }
       }
@@ -15745,6 +16915,12 @@
             "state" : "translated",
             "value" : "签名类型"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Тип подписи"
+          }
         }
       }
     },
@@ -15792,6 +16968,12 @@
             "state" : "translated",
             "value" : "大小"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Размер"
+          }
         }
       }
     },
@@ -15838,6 +17020,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "软件源"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Источник"
           }
         }
       }
@@ -15909,6 +17097,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "软件源链接"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL источника"
           }
         }
       }
@@ -15994,6 +17188,12 @@
             "state" : "translated",
             "value" : "软件源"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Источники"
+          }
         }
       }
     },
@@ -16040,6 +17240,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "软件源已复制到剪贴板"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Источники скопированы в буфер обмена"
           }
         }
       }
@@ -16099,6 +17305,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "更快"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скорость"
           }
         }
       }
@@ -16260,6 +17472,12 @@
             "state" : "translated",
             "value" : "SSL证书"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SSL-сертификаты"
+          }
         }
       }
     },
@@ -16330,6 +17548,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "标准"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Стандартный"
           }
         }
       }
@@ -16408,6 +17632,12 @@
             "state" : "translated",
             "value" : "开始签名"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Начать подпись"
+          }
         }
       }
     },
@@ -16479,6 +17709,12 @@
             "state" : "translated",
             "value" : "商店元素外观"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вид ячеек магазина"
+          }
         }
       }
     },
@@ -16549,6 +17785,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "字符串"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Строка"
           }
         }
       }
@@ -16710,6 +17952,12 @@
             "state" : "translated",
             "value" : "支持通过KravaSign/MapleSign和ESign导入。"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поддерживается импорт из KravaSign/MapleSign и ESign."
+          }
         }
       }
     },
@@ -16756,6 +18004,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "切换回去"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вернуться"
           }
         }
       }
@@ -16828,6 +18082,12 @@
             "state" : "translated",
             "value" : "团队标识符"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Идентификаторы команды"
+          }
         }
       }
     },
@@ -16898,6 +18158,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "团队名"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Название команды"
           }
         }
       }
@@ -16970,6 +18236,12 @@
             "state" : "translated",
             "value" : "心跳检测已在后台启用，并将在此App重启或被唤醒时重启。如果下面的状态灯正在闪动则为正常。"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Heartbeat работает в фоне и перезапускается при открытии приложения. Если статус ниже пульсирует — всё в порядке."
+          }
         }
       }
     },
@@ -17029,6 +18301,12 @@
             "state" : "translated",
             "value" : "仅支持AltStore Repo。"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поддерживаются только репозитории формата AltStore."
+          }
         }
       }
     },
@@ -17087,6 +18365,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "主题"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Тема"
           }
         }
       }
@@ -17159,6 +18443,12 @@
             "state" : "translated",
             "value" : "这些改动需要重启应用。"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Изменения требуют перезапуска приложения"
+          }
         }
       }
     },
@@ -17217,6 +18507,12 @@
             "state" : "translated",
             "value" : "操作无法撤销，确定继续？"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Это действие нельзя отменить. Продолжить?"
+          }
         }
       }
     },
@@ -17263,6 +18559,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "这些选项设置在为应用签名时自动替换包ID/显示名称的规则。"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Правила автоматической замены bundle ID и отображаемого имени при подписи."
           }
         }
       }
@@ -17323,6 +18625,12 @@
             "state" : "translated",
             "value" : "为此应用启用Liquid Glass。需要重启应用。"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Включает Liquid Glass для этого приложения, нужен перезапуск."
+          }
         }
       }
     },
@@ -17382,6 +18690,12 @@
             "state" : "translated",
             "value" : "此选项强制为应用启用iOS 26的Liquid Glass。由于使用的框架不同，此选项不一定有效果。"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Принудительно переводит приложения на дизайн Liquid Glass из iOS 26; может работать не со всеми приложениями из-за разных фреймворков."
+          }
         }
       }
     },
@@ -17392,6 +18706,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "This option merges entitlements with the embedded entitlements from the app you're signing."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Объединяет entitlements со встроенными entitlements подписываемого приложения."
           }
         }
       }
@@ -17452,6 +18772,12 @@
             "state" : "translated",
             "value" : "在签名后删除导入的应用来节省空间。"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удаляет импортированное приложение после подписи, чтобы не занимать место."
+          }
         }
       }
     },
@@ -17498,6 +18824,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "彩色图标"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Тонированные иконки"
           }
         }
       }
@@ -17570,6 +18902,12 @@
             "state" : "translated",
             "value" : "启用该选项会在导出文件时显示共享菜单。"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Если включено, после экспорта в «Файлы» откроется меню «Поделиться»."
+          }
         }
       }
     },
@@ -17641,6 +18979,12 @@
             "state" : "translated",
             "value" : "隧道&配对"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Туннель и сопряжение"
+          }
         }
       }
     },
@@ -17706,6 +19050,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "插件"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Твики"
           }
         }
       }
@@ -17813,6 +19163,12 @@
             "state" : "translated",
             "value" : "Aktualizuj"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Обновить"
+          }
         }
       }
     },
@@ -17829,6 +19185,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dostępna aktualizacja"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Доступно обновление"
           }
         }
       }
@@ -17901,6 +19263,12 @@
             "state" : "translated",
             "value" : "更新SSL证书"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Обновить SSL-сертификаты"
+          }
         }
       }
     },
@@ -17947,6 +19315,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已更新"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Обновлено"
           }
         }
       }
@@ -18000,6 +19374,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "网址"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL"
           }
         }
       }
@@ -18059,6 +19439,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "值"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Значение"
           }
         }
       }
@@ -18143,6 +19529,12 @@
             "state" : "translated",
             "value" : "版本"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Версия"
+          }
         }
       }
     },
@@ -18191,6 +19583,12 @@
             "state" : "translated",
             "value" : "版本%@"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Версия %@"
+          }
         }
       }
     },
@@ -18237,6 +19635,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "版本历史"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "История версий"
           }
         }
       }
@@ -18310,6 +19714,12 @@
             "state" : "translated",
             "value" : "查看授权"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Посмотреть entitlements"
+          }
         }
       }
     },
@@ -18381,6 +19791,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "查看捐赠者"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Открыть Patreon"
           }
         }
       }
@@ -18454,6 +19870,12 @@
             "state" : "translated",
             "value" : "访问网站"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Открыть сайт"
+          }
         }
       }
     },
@@ -18500,6 +19922,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "更新内容"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Что нового"
           }
         }
       }
@@ -18566,6 +19994,12 @@
             "state" : "translated",
             "value" : "不能用‘%@’更新自己，请使用其他工具更新。"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нельзя обновить «%@» им самим, используйте другой инструмент."
+          }
         }
       }
     },
@@ -18624,6 +20058,1948 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "配对文件不可用并且与设备不匹配，请导入可用的的配置文件。"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Файл сопряжения недействителен или не подходит к устройству, импортируйте правильный."
+          }
+        }
+      }
+    },
+    "%@ will be freed. Certificates, sources and settings are kept." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Будет освобождено %@. Сертификаты, источники и настройки сохранятся."
+          }
+        }
+      }
+    },
+    "%lld app extensions" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Расширений приложения: %lld"
+          }
+        }
+      }
+    },
+    "%lld apps" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld прил."
+          }
+        }
+      }
+    },
+    "%lld items" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Элементов: %lld"
+          }
+        }
+      }
+    },
+    "%lld signed apps" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подписанных приложений: %lld"
+          }
+        }
+      }
+    },
+    "%lld sources" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "источников: %lld"
+          }
+        }
+      }
+    },
+    ", settings" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ", настройки"
+          }
+        }
+      }
+    },
+    "A source is pinned manually for this app." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Для этого приложения источник закреплён вручную."
+          }
+        }
+      }
+    },
+    "Activity" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Активность"
+          }
+        }
+      }
+    },
+    "Ad-hoc" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ad-hoc"
+          }
+        }
+      }
+    },
+    "Add a source first." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сначала добавьте источник."
+          }
+        }
+      }
+    },
+    "After 1 day" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Через 1 день"
+          }
+        }
+      }
+    },
+    "After 30 days" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Через 30 дней"
+          }
+        }
+      }
+    },
+    "After 7 days" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Через 7 дней"
+          }
+        }
+      }
+    },
+    "After gaining beta access, you're able to use exclusive features that may not be present on releases!" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "С бета-доступом вы получаете эксклюзивные функции, которых может не быть в релизах!"
+          }
+        }
+      }
+    },
+    "Always use this source" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Всегда использовать этот источник"
+          }
+        }
+      }
+    },
+    "Apps" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Приложения"
+          }
+        }
+      }
+    },
+    "Apps signed with it will not open. Choose another certificate." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подписанные им приложения не откроются. Выберите другой сертификат."
+          }
+        }
+      }
+    },
+    "Auto Clean" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Автоочистка"
+          }
+        }
+      }
+    },
+    "Automatic: the newest version is downloaded by default." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Автоматически: по умолчанию скачивается самая новая версия."
+          }
+        }
+      }
+    },
+    "Back Up" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Резервная копия"
+          }
+        }
+      }
+    },
+    "Back to automatic (newest version)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вернуть автоматический выбор (самая новая версия)"
+          }
+        }
+      }
+    },
+    "Backup & Restore" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Резервная копия и восстановление"
+          }
+        }
+      }
+    },
+    "Backup password" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пароль резервной копии"
+          }
+        }
+      }
+    },
+    "Browse & Edit App Files" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Просмотр и правка файлов приложения"
+          }
+        }
+      }
+    },
+    "Bundle Cleanup" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Очистка бандла"
+          }
+        }
+      }
+    },
+    "Bytes (hex, e.g. 1F 20 03 D5)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Байты (hex, напр. 1F 20 03 D5)"
+          }
+        }
+      }
+    },
+    "Cached icons, screenshots and source responses. Rebuilt automatically." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Кэш иконок, скриншотов и ответов источников. Восстанавливается автоматически."
+          }
+        }
+      }
+    },
+    "Can be freed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Можно освободить"
+          }
+        }
+      }
+    },
+    "Categories" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Категории"
+          }
+        }
+      }
+    },
+    "Certificate Health" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Здоровье сертификатов"
+          }
+        }
+      }
+    },
+    "Certificate expired" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Срок сертификата истёк"
+          }
+        }
+      }
+    },
+    "Certificate expires soon" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сертификат скоро истечёт"
+          }
+        }
+      }
+    },
+    "Certificate revoked" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сертификат отозван"
+          }
+        }
+      }
+    },
+    "Certificates (.p12, .mobileprovision and passwords), the list of sources, the library database and settings are never deleted by cleaning. This is enforced in code." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сертификаты (.p12, .mobileprovision и пароли), список источников, база библиотеки и настройки никогда не удаляются при очистке. Это гарантируется в коде."
+          }
+        }
+      }
+    },
+    "Certificates and sources are added to the existing ones; nothing is deleted." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сертификаты и источники добавляются к существующим, ничего не удаляется."
+          }
+        }
+      }
+    },
+    "Certificates, sources, settings" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сертификаты, источники, настройки"
+          }
+        }
+      }
+    },
+    "Check All Now" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Проверить все сейчас"
+          }
+        }
+      }
+    },
+    "Check failed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Проверка не удалась"
+          }
+        }
+      }
+    },
+    "Checking…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Проверка…"
+          }
+        }
+      }
+    },
+    "Chosen manually" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выбрано вручную"
+          }
+        }
+      }
+    },
+    "Clean Category" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Очистить категорию"
+          }
+        }
+      }
+    },
+    "Clean Everything" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Очистить всё"
+          }
+        }
+      }
+    },
+    "Clean Everything Except Protected" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Очистить всё, кроме защищённого"
+          }
+        }
+      }
+    },
+    "Clones: %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Клонов: %lld"
+          }
+        }
+      }
+    },
+    "Clones: off" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Клоны: выкл."
+          }
+        }
+      }
+    },
+    "Connect to LocalDevVPN" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подключиться к LocalDevVPN"
+          }
+        }
+      }
+    },
+    "Copy Download URL" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скопировать ссылку загрузки"
+          }
+        }
+      }
+    },
+    "Copy Path" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скопировать путь"
+          }
+        }
+      }
+    },
+    "Copy URL" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скопировать URL"
+          }
+        }
+      }
+    },
+    "Create Backup" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Создать резервную копию"
+          }
+        }
+      }
+    },
+    "Dead" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Мёртвые"
+          }
+        }
+      }
+    },
+    "Delete Selected (%@)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить выбранное (%@)"
+          }
+        }
+      }
+    },
+    "Delete exported IPAs" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалять экспортированные IPA"
+          }
+        }
+      }
+    },
+    "Done" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Готово"
+          }
+        }
+      }
+    },
+    "Download LocalDevVPN" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скачать LocalDevVPN"
+          }
+        }
+      }
+    },
+    "Download update (%@)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скачать обновление (%@)"
+          }
+        }
+      }
+    },
+    "Downloading" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Загрузка"
+          }
+        }
+      }
+    },
+    "Downloading into the Library. Sign it there and install over the current app (same bundle ID keeps your data)." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Загружается в библиотеку. Подпишите его там и установите поверх текущего приложения (тот же bundle ID сохранит данные)."
+          }
+        }
+      }
+    },
+    "Empty folder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пустая папка"
+          }
+        }
+      }
+    },
+    "Encrypted app" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зашифрованное приложение"
+          }
+        }
+      }
+    },
+    "Entries" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Записи"
+          }
+        }
+      }
+    },
+    "Errors only" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Только ошибки"
+          }
+        }
+      }
+    },
+    "Exclusive Features" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Эксклюзивные функции"
+          }
+        }
+      }
+    },
+    "Executable not found" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Исполняемый файл не найден"
+          }
+        }
+      }
+    },
+    "Expiring" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Истекают"
+          }
+        }
+      }
+    },
+    "Exported IPAs" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Экспортированные IPA"
+          }
+        }
+      }
+    },
+    "Failed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ошибка"
+          }
+        }
+      }
+    },
+    "Failed to load" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не загрузился"
+          }
+        }
+      }
+    },
+    "Failing" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не работают"
+          }
+        }
+      }
+    },
+    "File Manager" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Файловый менеджер"
+          }
+        }
+      }
+    },
+    "File is too large for the text editor. Use the hex viewer." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Файл слишком большой для текстового редактора. Используйте hex-просмотр."
+          }
+        }
+      }
+    },
+    "Files in Documents that do not belong to any category (for example Inbox)." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Файлы в «Документах», не относящиеся ни к одной категории (например, Inbox)."
+          }
+        }
+      }
+    },
+    "Fix White/Dark Icon" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Исправить белую/тёмную иконку"
+          }
+        }
+      }
+    },
+    "Freed %@." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Освобождено %@."
+          }
+        }
+      }
+    },
+    "Healthy" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Исправные"
+          }
+        }
+      }
+    },
+    "Hex Viewer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hex-просмотр"
+          }
+        }
+      }
+    },
+    "History" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "История"
+          }
+        }
+      }
+    },
+    "IPA files exported from the library." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IPA-файлы, экспортированные из библиотеки."
+          }
+        }
+      }
+    },
+    "Icon & Network Cache" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Кэш иконок и сети"
+          }
+        }
+      }
+    },
+    "If installation fails with a free/limited certificate, enable \"Remove App Extensions\"." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Если установка не проходит с бесплатным/ограниченным сертификатом, включите «Удалить расширения приложения»."
+          }
+        }
+      }
+    },
+    "Imported Apps" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Импортированные приложения"
+          }
+        }
+      }
+    },
+    "Injection" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Внедрение"
+          }
+        }
+      }
+    },
+    "Installed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Установлено"
+          }
+        }
+      }
+    },
+    "Installed build" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Установленная сборка"
+          }
+        }
+      }
+    },
+    "Keep Supported Devices List" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сохранять список поддерживаемых устройств"
+          }
+        }
+      }
+    },
+    "Latest build" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Последняя сборка"
+          }
+        }
+      }
+    },
+    "Learn more about how to setup a repository..." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подробнее о настройке репозитория..."
+          }
+        }
+      }
+    },
+    "Leftovers from signing, unpacking and downloads." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Остатки от подписи, распаковки и загрузок."
+          }
+        }
+      }
+    },
+    "Logs" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Логи"
+          }
+        }
+      }
+    },
+    "Minimum OS" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Минимальная iOS"
+          }
+        }
+      }
+    },
+    "Modify: only apply changes without signing (export a tweaked IPA). Ad-hoc: sign without a certificate (for TrollStore or jailbroken devices)." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Изменение: только применить изменения без подписи (экспорт изменённого IPA). Ad-hoc: подпись без сертификата (для TrollStore или джейлбрейка)."
+          }
+        }
+      }
+    },
+    "Name or bundle ID" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Название или bundle ID"
+          }
+        }
+      }
+    },
+    "Never" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Никогда"
+          }
+        }
+      }
+    },
+    "New Folder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Новая папка"
+          }
+        }
+      }
+    },
+    "Newest" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Новейшая"
+          }
+        }
+      }
+    },
+    "Newest version among %lld sources" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Самая новая версия среди %lld источников"
+          }
+        }
+      }
+    },
+    "Nickname" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Имя"
+          }
+        }
+      }
+    },
+    "No activity yet." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пока ничего не происходило."
+          }
+        }
+      }
+    },
+    "No arm64 code" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет кода arm64"
+          }
+        }
+      }
+    },
+    "No certificates imported yet." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сертификаты ещё не импортированы."
+          }
+        }
+      }
+    },
+    "No limit" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Без лимита"
+          }
+        }
+      }
+    },
+    "No release notes available" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет описания изменений"
+          }
+        }
+      }
+    },
+    "No sources to export" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет источников для экспорта"
+          }
+        }
+      }
+    },
+    "Not a text file. Use the hex viewer." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Это не текстовый файл. Используйте hex-просмотр."
+          }
+        }
+      }
+    },
+    "Not checked" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не проверено"
+          }
+        }
+      }
+    },
+    "Not encrypted (HTTP)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Без шифрования (HTTP)"
+          }
+        }
+      }
+    },
+    "Offset (hex, e.g. 1A2B)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Смещение (hex, напр. 1A2B)"
+          }
+        }
+      }
+    },
+    "Offset is outside the file." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Смещение за пределами файла."
+          }
+        }
+      }
+    },
+    "Only BetterThanBox messages" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Только сообщения BetterThanBox"
+          }
+        }
+      }
+    },
+    "Only apps found in several sources" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Только приложения из нескольких источников"
+          }
+        }
+      }
+    },
+    "Only source" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Единственный источник"
+          }
+        }
+      }
+    },
+    "Open an [issue](https://github.com/claration/Feather/issues) on GitHub if you want your source to be featured." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Откройте [issue](https://github.com/claration/Feather/issues) на GitHub, если хотите, чтобы ваш источник попал в рекомендуемые."
+          }
+        }
+      }
+    },
+    "Open as Plist" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Открыть как plist"
+          }
+        }
+      }
+    },
+    "Open as Text" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Открыть как текст"
+          }
+        }
+      }
+    },
+    "Open in Files app" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Открыть в приложении «Файлы»"
+          }
+        }
+      }
+    },
+    "Other Files" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Другие файлы"
+          }
+        }
+      }
+    },
+    "Overwrites bytes in place. Make a copy first if unsure." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Перезаписывает байты на месте. Если не уверены, сначала сделайте копию."
+          }
+        }
+      }
+    },
+    "Page %lld of %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Страница %lld из %lld"
+          }
+        }
+      }
+    },
+    "Password (recommended)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пароль (рекомендуется)"
+          }
+        }
+      }
+    },
+    "Patch" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Патч"
+          }
+        }
+      }
+    },
+    "Patch Bytes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Патч байтов"
+          }
+        }
+      }
+    },
+    "Pin" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Закрепить"
+          }
+        }
+      }
+    },
+    "PlugIns" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Плагины"
+          }
+        }
+      }
+    },
+    "Preflight" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Предпроверка"
+          }
+        }
+      }
+    },
+    "Profile is not a wildcard" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Профиль не wildcard"
+          }
+        }
+      }
+    },
+    "Protected" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Защищено"
+          }
+        }
+      }
+    },
+    "Quick Look" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Быстрый просмотр"
+          }
+        }
+      }
+    },
+    "Refresh" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Обновить"
+          }
+        }
+      }
+    },
+    "Remove App Extensions" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить расширения приложения"
+          }
+        }
+      }
+    },
+    "Remove Device Restrictions" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Снять ограничения устройств"
+          }
+        }
+      }
+    },
+    "Remove Failing Sources" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить неработающие источники"
+          }
+        }
+      }
+    },
+    "Remove Watch App" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить приложение для Watch"
+          }
+        }
+      }
+    },
+    "Removing extensions helps when the certificate cannot sign widgets or share extensions (fewer App IDs are used). Removing restrictions lets the app install on any iPhone/iPad. Thinning removes unused CPU slices to make the app smaller." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удаление расширений помогает, если сертификат не может подписать виджеты или расширения (нужно меньше App ID). Снятие ограничений позволяет установить приложение на любой iPhone/iPad. Удаление лишних архитектур уменьшает размер."
+          }
+        }
+      }
+    },
+    "Rename" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Переименовать"
+          }
+        }
+      }
+    },
+    "Restore" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Восстановление"
+          }
+        }
+      }
+    },
+    "Restore from File" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Восстановить из файла"
+          }
+        }
+      }
+    },
+    "Revocation is checked with Apple's OCSP responder. Certificates are also re-checked automatically in the background every few hours." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отзыв проверяется через OCSP-сервер Apple. Сертификаты также автоматически перепроверяются в фоне каждые несколько часов."
+          }
+        }
+      }
+    },
+    "Rules run when the app starts. Temporary files are always cleared on launch. The storage limit removes the oldest temporary files and exported IPAs first; library apps are never removed automatically." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Правила выполняются при запуске приложения. Временные файлы всегда очищаются при запуске. Лимит хранилища сначала удаляет самые старые временные файлы и экспортированные IPA; приложения из библиотеки автоматически не удаляются."
+          }
+        }
+      }
+    },
+    "Saves certificates with their passwords, sources and settings into one .btbbackup file. Store it in Files or iCloud Drive to restore after reinstalling. Use a password: the file contains your certificates." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сохраняет сертификаты с паролями, источники и настройки в один файл .btbbackup. Храните его в «Файлах» или iCloud Drive, чтобы восстановить после переустановки. Задайте пароль: в файле ваши сертификаты."
+          }
+        }
+      }
+    },
+    "Search All Sources" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поиск по всем источникам"
+          }
+        }
+      }
+    },
+    "Search All Sources (newest version)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поиск по всем источникам (самая новая версия)"
+          }
+        }
+      }
+    },
+    "Searches every source you added. By default the source with the highest version is used; tap an app to pick another source manually." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ищет во всех добавленных вами источниках. По умолчанию берётся источник с наибольшей версией; нажмите на приложение, чтобы выбрать другой вручную."
+          }
+        }
+      }
+    },
+    "Share" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поделиться"
+          }
+        }
+      }
+    },
+    "Share (secrets redacted)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поделиться (без секретов)"
+          }
+        }
+      }
+    },
+    "Shared apps" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Общие приложения"
+          }
+        }
+      }
+    },
+    "Show" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показать"
+          }
+        }
+      }
+    },
+    "Show Hidden Files" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показывать скрытые файлы"
+          }
+        }
+      }
+    },
+    "Sign several copies with numbered bundle IDs and names (and a number on the icon) to use multiple accounts side by side." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подписать несколько копий с пронумерованными bundle ID и названиями (и цифрой на иконке), чтобы держать несколько аккаунтов рядом."
+          }
+        }
+      }
+    },
+    "Signed Apps" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подписанные приложения"
+          }
+        }
+      }
+    },
+    "Signed copies of apps. Library entries are removed too." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подписанные копии приложений. Записи в библиотеке тоже удаляются."
+          }
+        }
+      }
+    },
+    "Signing %lld of %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подпись %lld из %lld"
+          }
+        }
+      }
+    },
+    "Source Health" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Здоровье источников"
+          }
+        }
+      }
+    },
+    "Status" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Статус"
+          }
+        }
+      }
+    },
+    "Storage" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Хранилище"
+          }
+        }
+      }
+    },
+    "Storage limit" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Лимит хранилища"
+          }
+        }
+      }
+    },
+    "Success" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Успешно"
+          }
+        }
+      }
+    },
+    "Temporary Files" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Временные файлы"
+          }
+        }
+      }
+    },
+    "The app has no 64-bit ARM slice and cannot run on this device." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В приложении нет 64-битного ARM-кода, на этом устройстве оно не запустится."
+          }
+        }
+      }
+    },
+    "The main binary is still FairPlay-encrypted (App Store copy). After re-signing it will not launch. Use a decrypted IPA." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Основной исполняемый файл всё ещё зашифрован FairPlay (копия из App Store). После переподписи приложение не запустится. Используйте расшифрованный IPA."
+          }
+        }
+      }
+    },
+    "The profile is for %@, the app will be signed as %@. Set the bundle ID to match or use a wildcard profile." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Профиль выписан на %@, а приложение будет подписано как %@. Укажите подходящий bundle ID или используйте wildcard-профиль."
+          }
+        }
+      }
+    },
+    "Thin to arm64" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Оставить только arm64"
+          }
+        }
+      }
+    },
+    "This file is not a BetterThanBox backup or the password is wrong." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Это не резервная копия BetterThanBox или неверный пароль."
+          }
+        }
+      }
+    },
+    "Total" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Всего"
+          }
+        }
+      }
+    },
+    "Unable to read file." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось прочитать файл."
+          }
+        }
+      }
+    },
+    "Unknown version" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Версия неизвестна"
+          }
+        }
+      }
+    },
+    "Unsigned apps you downloaded or imported. Library entries are removed too." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Неподписанные приложения, которые вы скачали или импортировали. Записи в библиотеке тоже удаляются."
+          }
+        }
+      }
+    },
+    "Unsupported plist root." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Неподдерживаемый корень plist."
+          }
+        }
+      }
+    },
+    "Updates" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Обновления"
+          }
+        }
+      }
+    },
+    "Updates come from the nightly-dev release on GitHub." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Обновления берутся из релиза nightly-dev на GitHub."
+          }
+        }
+      }
+    },
+    "Valid" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Действителен"
+          }
+        }
+      }
+    },
+    "Working" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Работают"
+          }
+        }
+      }
+    },
+    "Write" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Записать"
+          }
+        }
+      }
+    },
+    "You have the latest build" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "У вас последняя сборка"
+          }
+        }
+      }
+    },
+    "\"%@\" is protected and was not deleted." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» защищён и не был удалён."
+          }
+        }
+      }
+    },
+    "\"Shared apps\" are apps offered by more than one source; Search All Sources picks the newest version among them." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«Общие приложения» есть в нескольких источниках; поиск по всем источникам выбирает среди них самую новую версию."
           }
         }
       }
