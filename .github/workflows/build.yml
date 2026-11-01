@@ -1,0 +1,74 @@
+name: Build BetterThanBox
+
+on:
+  push:
+    branches: ['**']
+    paths:
+      - 'App/**'
+      - '.github/workflows/build.yml'
+  pull_request:
+    paths:
+      - 'App/**'
+  workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: App
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select newest Xcode
+        run: |
+          ls -d /Applications/Xcode*.app
+          XCODE=$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)
+          echo "Using $XCODE"
+          sudo xcode-select -s "$XCODE"
+          xcodebuild -version
+
+      - name: Cache SwiftPM
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/BetterThanBox/iphoneos/SourcePackages
+          key: spm-${{ hashFiles('App/Feather.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
+
+      - name: Build unsigned IPA
+        env:
+          TMPDIR: ${{ runner.temp }}/
+        run: |
+          agvtool new-version -all ${{ github.run_number }}
+          set -o pipefail
+          make 2>&1 | tee build.log | grep -E 'error:|warning: unused|BUILD (SUCCEEDED|FAILED)|\*\*' || true
+          test -f packages/BetterThanBox.ipa
+
+      - name: Show errors
+        if: failure()
+        run: grep -n -B2 -A6 'error:' build.log | head -300 || true
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: BetterThanBox-${{ github.run_number }}
+          path: App/packages/BetterThanBox.ipa
+          if-no-files-found: error
+
+      - name: Publish rolling release
+        if: github.event_name != 'pull_request'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: nightly-${{ github.ref_name == 'master' && 'master' || 'dev' }}
+          name: BetterThanBox nightly (${{ github.ref_name }})
+          prerelease: true
+          files: App/packages/BetterThanBox.ipa
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    permissions:
+      contents: write
