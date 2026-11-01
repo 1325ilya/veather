@@ -61,7 +61,6 @@
 - [ ] 🟢 Проверка сигнатур и целостности скачанного (`SignatureVerifier`, `DownloadIntegrity`, `BundleSignature`)
 - [ ] 🟢 OCSP-проверка с верификацией респондера (`OCSP`, `OCSPResponderVerification`)
 - [ ] 🟢 Mach-O thinning — удаление лишних архитектур
-- [ ] 🔧 Облачная подпись как опциональный бэкенд (`CloudSigningClient`, `CloudSigningView`)
 - [ ] 🟢 Диагностика устройства и экспорт диагностического бандла с редакцией секретов (`DiagnosticBundleExporter`, `LogRedaction`)
 
 **Редактирование IPA и твики**
@@ -81,9 +80,6 @@
 - [ ] 🟢 Самообновление приложения (`SelfUpdateManager`)
 
 **Экосистема и платформы**
-- [ ] 🔧 Приложения для Apple Watch / Apple TV / Vision Pro + виджеты и complications (`VexSignWatchApp`, `VexSignTVApp`, `VexSignVisionApp`, виджеты)
-- [ ] 🔧 Companion-мост между устройствами (`CompanionBridge`, `CompanionClient`)
-- [ ] 🔧 Web Manager: HTTP- и WebDAV-сервер на устройстве, чтобы управлять файлами с ПК (`WebManagerServer`, `+WebDAV`)
 - [ ] 🟢 Браузер IPSW (`IPSWBrowser`)
 - [ ] 🟢 Game Mode, ProMotion, JIT-настройки, симулятор геолокации (`GameMode`, `JITSettingsView`, `LocationSimulatorSettingsView`)
 - [ ] 🟢 App Lock (Face ID / пароль на приложение) (`AppLockManager`)
@@ -94,10 +90,8 @@
 - [ ] ⚠️ Anti-Revoke через DNS-профиль (`AntiRevokeManager`) — профиль не может «разотозвать» сертификат, и это обход проверки Apple
 - [ ] ⚠️ Подбор пароля p12 по словарю/PIN (`P12Cracker`) — обычно для чужих сертификатов; допустимо только как «восстановить свой»
 - [ ] ⚠️ Каталог бесплатных сертификатов из внешнего API (`NexCerts`, `CommunityCertificatesView`) — утечки/слитые сертификаты, быстро отзываются
-- [ ] ⚠️ «Premium»-активация через backend (`PremiumManager`)
 
 ### EnSign (cc158999) — исходников нет, только docs
-- [ ] 🔧 Серверное «обновление в один тап» с автоподбором исходного сертификата (нужен свой бэкенд)
 - [ ] 🟢 Режимы «Ad-hoc» и «Modify only, don't sign»
 - [ ] 🟢 Вывод в TIPA (для TrollStore)
 - [ ] 🟢 Шаблон имени выходного файла + метка времени, APFS-клонирование при упаковке
@@ -123,8 +117,6 @@
 - [ ] 🟢 Парсинг веб-страницы в поисках ссылки на IPA
 
 ### TanaraSign (iRayanKhan) — по README
-- [ ] 🔧 Клиенты для watchOS, tvOS, visionOS, macOS: поиск приложений на часах/ТВ и отправка на iPhone
-- [ ] 🟢 Установка на Apple Vision Pro
 
 ### ProStore / ProSign (ProStore-iOS) — заброшены
 - [ ] 🟢 Загрузчик «официальных» сертификатов (`OfficialCertsDownloader`) ⚠️ та же оговорка, что у NexCerts
@@ -137,9 +129,7 @@
 
 ### AltStore (altstoreio)
 - [ ] 🔧 AltJIT — включение JIT и монтирование DDI из демона (`AltJIT/Commands`)
-- [ ] 🔧 AltDaemon / AltXPC — привилегированный демон для jailbroken-устройств
 - [ ] 🔧 AltMarketplace — установка через EU Digital Markets Act (`InstallAppRequest`)
-- [ ] 🔧 AltPlugin — плагин для Apple Mail, отдающий anisette (`ALTPluginService`)
 - [ ] 🟢 Виджеты (`AltWidget`), новости в приложении (`News`), Fediverse-интеграция
 - [ ] 🟢 Каналы разрешений приложения (`Permissions`) и превью
 
@@ -156,56 +146,9 @@
 - [ ] 🔧 `apple-dev-apis` — Xcode developer API
 - [ ] 🔧 `apple-codesign-wrapper` — обёртка над `apple-codesign` (подпись без OpenSSL/zsign)
 
-### AltServer-Linux (NyaMisty)
-- [ ] 🔧 Wi-Fi refresh через netmuxd
-- [ ] 🔧 Собственный anisette-сервер (`ALTSERVER_ANISETTE_SERVER`), офлайн-генерация
-- [ ] 🟢 Режим демона + CLI-установка одной командой, статический бинарь
-
-### althea (vyvir)
+## althea (vyvir)
 - [ ] 🟢 GUI-обёртка (GTK/Python) над AltServer-Linux с иконкой в трее, хранение пароля в системном keyring
 - [ ] 🟢 Поддержка x86_64 / aarch64 / armv7
-
----
-
-## Десктоп и CLI-инструменты
-
-### Impactor / PlumeImpactor (claration)
-- [ ] 🔧 Rust-крейты: `plume_core` (auth, developer API v1 и qh, app groups, capabilities), `plume_store`, `plume_utils`, `plume_gestalt`
-- [ ] 🟢 Нормализатор CgBI PNG (`cgbi.rs`) — иконки из iOS-сборок
-- [ ] 🟢 Опции подписи: iPad fullscreen, ProMotion, Game Mode, Liquid Glass, ElleKit, удаление URL schemes, single profile
-- [ ] 🟢 Разные режимы установки и `refresh` как отдельная операция
-- [ ] 🟢 CLI `plumesign` рядом с GUI и 10 локалей (ar, de, en, es, fi, fr, it, ja, pl, ru)
-- [ ] 🟢 Nix flake
-
-### iloader (nab138)
-- [ ] 🔧 Установка SideStore и автоматический импорт pairing-файла
-- [ ] 🟢 Управление pairing-файлами для StikDebug, SideStore, Protokolle
-- [ ] 🟢 Просмотр и отзыв dev-сертификатов и App ID
-- [ ] 🟢 «Умные» подсказки по распространённым ошибкам
-- [ ] 🟢 Tauri-приложение с защищённым хранилищем (`secure_storage.rs`)
-
-### Sideloader (Dadoum)
-- [ ] 🔧 Команда `trollsign` (метод TrollStore 2, CVE-2023-41991) ⚠️ работает только на уязвимых версиях iOS
-- [ ] 🟢 Подкоманды `app-id`, `cert`, `device`, `team`, `tool`
-- [ ] 🟢 Фронтенды GTK, Qt, SwiftUI, dlangui поверх общего ядра
-- [ ] 🟢 Свой keyring на libsecret
-
-### iPASide (pwnapplehat)
-- [ ] 🟢 Установка Dopamine с проверкой совместимости чипа и iOS ⚠️
-- [ ] 🟢 Выбор USB или Wi-Fi, фоновое автообновление (7-дневный re-sign) без запущенного приложения
-- [ ] 🟢 Страница диагностики; список сертификатов Apple ID с пометкой, каким инструментом создан
-- [ ] 🟢 Flutter UI + Python-движок, Windows-инсталлятор без прав администратора, светлая тема
-
-### altsign-cli (xhzq233)
-- [ ] 🟢 Одна сессия с кешем; пароль и 2FA только через stdin
-- [ ] 🟢 Принимает `.app` без упаковки, а не только IPA
-- [ ] 🟢 Встроенная диагностика и remote anisette
-- [ ] 🟢 `SKILL.md` — описание инструмента для AI-агентов
-
-### ipashare (togettoyou)
-- [ ] 🔧 Серверная раздача: загрузка IPA, Ad Hoc-подпись, QR-код/ссылка
-- [ ] 🔧 Автоматическая регистрация UDID устройств через App Store Connect API (ключ .p8)
-- [ ] 🟢 Docker-деплой, Swagger-документация, веб-админка
 
 ---
 
@@ -278,12 +221,6 @@
 ### Вкладка «Download from App Store»
 - [ ] 🔧 Вкладка, куда вставляется ссылка на App Store / bundle ID / track ID, плюс поиск по названию (публичный iTunes Search/Lookup API, работает и для малоизвестных приложений с единичными скачиваниями)
 - [ ] 🔧 Скачивание IPA через Apple ID пользователя (подход ipatool: авторизация, получение лицензии, ссылка на загрузку, 2FA)
-- [ ] 🔧 «Расшифрованная» версия: IPA из App Store зашифрован FairPlay, расшифровка невозможна самим подписчиком — нужен отдельный шаг на устройстве с джейлбрейком/TrollStore либо готовый дамп. Продумать архитектуру до начала работ
-- [ ] 🔧 Архитектура расшифровки по публичным аналогам (ipa-bot, ipadecrypt, bagbak, TrollDecrypt). Как устроен конкретный бот пользователя — неизвестно:
-  1. скачать зашифрованный IPA через `ipatool` (поиск, лицензия, Apple ID + 2FA; риск для аккаунта — советовать отдельный Apple ID);
-  2. расшифровать на физическом iPhone с джейлбрейком (SSH + Frida/AppSync + bagbak/ipadecrypt) либо на устройстве с TrollStore (TrollDecrypt, работает не всегда) — FairPlay снимается ядром при запуске, программно вне устройства не снимается;
-  3. очередь запросов (одно устройство — одна расшифровка за раз), отдача готового IPA пользователю.
-  Варианты для проекта: (а) свой сервер с подключённым iPhone, (б) только на устройстве пользователя через TrollStore, (в) принимать готовые дампы. Выбрать до начала работ.
 - [ ] ⚠️ Только для приложений, доступных этому Apple ID (бесплатные или купленные). Скачивание платных приложений без покупки — пиратство, не реализуем
 
 ### Функции бота (твики к IPA)
@@ -315,6 +252,9 @@
 - [ ] 🟢 **Защищённый набор, который очистка не трогает:** сертификаты (.p12, .mobileprovision, пароли в Keychain), список источников и настройки, файлы, нужные для работы приложения. Защита на уровне кода, а не только скрытие в интерфейсе
 - [ ] 🟢 Правила автоочистки (по возрасту, по лимиту размера, после успешной установки) — по желанию пользователя
 - [ ] 🟢 Основа в коде: VexSign `CleanupManager`, `CleanupView`, `StorageManager`, `TempStorageSweeper`; BatSign/SignOs `StorageView`; Ksign `FilesView`
+
+
+> **Ограничение пользователя:** в проекте не должно быть пунктов, которым нужен другой iPhone, ПК/Mac, свой сервер, часы/ТВ/Vision или расшифровка на отдельном устройстве. Всё должно работать на одном iPhone пользователя. Удалены: расшифровка App Store-приложений (нужен джейлбрейк-телефон/сервер), облачная подпись, серверное автообновление EnSign, Companion/Watch/TV/Vision, Web Manager для ПК, Premium-бэкенд, AltDaemon и AltPlugin, разделы AltServer-Linux, althea, «Десктоп и CLI» (Impactor, iloader, Sideloader, iPASide, altsign-cli, ipashare). Вкладка App Store осталась только как поиск и скачивание зашифрованного IPA без расшифровки — подумать, нужна ли она вообще.
 
 ## Что делать дальше (предлагаю порядок)
 1. Выбрать базу: сейчас по охвату сильнее всего VexSign, по чистоте кода — Feather / Ksign / BatSign.
