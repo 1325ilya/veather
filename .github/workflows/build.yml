@@ -98,6 +98,7 @@ jobs:
           tag_name: nightly-${{ github.ref_name == 'master' && 'master' || 'dev' }}
           name: BetterThanBox nightly (${{ github.ref_name }})
           prerelease: true
+          body: "Build ${{ github.run_number }} (${{ github.sha }})"
           files: App/packages/BetterThanBox.ipa
           overwrite_files: true
         env:

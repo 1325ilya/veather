@@ -123,6 +123,9 @@ extension SettingsView {
 				}
 			}
             
+			NavigationLink(destination: BTBSelfUpdateView()) {
+				Label(.localized("Check for Updates"), systemImage: "arrow.triangle.2.circlepath")
+			}
 			Button(.localized("Submit Feedback"), systemImage: "safari") {
 				UIApplication.open(URL(string: "\(_githubUrl)/issues/new/choose")!)
 			}

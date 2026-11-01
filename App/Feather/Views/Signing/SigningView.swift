@@ -20,6 +20,8 @@ struct SigningView: View {
 	@State private var _isFilePickerPresenting = false
 	@State private var _isImagePickerPresenting = false
 	@State private var _isSigning = false
+	@State private var _cloneCount = 1
+	@State private var _cloneProgress = 0
 	@State private var _selectedPhoto: PhotosPickerItem? = nil
 	@State var appIcon: UIImage?
 	
@@ -47,9 +49,23 @@ struct SigningView: View {
 	var body: some View {
 		NBNavigationView("", displayMode: .inline) {
 			Form {
+				BTBPreflightSection(app: app, options: _temporaryOptions, certificate: _selectedCert())
 				_customizationOptions(for: app)
 				_cert()
 				_customizationProperties(for: app)
+				
+				Section {
+					Stepper(value: $_cloneCount, in: 1...BTBCloneWizard.maxClones) {
+						Label(
+							_cloneCount == 1
+								? String.localized("Clones: off")
+								: String.localized("Clones: %lld", arguments: _cloneCount),
+							systemImage: "square.on.square"
+						)
+					}
+				} footer: {
+					Text(.localized("Sign several copies with numbered bundle IDs and names (and a number on the icon) to use multiple accounts side by side."))
+				}
 				
 				// horrible
 				Rectangle()
@@ -67,7 +83,12 @@ struct SigningView: View {
 							Button {
 								_start()
 							} label: {
-								NBSheetButton(title: .localized("Start Signing"), style: .prominent)
+								NBSheetButton(
+									title: _isSigning && _cloneCount > 1
+										? String.localized("Signing %lld of %lld", arguments: _cloneProgress, _cloneCount)
+										: String.localized("Start Signing"),
+									style: .prominent
+								)
 									.padding()
 							}
 							.buttonStyle(.plain)
@@ -279,12 +300,7 @@ extension SigningView {
 		generator.impactOccurred()
 		_isSigning = true
 		
-		FR.signPackageFile(
-			app,
-			using: _temporaryOptions,
-			icon: appIcon,
-			certificate: _selectedCert()
-		) { error in
+		let completion: (Error?) -> Void = { error in
 			if let error {
 				let ok = UIAlertAction(title: .localized("Dismiss"), style: .cancel) { _ in
 					dismiss()
@@ -310,6 +326,26 @@ extension SigningView {
 				}
 				dismiss()
 			}
+		}
+		
+		if _cloneCount > 1 {
+			BTBCloneWizard.sign(
+				app,
+				using: _temporaryOptions,
+				icon: appIcon,
+				certificate: _selectedCert(),
+				count: _cloneCount,
+				progress: { _cloneProgress = $0 },
+				completion: completion
+			)
+		} else {
+			FR.signPackageFile(
+				app,
+				using: _temporaryOptions,
+				icon: appIcon,
+				certificate: _selectedCert(),
+				completion: completion
+			)
 		}
 	}
 }
