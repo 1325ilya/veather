@@ -22971,6 +22971,160 @@
           }
         }
       }
+    },
+    "Analyzing…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Анализ…"
+          }
+        }
+      }
+    },
+    "Apply Plugin Fixes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Применить фиксы плагинов"
+          }
+        }
+      }
+    },
+    "Architecture" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Архитектура"
+          }
+        }
+      }
+    },
+    "Could not read this package." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось прочитать пакет."
+          }
+        }
+      }
+    },
+    "Dependencies" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зависимости"
+          }
+        }
+      }
+    },
+    "Depends on Cydia Substrate. Enable \"Replace Substrate with ElleKit\" in signing options so it works sideloaded." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зависит от Cydia Substrate. Включите «Заменить Substrate на ElleKit» в опциях подписи, чтобы работало при сайдлоаде."
+          }
+        }
+      }
+    },
+    "Export .cyan" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Экспортировать .cyan"
+          }
+        }
+      }
+    },
+    "Favorites only" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Только избранное"
+          }
+        }
+      }
+    },
+    "Import .cyan" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Импортировать .cyan"
+          }
+        }
+      }
+    },
+    "No active tasks." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет активных задач."
+          }
+        }
+      }
+    },
+    "No declared dependencies." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зависимости не указаны."
+          }
+        }
+      }
+    },
+    "Package" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пакет"
+          }
+        }
+      }
+    },
+    "Task Center" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Центр задач"
+          }
+        }
+      }
+    },
+    "Tweak Info" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "О твике"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

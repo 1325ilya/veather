@@ -90,6 +90,9 @@ struct SettingsView: View {
 					NavigationLink(destination: BTBDeviceInfoView()) {
 						Label(.localized("Device Info"), systemImage: "iphone")
 					}
+					NavigationLink(destination: BTBTaskCenterView()) {
+						Label(.localized("Task Center"), systemImage: "list.bullet.rectangle")
+					}
 				}
 				
 				NBSection(.localized("Features")) {

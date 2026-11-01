@@ -10,7 +10,7 @@ import Combine
 import UIKit.UIImpactFeedbackGenerator
 import BackgroundTasks
 
-class Download: Identifiable, @unchecked Sendable {
+class Download: ObservableObject, Identifiable, @unchecked Sendable {
 	@Published var progress: Double = 0.0
 	@Published var bytesDownloaded: Int64 = 0
 	@Published var totalBytes: Int64 = 0

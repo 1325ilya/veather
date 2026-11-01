@@ -12,6 +12,7 @@ struct BTBUniversalSearchView: View {
 	@ObservedObject private var _viewModel = SourcesViewModel.shared
 	@State private var _query = ""
 	@State private var _onlyDuplicates = false
+	@State private var _onlyFavorites = false
 	@State private var _refreshToken = UUID()
 	@AppStorage(BTBUpdateRules.allSourcesKey) private var _updatesFromAllSources = true
 	
@@ -22,8 +23,10 @@ struct BTBUniversalSearchView: View {
 	
 	private var _results: [BTBResolvedApp] {
 		_ = _refreshToken
-		let all = BTBSourceResolver.resolve(sources: _viewModel.sources, query: _query)
-		return _onlyDuplicates ? all.filter { $0.candidates.count > 1 } : all
+		var all = BTBSourceResolver.resolve(sources: _viewModel.sources, query: _query)
+		if _onlyDuplicates { all = all.filter { $0.candidates.count > 1 } }
+		if _onlyFavorites { all = all.filter { BTBFavorites.contains($0.key) } }
+		return all
 	}
 	
 	var body: some View {
@@ -35,6 +38,9 @@ struct BTBUniversalSearchView: View {
 				}
 				Toggle(isOn: $_updatesFromAllSources) {
 					Label(.localized("Library updates from all sources"), systemImage: "arrow.triangle.2.circlepath")
+				}
+				Toggle(isOn: $_onlyFavorites) {
+					Label(.localized("Favorites only"), systemImage: "star")
 				}
 			} footer: {
 				Text(.localized("Searches every source you added. By default the source with the highest version is used; tap an app to pick another source manually."))
@@ -92,11 +98,13 @@ struct BTBResolvedAppView: View {
 	let resolved: BTBResolvedApp
 	var onChange: () -> Void
 	@State private var _pinned: String?
+	@State private var _favorite = false
 	
 	init(resolved: BTBResolvedApp, onChange: @escaping () -> Void) {
 		self.resolved = resolved
 		self.onChange = onChange
 		self.__pinned = State(initialValue: BTBSourceResolver.pinnedSource(for: resolved.key))
+		self.__favorite = State(initialValue: BTBFavorites.contains(resolved.key))
 	}
 	
 	var body: some View {
@@ -165,6 +173,17 @@ struct BTBResolvedAppView: View {
 			}
 		}
 		.navigationTitle(resolved.name)
+		.toolbar {
+			ToolbarItem(placement: .topBarTrailing) {
+				Button {
+					BTBFavorites.toggle(resolved.key)
+					_favorite.toggle()
+					onChange()
+				} label: {
+					Image(systemName: _favorite ? "star.fill" : "star")
+				}
+			}
+		}
 	}
 	
 	private func _setPin(_ id: String?) {

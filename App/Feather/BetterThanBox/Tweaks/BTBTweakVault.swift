@@ -95,10 +95,18 @@ struct BTBTweakVaultView: View {
 			}
 			NBSection(.localized("Tweaks"), secondary: _files.count.description) {
 				ForEach(_files, id: \.self) { file in
-					VStack(alignment: .leading, spacing: 2) {
-						Text(file.lastPathComponent).lineLimit(2)
-						Text(btbFormatBytes(BTBStorageManager.shared.size(of: file)))
-							.font(.caption).foregroundStyle(.secondary)
+					NavigationLink {
+						if file.pathExtension.lowercased() == "deb" {
+							BTBTweakAnalyzerView(url: file)
+						} else {
+							BTBHexView(url: file)
+						}
+					} label: {
+						VStack(alignment: .leading, spacing: 2) {
+							Text(file.lastPathComponent).lineLimit(2)
+							Text(btbFormatBytes(BTBStorageManager.shared.size(of: file)))
+								.font(.caption).foregroundStyle(.secondary)
+						}
 					}
 				}
 				.onDelete { offsets in

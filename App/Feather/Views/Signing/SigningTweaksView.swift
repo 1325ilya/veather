@@ -58,6 +58,9 @@ struct SigningTweaksView: View {
 			) {
 				_isAddingPresenting = true
 			}
+			ToolbarItem(placement: .topBarTrailing) {
+				BTBCyanMenu(options: $options)
+			}
 		}
 		.sheet(isPresented: $_isAddingPresenting) {
 			FileImporterRepresentableView(

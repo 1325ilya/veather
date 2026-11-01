@@ -49,16 +49,9 @@ final class SourcesViewModel: ObservableObject {
 							return (source, nil)
 						}
 						
-						return await withCheckedContinuation { continuation in
-							self._dataService.fetch(from: url) { (result: RepositoryDataHandler) in
-								switch result {
-								case .success(let repo):
-									continuation.resume(returning: (source, repo))
-								case .failure(_):
-									continuation.resume(returning: (source, nil))
-								}
-							}
-						}
+						// BetterThanBox: conditional fetch + offline cache
+						let repo = await BTBSourceCache.fetch(from: url)
+						return (source, repo)
 					}
 				}
 				

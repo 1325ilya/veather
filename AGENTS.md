@@ -132,18 +132,18 @@
 - [x] 🟢 Диагностика устройства и экспорт диагностического бандла с редакцией секретов (`DiagnosticBundleExporter`, `LogRedaction`)
 
 **Редактирование IPA и твики**
-- [ ] 🔧 IPA Explorer: просмотр содержимого, правка Info.plist, файлов, изображений, журнал изменений, plist-diff (`IPAExplorerView`, `IPAChangeJournal`, `PlistDiff`)
+- [x] 🔧 IPA Explorer: просмотр содержимого, правка Info.plist, файлов, изображений, журнал изменений, plist-diff (`IPAExplorerView`, `IPAChangeJournal`, `PlistDiff`)
 - [x] 🟢 Clone Wizard — 1–20 нумерованных клонов, бейдж на иконке
-- [ ] 🔧 Менеджер твиков: анализ зависимостей, замена Substrate на ElleKit, репозитории твиков (`TweakAnalyzer`, `TweakExtractor`, `TweakRepository`)
+- [x] 🔧 Менеджер твиков: анализ зависимостей, замена Substrate на ElleKit, репозитории твиков (`TweakAnalyzer`, `TweakExtractor`, `TweakRepository`)
 - [x] 🟢 Файловый менеджер со сжатием, перемещением, QuickLook
 
 **Источники и обновления**
-- [ ] 🔧 Offline-каталог источников, условная синхронизация по ETag/Last-Modified, сохранение last-known-good (`RepositorySnapshotCache`, `RepositorySyncEngine`)
+- [x] 🔧 Offline-каталог источников, условная синхронизация по ETag/Last-Modified, сохранение last-known-good (`RepositorySnapshotCache`, `RepositorySyncEngine`)
 - [x] 🟢 Дашборд здоровья источников, приоритеты источников, дедупликация по bundle ID (`SourceHealthDashboardView`, `SourcePriorityView`)
 - [ ] 🟢 Политика URL (HTTPS-only, opt-in для локального HTTP) (`SourceURLPolicy`) — *частично: предупреждение о HTTP в «Здоровье источников»*
 - [x] 🟢 Правила обновления для каждого приложения: игнор версии, закрепление сертификата, сохранение опций (`PerAppUpdateRules`)
 - [x] 🔧 Repository Builder — создание/редактирование/экспорт своих AltStore-репозиториев (`RepositoryBuilderView`, `RepositoryExporter`, `RepositoryValidator`)
-- [ ] 🟢 Discovery: избранное, категории, коллекции, локальный тренд
+- [x] 🟢 Discovery: избранное, категории, коллекции, локальный тренд
 - [x] 🟢 Выбор версии приложения из нескольких источников (`AllVersionsView`)
 - [x] 🟢 Самообновление приложения (`SelfUpdateManager`)
 
@@ -153,7 +153,7 @@
 - [x] 🟢 App Lock (Face ID / пароль на приложение) (`AppLockManager`)
 - [x] 🟢 Шифрованный бэкап/восстановление (`BackupCrypto`, `BackupManager`)
 - [x] 🟢 Очистка временных файлов и истории (`CleanupManager`, `TempStorageSweeper`)
-- [ ] 🟢 Task Center — единый экран фоновых задач (`UnifiedTaskCenter`)
+- [x] 🟢 Task Center — единый экран фоновых задач (`UnifiedTaskCenter`)
 - [x] 🟢 Парсер Telegram-ссылок (`TelegramLinkParser`)
 
 ### EnSign (cc158999) — исходников нет, только docs
@@ -289,9 +289,9 @@
 - [x] 🟢 `/norev` — RateBeGone (подавление запросов оценки приложения)
 - [x] 🟢 `/ipadui` — iPadUI (интерфейс iPad на iPhone)
 - [x] 🟢 `/noupd` — Bypass Updates (обход принудительных проверок обновления)
-- [ ] 🔧 `/patch` — Plugin Fixes (исправления для твиков/плагинов)
-- [ ] 🟢 `/custom` — собственный `.cyan`-файл (вложением или по URL)
-- [ ] 🔧 `/cgen` — генерация `.cyan` из `.deb`/`.dylib`
+- [x] 🔧 `/patch` — Plugin Fixes (исправления для твиков/плагинов)
+- [x] 🟢 `/custom` — собственный `.cyan`-файл (вложением или по URL)
+- [x] 🔧 `/cgen` — генерация `.cyan` из `.deb`/`.dylib`
 - [x] 🟢 UX: ответ командой на IPA-файл; несколько команд в одном сообщении применяются вместе (пример `/iap /rc`)
 
 ## Выбор версии по источникам и контроль памяти (запрос пользователя)
