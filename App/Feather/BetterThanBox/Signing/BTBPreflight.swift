@@ -164,34 +164,39 @@ struct BTBPreflightSection: View {
 	let app: AppInfoPresentable
 	let options: Options
 	let certificate: CertificatePair?
-	@State private var _issues: [BTBPreflightIssue] = []
+	/// Results per app+options, so re-renders of the signing screen don't re-read the bundle.
+	@MainActor private static var _cache: [String: [BTBPreflightIssue]] = [:]
 	
 	private var _key: String {
-		"\(options.appIdentifier ?? "")|\(options.signingOption.rawValue)|\(options.btb_removeExtensions)|\(certificate?.uuid ?? "")"
+		"\(app.uuid ?? "")|\(options.appIdentifier ?? "")|\(options.signingOption.rawValue)|\(options.btb_removeExtensions)|\(certificate?.uuid ?? "")"
+	}
+	
+	// Computed in body: a `.task` attached to an empty Group inside a List never runs,
+	// so the section could never appear.
+	@MainActor private var _issues: [BTBPreflightIssue] {
+		if let cached = Self._cache[_key] { return cached }
+		let issues = BTBPreflight.run(app: app, options: options, certificate: certificate)
+		Self._cache[_key] = issues
+		return issues
 	}
 	
 	var body: some View {
-		Group {
-			if !_issues.isEmpty {
-				Section {
-					ForEach(_issues) { issue in
-						Label {
-							VStack(alignment: .leading, spacing: 2) {
-								Text(issue.title).font(.subheadline.bold())
-								Text(issue.detail).font(.caption).foregroundStyle(.secondary)
-							}
-						} icon: {
-							Image(systemName: _icon(issue.level)).foregroundStyle(_color(issue.level))
+		let issues = _issues
+		if !issues.isEmpty {
+			Section {
+				ForEach(issues) { issue in
+					Label {
+						VStack(alignment: .leading, spacing: 2) {
+							Text(issue.title).font(.subheadline.bold())
+							Text(issue.detail).font(.caption).foregroundStyle(.secondary)
 						}
+					} icon: {
+						Image(systemName: _icon(issue.level)).foregroundStyle(_color(issue.level))
 					}
-				} header: {
-					Text(.localized("Preflight"))
 				}
+			} header: {
+				Text(.localized("Preflight"))
 			}
-		}
-		.task(id: _key) {
-			// Core Data objects must stay on the main thread; the checks only read headers
-			_issues = BTBPreflight.run(app: app, options: options, certificate: certificate)
 		}
 	}
 	

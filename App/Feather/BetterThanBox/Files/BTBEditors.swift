@@ -41,7 +41,9 @@ final class BTBPlistNode: ObservableObject, Identifiable {
 		case let n as NSNumber: return n.stringValue
 		case let d as Date: return d.formatted()
 		case let d as Data: return btbFormatBytes(Int64(d.count))
-		default: return "\(value)"
+		case let s as String: return s
+		case let s as NSString: return s as String
+		default: return String(describing: value)
 		}
 	}
 }
@@ -140,7 +142,7 @@ struct BTBPlistContainerView: View {
 			return (dict.allKeys as? [String] ?? [])
 				.sorted { $0.localizedStandardCompare($1) == .orderedAscending }
 				.filter { _query.isEmpty || $0.localizedCaseInsensitiveContains(_query) }
-				.map { Row(key: $0, value: dict[$0] as Any) }
+				.map { Row(key: $0, value: dict[$0] ?? "") }
 		} else if let array = container as? NSMutableArray {
 			return array.enumerated().map { Row(key: "\($0.offset)", value: $0.element) }
 		}
