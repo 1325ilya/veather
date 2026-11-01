@@ -107,6 +107,9 @@ extension LibraryInfoView {
 			NavigationLink(.localized("Dylibs")) {
 				SigningDylibView(app: app, options: .constant(nil))
 			}
+			Button(.localized("Verify Signature"), systemImage: "checkmark.shield") {
+				BTBVerifySignature.run(for: app)
+			}
 			NavigationLink(.localized("Entitlements")) {
 				if 
 					let path = Bundle(url: Storage.shared.getAppDirectory(for: app)!)?.executableURL?.path,

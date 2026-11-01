@@ -87,6 +87,9 @@ struct SettingsView: View {
 					NavigationLink(destination: BTBIPSWView()) {
 						Label(.localized("IPSW"), systemImage: "cpu")
 					}
+					NavigationLink(destination: BTBDeviceInfoView()) {
+						Label(.localized("Device Info"), systemImage: "iphone")
+					}
 				}
 				
 				NBSection(.localized("Features")) {
