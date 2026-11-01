@@ -1,4 +1,4 @@
-# TODO — уникальные фичи из каждого проекта (только план, ничего не реализовано)
+# TODO — уникальные фичи из каждого проекта ([x] — готово в App/, включая то, что уже было в Feather)
 
 Метод: сравнивались README и список исходных файлов. Для семейства Feather (Feather → Ksign / BatSign / SignOs / VexSign / ProStore) сравнивался diff по именам файлов относительно Feather. Глубокого чтения кода каждой фичи не было, поэтому перед реализацией нужно открыть соответствующий файл и подтвердить.
 
@@ -15,15 +15,15 @@
 ## Feather-семейство (on-device подписчики)
 
 ### Ksign (Nyasami)
-- [ ] 🟢 Hex-редактор файлов внутри IPA (`HexEditorView`)
-- [ ] 🟢 Редактор plist (`PlistEditorView`) и текстовый редактор (`TextEditorView`) в файловом менеджере
-- [ ] 🟢 Встроенный менеджер файлов с QuickLook, превью изображений, экспортом (`FilesView`, `FilesViewModel`)
+- [x] 🟢 Hex-редактор файлов внутри IPA (`HexEditorView`)
+- [x] 🟢 Редактор plist (`PlistEditorView`) и текстовый редактор (`TextEditorView`) в файловом менеджере
+- [x] 🟢 Встроенный менеджер файлов с QuickLook, превью изображений, экспортом (`FilesView`, `FilesViewModel`)
 - [ ] 🟢 Встроенный WebView-загрузчик IPA со страниц (`WebViewSheet`, `DownloaderView`, `IPADownloadManager`)
 - [ ] 🟢 Менеджер распаковки архивов с прогрессом (`ExtractManager`, `ExtractionService`)
 - [ ] 🔧 Массовая установка с превью и прогрессом (`BulkInstallPreviewView`, `BulkInstallProgressView`, `BulkSigningView`)
-- [ ] 🟢 Экран управления dylib приложения (`DylibsView`)
-- [ ] 🟢 Окно логов с историей (`LogsManager`, `LogsView`)
-- [ ] 🟢 Выбор акцентного цвета (`AccentColorManager`)
+- [x] 🟢 Экран управления dylib приложения (`DylibsView`)
+- [x] 🟢 Окно логов с историей (`LogsManager`, `LogsView`)
+- [x] 🟢 Выбор акцентного цвета (`AccentColorManager`)
 - [ ] 🔧 «Server Pack» — формат раздачи SSL-/сертификатных наборов для OTA-установки (`ServerPackModel`)
 - [ ] 🔧 Отдельный «Appstore»-таб, выделенный из общих Sources
 
@@ -32,59 +32,59 @@
 - [ ] 🔧 Live Activity / Dynamic Island с прогрессом, скоростью и ETA (`LiveActivityController`, `BatSignLiveActivity`, `DownloadActivityAttributes`)
 - [ ] 🔧 Serial-очередь подписи и «Pending Sign» (`BSPendingSign`, `BSBulkSign`, `AutoSignManager`)
 - [ ] 🔧 Self-Heal: обнаружить отозванный сертификат и автоматически переподписать приложения лучшим живым (`CertHealthView`)
-- [ ] 🟢 Дашборд здоровья сертификатов: кольца срока, статус отзыва, «Renew All»
-- [ ] 🔧 Install Ledger / Install Watcher: журнал установок и отслеживание, что приложение реально установилось (`BSInstallLedger`, `BSInstallWatcher`)
+- [x] 🟢 Дашборд здоровья сертификатов: кольца срока, статус отзыва, «Renew All»
+- [x] 🔧 Install Ledger / Install Watcher: журнал установок и отслеживание, что приложение реально установилось (`BSInstallLedger`, `BSInstallWatcher`)
 - [ ] 🔧 Download Rescue — дозагрузка после обрыва (`DownloadRescue`)
 - [ ] 🟢 Поиск приложения через App Store lookup (`AppStoreLookup`) и показ значка/скриншотов (`BSArtwork`, `BSShotCache`)
-- [ ] 🟢 Shortcuts / App Intents для подписи (`SignIntents`)
-- [ ] 🟢 Экраны Storage, Activity log, Backup/Restore, Discover, Updates, Tweak Vault
+- [x] 🟢 Shortcuts / App Intents для подписи (`SignIntents`)
+- [x] 🟢 Экраны Storage, Activity log, Backup/Restore, Discover, Updates, Tweak Vault
 - [ ] 🟢 Tweak Vault: сохранённые .deb/.dylib, внедрение в один тап
 - [ ] 🟢 Определение устройства через MobileGestalt (`MobileGestalt`)
 - [ ] 🟢 «One View Install» — установка и подпись на одном экране (`OneViewInstallView`)
-- [ ] 🟢 Настраиваемая компрессия при упаковке (`CompressionMode`)
+- [x] 🟢 Настраиваемая компрессия при упаковке (`CompressionMode`)
 
 ### SignOs (ihateios)
 Пересекается с BatSign. Отличается набором:
-- [ ] 🟢 App Cloner — два аккаунта одного приложения рядом
-- [ ] 🟢 PPQ protection, патч Liquid Glass, смена внешнего вида, minimum iOS version
+- [x] 🟢 App Cloner — два аккаунта одного приложения рядом
+- [x] 🟢 PPQ protection, патч Liquid Glass, смена внешнего вида, minimum iOS version
 - [ ] 🟢 `SearchView` — отдельный глобальный поиск
-- [ ] 🟢 ElleKit для инъекции твиков в расширения, управление существующими dylib/frameworks
+- [x] 🟢 ElleKit для инъекции твиков в расширения, управление существующими dylib/frameworks
 
 ### VexSign (raynmahbub) — самый большой, 554 файла
 **Подпись и установка**
 - [ ] 🔧 Пакетная подпись и очереди установки с настройками для каждого приложения (`BatchSignView`, `BatchJobRunner`, `InstallQueue`)
 - [ ] 🟢 Именованные профили подписи / пресеты (`NamedSigningProfileStore`, `SigningProfileStore`)
-- [ ] 🟢 Preflight перед подписью и перед установкой (`PreflightChecks`, `InstallPreflight`, `NestedBundleAudit`, `ProfileCompatibility`)
+- [x] 🟢 Preflight перед подписью и перед установкой (`PreflightChecks`, `InstallPreflight`, `NestedBundleAudit`, `ProfileCompatibility`)
 - [ ] 🟢 Редактор entitlements с билдером (`EntitlementBuilder`, `SigningEntitlementsEditorView`) и чтением из Mach-O (`MachOEntitlements`)
 - [ ] 🔧 Локальный HTTPS для `itms-services` со своим CA/TLS (`LocalCAProfile`, `LocalTLSIdentity`, `OTAExporter`)
 - [ ] 🔧 Установка через AFC / installd на спаренном устройстве (`DirectInstaller`)
 - [ ] 🟢 Проверка сигнатур и целостности скачанного (`SignatureVerifier`, `DownloadIntegrity`, `BundleSignature`)
-- [ ] 🟢 OCSP-проверка с верификацией респондера (`OCSP`, `OCSPResponderVerification`)
-- [ ] 🟢 Mach-O thinning — удаление лишних архитектур
-- [ ] 🟢 Диагностика устройства и экспорт диагностического бандла с редакцией секретов (`DiagnosticBundleExporter`, `LogRedaction`)
+- [x] 🟢 OCSP-проверка с верификацией респондера (`OCSP`, `OCSPResponderVerification`)
+- [x] 🟢 Mach-O thinning — удаление лишних архитектур
+- [x] 🟢 Диагностика устройства и экспорт диагностического бандла с редакцией секретов (`DiagnosticBundleExporter`, `LogRedaction`)
 
 **Редактирование IPA и твики**
 - [ ] 🔧 IPA Explorer: просмотр содержимого, правка Info.plist, файлов, изображений, журнал изменений, plist-diff (`IPAExplorerView`, `IPAChangeJournal`, `PlistDiff`)
-- [ ] 🟢 Clone Wizard — 1–20 нумерованных клонов, бейдж на иконке
+- [x] 🟢 Clone Wizard — 1–20 нумерованных клонов, бейдж на иконке
 - [ ] 🔧 Менеджер твиков: анализ зависимостей, замена Substrate на ElleKit, репозитории твиков (`TweakAnalyzer`, `TweakExtractor`, `TweakRepository`)
-- [ ] 🟢 Файловый менеджер со сжатием, перемещением, QuickLook
+- [x] 🟢 Файловый менеджер со сжатием, перемещением, QuickLook
 
 **Источники и обновления**
 - [ ] 🔧 Offline-каталог источников, условная синхронизация по ETag/Last-Modified, сохранение last-known-good (`RepositorySnapshotCache`, `RepositorySyncEngine`)
-- [ ] 🟢 Дашборд здоровья источников, приоритеты источников, дедупликация по bundle ID (`SourceHealthDashboardView`, `SourcePriorityView`)
+- [x] 🟢 Дашборд здоровья источников, приоритеты источников, дедупликация по bundle ID (`SourceHealthDashboardView`, `SourcePriorityView`)
 - [ ] 🟢 Политика URL (HTTPS-only, opt-in для локального HTTP) (`SourceURLPolicy`)
-- [ ] 🟢 Правила обновления для каждого приложения: игнор версии, закрепление сертификата, сохранение опций (`PerAppUpdateRules`)
+- [x] 🟢 Правила обновления для каждого приложения: игнор версии, закрепление сертификата, сохранение опций (`PerAppUpdateRules`)
 - [ ] 🔧 Repository Builder — создание/редактирование/экспорт своих AltStore-репозиториев (`RepositoryBuilderView`, `RepositoryExporter`, `RepositoryValidator`)
 - [ ] 🟢 Discovery: избранное, категории, коллекции, локальный тренд
-- [ ] 🟢 Выбор версии приложения из нескольких источников (`AllVersionsView`)
-- [ ] 🟢 Самообновление приложения (`SelfUpdateManager`)
+- [x] 🟢 Выбор версии приложения из нескольких источников (`AllVersionsView`)
+- [x] 🟢 Самообновление приложения (`SelfUpdateManager`)
 
 **Экосистема и платформы**
 - [ ] 🟢 Браузер IPSW (`IPSWBrowser`)
-- [ ] 🟢 Game Mode, ProMotion, JIT-настройки, симулятор геолокации (`GameMode`, `JITSettingsView`, `LocationSimulatorSettingsView`)
+- [x] 🟢 Game Mode, ProMotion, JIT-настройки, симулятор геолокации (`GameMode`, `JITSettingsView`, `LocationSimulatorSettingsView`)
 - [ ] 🟢 App Lock (Face ID / пароль на приложение) (`AppLockManager`)
-- [ ] 🟢 Шифрованный бэкап/восстановление (`BackupCrypto`, `BackupManager`)
-- [ ] 🟢 Очистка временных файлов и истории (`CleanupManager`, `TempStorageSweeper`)
+- [x] 🟢 Шифрованный бэкап/восстановление (`BackupCrypto`, `BackupManager`)
+- [x] 🟢 Очистка временных файлов и истории (`CleanupManager`, `TempStorageSweeper`)
 - [ ] 🟢 Task Center — единый экран фоновых задач (`UnifiedTaskCenter`)
 - [ ] 🟢 Парсер Telegram-ссылок (`TelegramLinkParser`)
 - [ ] ⚠️ Anti-Revoke через DNS-профиль (`AntiRevokeManager`) — профиль не может «разотозвать» сертификат, и это обход проверки Apple
@@ -92,27 +92,27 @@
 - [ ] ⚠️ Каталог бесплатных сертификатов из внешнего API (`NexCerts`, `CommunityCertificatesView`) — утечки/слитые сертификаты, быстро отзываются
 
 ### EnSign (cc158999) — исходников нет, только docs
-- [ ] 🟢 Режимы «Ad-hoc» и «Modify only, don't sign»
+- [x] 🟢 Режимы «Ad-hoc» и «Modify only, don't sign»
 - [ ] 🟢 Вывод в TIPA (для TrollStore)
 - [ ] 🟢 Шаблон имени выходного файла + метка времени, APFS-клонирование при упаковке
 - [ ] 🟢 Keychain Isolation (раздельные access groups у подписанных приложений)
-- [ ] 🟢 Fix White Icon / Fix Dark Icon (`UIPrerenderedIcon`)
-- [ ] 🟢 Структурированный лог подписи с таймингами, экспорт одним тапом
-- [ ] 🟢 Расширенный URL-scheme (`source/`, `install/`, `import-certificate`)
+- [x] 🟢 Fix White Icon / Fix Dark Icon (`UIPrerenderedIcon`)
+- [x] 🟢 Структурированный лог подписи с таймингами, экспорт одним тапом
+- [x] 🟢 Расширенный URL-scheme (`source/`, `install/`, `import-certificate`)
 - [ ] 🟢 Локализации: zh-Hans / zh-Hant / en / vi
 
 ### ForgeSign-iOS (Mesutcydev)
-- [ ] 🔧 Установка через loopback HTTP-сервер + удалённый HTTPS-манифест (`LocalInstallServer`, `InstallKeepAlive`)
+- [x] 🔧 Установка через loopback HTTP-сервер + удалённый HTTPS-манифест (`LocalInstallServer`, `InstallKeepAlive`)
 - [ ] 🟢 Запомненные сертификаты с обратным отсчётом срока и хранением пароля в Keychain
 - [ ] 🟢 Библиотека подписанных приложений со статусами signed / installing / delivered / installed / missing
-- [ ] 🟢 IPA preflight (шифрование, архитектура) и аудит профилей по каждому bundle/extension
+- [x] 🟢 IPA preflight (шифрование, архитектура) и аудит профилей по каждому bundle/extension
 - [ ] 🔧 Провижининг через Apple ID прямо на устройстве, с патчем GSA (`altsign-gsa-http503.patch`)
 - [ ] 🟢 Дизайн Liquid Glass с fallback на iOS 16
 
 ### ABox (SWING1993)
-- [ ] 🟢 Просмотр p12 и mobileprovision (поля, сроки)
+- [x] 🟢 Просмотр p12 и mobileprovision (поля, сроки)
 - [ ] 🔧 Class-dump заголовков из Mach-O прямо на устройстве
-- [ ] 🟢 Инъекция и удаление dylib через optool
+- [x] 🟢 Инъекция и удаление dylib через optool
 - [ ] 🟢 Поддержка iOS 12+ (самая старая цель среди всех)
 - [ ] 🟢 Парсинг веб-страницы в поисках ссылки на IPA
 
@@ -153,10 +153,10 @@
 ### zsign (zhlynn)
 Флаги, которые стоит перенять, если нет:
 - [ ] 🟢 `-L` dual SHA1+SHA256 CodeDirectory (iOS ≤ 10)
-- [ ] 🟢 `-C` проверка сертификата и OCSP
+- [x] 🟢 `-C` проверка сертификата и OCSP
 - [ ] 🟢 `-x` извлечение метаданных и иконки
-- [ ] 🟢 `-S` включить file sharing, `-M` min version, `-E` удалить extensions, `-W` удалить Watch, `-U` удалить UISupportedDevices
-- [ ] 🟢 `-P` инъекция dylib также в расширения, `-w` weak-инъекция, `-D` удаление dylib, `-I` замена иконки, `-z` уровень сжатия
+- [x] 🟢 `-S` включить file sharing, `-M` min version, `-E` удалить extensions, `-W` удалить Watch, `-U` удалить UISupportedDevices
+- [x] 🟢 `-P` инъекция dylib также в расширения, `-w` weak-инъекция, `-D` удаление dylib, `-I` замена иконки, `-z` уровень сжатия
 
 ### ldid (ProcursusTeam)
 - [ ] 🟢 PKCS#11-ключи (токены, HSM)
@@ -181,10 +181,10 @@
 Уверенность: **В** — подтверждено официальной страницей/README, **Н** — только сторонние сайты (часто SEO-мусор), **С** — видно по коду другого проекта в этой коллекции. Перед реализацией проверять на самом приложении.
 
 ### Sideloadly (В — sideloadly.io)
-- [ ] 🟢 Режим «экспортировать твикнутый IPA» без установки; режим «ad-hoc подпись»
-- [ ] 🟢 Инъекция `.dylib`, `.deb`, `.framework` и `.bundle` одновременно, с поддержкой Cydia Substrate и Substitute
-- [ ] 🟢 Удаление всех или части app extensions (PlugIns) перед установкой
-- [ ] 🟢 «Remove restrictions» — снятие ограничений IPA на поддерживаемых устройствах
+- [x] 🟢 Режим «экспортировать твикнутый IPA» без установки; режим «ad-hoc подпись»
+- [x] 🟢 Инъекция `.dylib`, `.deb`, `.framework` и `.bundle` одновременно, с поддержкой Cydia Substrate и Substitute
+- [x] 🟢 Удаление всех или части app extensions (PlugIns) перед установкой
+- [x] 🟢 «Remove restrictions» — снятие ограничений IPA на поддерживаемых устройствах
 - [ ] 🟢 URI-схема для установки IPA с веб-страницы
 - [ ] 🟢 Доступ к документам приложения и системные логи устройства прямо из программы
 - [ ] 🟢 Режим «скрыть чувствительные данные» (для скриншотов и записи экрана)
@@ -196,12 +196,12 @@
 - [ ] 🟢 Выбор «свой сертификат или общий (global)» в одном приложении
 - [ ] ⚠️ Вариант с «бесплатным enterprise-сертификатом» в комплекте — общий сертификат, быстро отзывается
 - [ ] 🟢 Отдельная сборка под TrollStore (установка без сертификата)
-- [ ] 🟢 Только .p12 + .mobileprovision, без входа через Apple ID (так проще и безопаснее по данным)
+- [x] 🟢 Только .p12 + .mobileprovision, без входа через Apple ID (так проще и безопаснее по данным)
 
 ### ESign (Н; С — VexSign умеет читать зашифрованные источники ESign)
-- [ ] 🔧 Формат зашифрованных ESign-источников (есть парсер в `raynmahbub_VexSign`, см. AltSourceKit)
-- [ ] 🟢 Установка через `itms-services` без ПК (по таблице в README ProStore)
-- [ ] 🟢 Инъекция dylib в IPA
+- [x] 🔧 Формат зашифрованных ESign-источников (есть парсер в `raynmahbub_VexSign`, см. AltSourceKit)
+- [x] 🟢 Установка через `itms-services` без ПК (по таблице в README ProStore)
+- [x] 🟢 Инъекция dylib в IPA
 - [ ] 🟢 Известный баг: ESign портит entitlements (из заметок iDevice Toolkit) — в нашей версии на это нужен тест
 
 ### Scarlet (Н; официальный README недоступен)
@@ -236,18 +236,18 @@
 ## Выбор версии по источникам и контроль памяти (запрос пользователя)
 
 ### Автовыбор источника по самой новой версии
-- [ ] 🔧 Поиск приложения (по названию или bundle ID) сразу по **всем источникам, которые добавил сам пользователь** (AltStore-совместимые репозитории); в нескольких источниках одно приложение группируется по bundle ID
-- [ ] 🟢 По умолчанию скачивается источник с **наибольшей версией** (сравнение версий по правилам semver/числовых сегментов; при равенстве — более свежая дата, затем приоритет источника); пользователь может выбрать другой вручную
-- [ ] 🟢 Показывать, из какого источника и какая версия выбрана и почему; запоминать ручной выбор для приложения
-- [ ] 🟢 Основа в коде: VexSign `AllVersionsView`, `SourcePriorityView`, `SourceProvenance`, `PerAppUpdateRules`, `UpdateMatchingPreferences`
+- [x] 🔧 Поиск приложения (по названию или bundle ID) сразу по **всем источникам, которые добавил сам пользователь** (AltStore-совместимые репозитории); в нескольких источниках одно приложение группируется по bundle ID
+- [x] 🟢 По умолчанию скачивается источник с **наибольшей версией** (сравнение версий по правилам semver/числовых сегментов; при равенстве — более свежая дата, затем приоритет источника); пользователь может выбрать другой вручную
+- [x] 🟢 Показывать, из какого источника и какая версия выбрана и почему; запоминать ручной выбор для приложения
+- [x] 🟢 Основа в коде: VexSign `AllVersionsView`, `SourcePriorityView`, `SourceProvenance`, `PerAppUpdateRules`, `UpdateMatchingPreferences`
 - [ ] ⚠️ **Решение пользователя/ограничение:** встроенного списка репозиториев «со всеми расшифрованными приложениями» нет и не будет. Модель отказалась искать и подключать массовые подборки расшифрованных копий чужих приложений (нелегальное распространение). Источники добавляет только сам пользователь
 
 ### Гибкий контроль памяти (без переустановки)
-- [ ] 🔧 Экран «Хранилище»: размер по категориям — скачанные IPA, подписанные IPA, временные/распакованные файлы, кэш иконок и скриншотов, логи, резервные копии, снимки источников, хранилище твиков
-- [ ] 🟢 Выборочная очистка: целиком категорию, отдельный файл или приложение; предпросмотр «сколько освободится» до удаления и подтверждение
-- [ ] 🟢 **Защищённый набор, который очистка не трогает:** сертификаты (.p12, .mobileprovision, пароли в Keychain), список источников и настройки, файлы, нужные для работы приложения. Защита на уровне кода, а не только скрытие в интерфейсе
-- [ ] 🟢 Правила автоочистки (по возрасту, по лимиту размера, после успешной установки) — по желанию пользователя
-- [ ] 🟢 Основа в коде: VexSign `CleanupManager`, `CleanupView`, `StorageManager`, `TempStorageSweeper`; BatSign/SignOs `StorageView`; Ksign `FilesView`
+- [x] 🔧 Экран «Хранилище»: размер по категориям — скачанные IPA, подписанные IPA, временные/распакованные файлы, кэш иконок и скриншотов, логи, резервные копии, снимки источников, хранилище твиков
+- [x] 🟢 Выборочная очистка: целиком категорию, отдельный файл или приложение; предпросмотр «сколько освободится» до удаления и подтверждение
+- [x] 🟢 **Защищённый набор, который очистка не трогает:** сертификаты (.p12, .mobileprovision, пароли в Keychain), список источников и настройки, файлы, нужные для работы приложения. Защита на уровне кода, а не только скрытие в интерфейсе
+- [x] 🟢 Правила автоочистки (по возрасту, по лимиту размера, после успешной установки) — по желанию пользователя
+- [x] 🟢 Основа в коде: VexSign `CleanupManager`, `CleanupView`, `StorageManager`, `TempStorageSweeper`; BatSign/SignOs `StorageView`; Ksign `FilesView`
 
 
 > **Ограничение пользователя:** в проекте не должно быть пунктов, которым нужен другой iPhone, ПК/Mac, свой сервер, часы/ТВ/Vision или расшифровка на отдельном устройстве. Всё должно работать на одном iPhone пользователя. Удалены: расшифровка App Store-приложений (нужен джейлбрейк-телефон/сервер), облачная подпись, серверное автообновление EnSign, Companion/Watch/TV/Vision, Web Manager для ПК, Premium-бэкенд, AltDaemon и AltPlugin, разделы AltServer-Linux, althea, «Десктоп и CLI» (Impactor, iloader, Sideloader, iPASide, altsign-cli, ipashare). Вкладка App Store осталась только как поиск и скачивание зашифрованного IPA без расшифровки — подумать, нужна ли она вообще.
