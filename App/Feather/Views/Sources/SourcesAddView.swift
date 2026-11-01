@@ -117,8 +117,6 @@ struct SourcesAddView: View {
 								}
 							}
 						}
-					} footer: {
-						Text(.localized("Open an [issue](https://github.com/claration/Feather/issues) on GitHub if you want your source to be featured."))
 					}
 				}
 			}
