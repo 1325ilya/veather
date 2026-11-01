@@ -36,6 +36,14 @@ jobs:
           sudo xcode-select -s "$XCODE"
           xcodebuild -version
 
+      - name: Prepare Xcode
+        run: |
+          # repos/ holds 26 reference submodules that are not checked out here;
+          # keep Xcode's source-control scanner away from them
+          defaults write com.apple.dt.Xcode IDESourceControlEnableSourceControl_10_0 -bool NO
+          defaults write com.apple.dt.Xcode IDEPackageSupportUseBuiltinSCM -bool YES
+          rm -f ../.gitmodules
+
       - name: Cache SwiftPM
         uses: actions/cache@v4
         with:
@@ -53,7 +61,10 @@ jobs:
 
       - name: Show errors
         if: failure()
-        run: grep -n -B2 -A6 'error:' build.log | head -300 || true
+        run: |
+          grep -n -B2 -A6 'error:' build.log | head -300 || true
+          echo '----- tail -----'
+          tail -n 120 build.log || true
 
       - name: Upload IPA
         uses: actions/upload-artifact@v4

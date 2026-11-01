@@ -119,6 +119,21 @@ struct Options: Codable, Equatable {
 	var injectIntoExtensions: Bool
 	/// If app should merge entitlements with the binary.
 	var mergeEntitlements: Bool
+	
+	// MARK: BetterThanBox
+	
+	/// Remove all app extensions (`PlugIns/`, `Extensions/`)
+	var btb_removeExtensions: Bool
+	/// Remove the bundled Watch app (`Watch/`)
+	var btb_removeWatchApp: Bool
+	/// Remove `UIRequiredDeviceCapabilities` (device restrictions)
+	var btb_removeDeviceRestrictions: Bool
+	/// Keep `UISupportedDevices` instead of always stripping it
+	var btb_keepSupportedDevices: Bool
+	/// Mark icons as pre-rendered (fixes white/dark icon glitches)
+	var btb_fixIcons: Bool
+	/// Strip non-arm64 slices from fat Mach-O binaries
+	var btb_thinToArm64: Bool
 
 	// MARK: Experiments
 	
@@ -167,6 +182,15 @@ struct Options: Codable, Equatable {
 		injectIntoExtensions: false,
 		mergeEntitlements: false,
 		
+		// MARK: BetterThanBox
+		
+		btb_removeExtensions: false,
+		btb_removeWatchApp: false,
+		btb_removeDeviceRestrictions: false,
+		btb_keepSupportedDevices: false,
+		btb_fixIcons: false,
+		btb_thinToArm64: false,
+		
 		// MARK: Experiments
 		
 		experiment_supportLiquidGlass: false,
@@ -197,20 +221,20 @@ struct Options: Codable, Equatable {
 
 	enum MinimumAppRequirement: String, Codable, CaseIterable, LocalizedDescribable {
 		case `default`
+		case v18 = "18.0"
+		case v17 = "17.0"
 		case v16 = "16.0"
 		case v15 = "15.0"
 		case v14 = "14.0"
 		case v13 = "13.0"
 		case v12 = "12.0"
+		case v11 = "11.0"
+		case v10 = "10.0"
 
 		var localizedDescription: String {
 			switch self {
 			case .default: .localized("Default")
-			case .v16: "16.0"
-			case .v15: "15.0"
-			case .v14: "14.0"
-			case .v13: "13.0"
-			case .v12: "12.0"
+			default: rawValue
 			}
 		}
 	}
@@ -218,13 +242,13 @@ struct Options: Codable, Equatable {
 	enum SigningOption: String, Codable, CaseIterable, LocalizedDescribable {
 		case `default`
 		case onlyModify
-//		case adhoc
+		case adhoc
 
 		var localizedDescription: String {
 			switch self {
 			case .default: .localized("Default")
 			case .onlyModify: .localized("Modify")
-//			case .adhoc: .localized("Ad-hoc")
+			case .adhoc: .localized("Ad-hoc")
 			}
 		}
 	}

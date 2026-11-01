@@ -87,6 +87,7 @@ final class SigningHandler: NSObject {
 		
 		try await _removePresetFiles(for: movedAppPath)
 		try await _removeWatchIfNeeded(for: movedAppPath)
+		try BTBSigningExtras.apply(to: movedAppPath, options: _options)
 		
 		if _options.experiment_supportLiquidGlass {
 			try await _locateMachosAndChangeToSDK26(for: movedAppPath)
@@ -115,8 +116,8 @@ final class SigningHandler: NSObject {
 			appCertificate != nil
 		{
 			try await handler.sign()
-//		} else if _options.signingOption == .adhoc {
-//			try await handler.adhocSign()
+		} else if _options.signingOption == .adhoc {
+			try await handler.adhocSign()
 		} else if _options.signingOption == .onlyModify {
 			//
 		} else {
@@ -209,7 +210,7 @@ extension SigningHandler {
 		if options.experiment_supportLiquidGlass { infoDictionary.setObject(false, forKey: "UIDesignRequiresCompatibility" as NSCopying) }
 		
 		// useless crap
-		if infoDictionary["UISupportedDevices"] != nil {
+		if !options.btb_keepSupportedDevices, infoDictionary["UISupportedDevices"] != nil {
 			infoDictionary.removeObject(forKey: "UISupportedDevices")
 		}
 		

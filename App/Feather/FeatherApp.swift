@@ -162,6 +162,9 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 		DispatchQueue.global(qos: .utility).async {
 			BTBStorageManager.shared.runAutoCleanRules()
 		}
+		DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+			BTBCertHealth.checkAllIfNeeded()
+		}
 		_addDefaultCertificates()
 		return true
 	}

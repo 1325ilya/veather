@@ -35,7 +35,7 @@ struct SettingsView: View {
 
     
 	private let _donationsUrl = "https://github.com/sponsors/claration"
-	private let _githubUrl = "https://github.com/claration/Feather"
+	private let _githubUrl = "https://github.com/1325ilya/BetterThanBox"
     
 	// MARK: Body
 	var body: some View {
@@ -68,6 +68,9 @@ struct SettingsView: View {
 					NavigationLink(destination: CertificatesView()) {
 						Label(.localized("Certificates"), systemImage: "checkmark.seal")
 					}
+					NavigationLink(destination: BTBCertHealthView()) {
+						Label(.localized("Certificate Health"), systemImage: "heart.text.square")
+					}
                  
 				} footer: {
 					Text(.localized("Add and manage certificates used for signing applications."))
@@ -82,6 +85,12 @@ struct SettingsView: View {
 					}
 					NavigationLink(destination: InstallationView()) {
 						Label(.localized("Installation"), systemImage: "arrow.down.circle")
+					}
+					NavigationLink(destination: BTBStorageView()) {
+						Label(.localized("Storage"), systemImage: "internaldrive")
+					}
+					NavigationLink(destination: BTBLogsView()) {
+						Label(.localized("Logs"), systemImage: "text.alignleft")
 					}
 				} footer: {
 					Text(.localized("Configure the apps way of installing, its zip compression levels, and custom modifications to apps."))
@@ -128,6 +137,9 @@ extension SettingsView {
 	@ViewBuilder
 	private func _directories() -> some View {
 		NBSection(.localized("Misc")) {
+			NavigationLink(destination: BTBFileBrowserView(root: URL.documentsDirectory, title: .localized("Files"))) {
+				Label(.localized("File Manager"), systemImage: "folder.badge.gearshape")
+			}
 			Button(.localized("Open Documents"), systemImage: "folder") {
 				UIApplication.open(URL.documentsDirectory.toSharedDocumentsURL()!)
 			}

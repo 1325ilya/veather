@@ -51,6 +51,8 @@ struct SigningOptionsView: View {
 				selection: $options.signingOption,
 				values: Options.SigningOption.allCases
 			)
+		} footer: {
+			Text(.localized("Modify: only apply changes without signing (export a tweaked IPA). Ad-hoc: sign without a certificate (for TrollStore or jailbroken devices)."))
 		}
 		
 		if (temporaryOptions == nil) {
@@ -142,6 +144,47 @@ struct SigningOptionsView: View {
 			)
 		} footer: {
 			Text(.localized("By default, localized titles for the app won't be changed, however this option overrides it."))
+		}
+		
+		NBSection(.localized("Bundle Cleanup")) {
+			_toggle(
+				.localized("Remove App Extensions"),
+				systemImage: "puzzlepiece.extension",
+				isOn: $options.btb_removeExtensions,
+				temporaryValue: temporaryOptions?.btb_removeExtensions
+			)
+			_toggle(
+				.localized("Remove Watch App"),
+				systemImage: "applewatch.slash",
+				isOn: $options.btb_removeWatchApp,
+				temporaryValue: temporaryOptions?.btb_removeWatchApp
+			)
+			_toggle(
+				.localized("Remove Device Restrictions"),
+				systemImage: "iphone.gen3.slash",
+				isOn: $options.btb_removeDeviceRestrictions,
+				temporaryValue: temporaryOptions?.btb_removeDeviceRestrictions
+			)
+			_toggle(
+				.localized("Keep Supported Devices List"),
+				systemImage: "list.bullet.rectangle",
+				isOn: $options.btb_keepSupportedDevices,
+				temporaryValue: temporaryOptions?.btb_keepSupportedDevices
+			).disabled(options.btb_removeDeviceRestrictions)
+			_toggle(
+				.localized("Fix White/Dark Icon"),
+				systemImage: "app.dashed",
+				isOn: $options.btb_fixIcons,
+				temporaryValue: temporaryOptions?.btb_fixIcons
+			)
+			_toggle(
+				.localized("Thin to arm64"),
+				systemImage: "scissors",
+				isOn: $options.btb_thinToArm64,
+				temporaryValue: temporaryOptions?.btb_thinToArm64
+			)
+		} footer: {
+			Text(.localized("Removing extensions helps when the certificate cannot sign widgets or share extensions (fewer App IDs are used). Removing restrictions lets the app install on any iPhone/iPad. Thinning removes unused CPU slices to make the app smaller."))
 		}
 		
 		NBSection(.localized("Post Signing")) {

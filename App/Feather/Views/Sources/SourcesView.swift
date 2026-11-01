@@ -57,6 +57,12 @@ struct SourcesView: View {
 							)
 						}
 						.buttonStyle(.plain)
+						
+						NavigationLink {
+							BTBUniversalSearchView()
+						} label: {
+							Label(.localized("Search All Sources (newest version)"), systemImage: "magnifyingglass.circle")
+						}
 					}
 					
 					NBSection(

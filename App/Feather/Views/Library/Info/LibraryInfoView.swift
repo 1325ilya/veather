@@ -28,6 +28,13 @@ struct LibraryInfoView: View {
 				_executableSection(for: app)
 				
 				Section {
+					if let appDir = Storage.shared.getAppDirectory(for: app) {
+						NavigationLink {
+							BTBFileBrowserView(root: appDir, title: app.name)
+						} label: {
+							Label(.localized("Browse & Edit App Files"), systemImage: "doc.text.magnifyingglass")
+						}
+					}
 					Button(.localized("Open in Files"), systemImage: "folder") {
 						UIApplication.open(Storage.shared.getUuidDirectory(for: app)!.toSharedDocumentsURL()!)
 					}
