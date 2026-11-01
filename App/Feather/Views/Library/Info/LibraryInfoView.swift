@@ -12,15 +12,19 @@ import Zsign
 // MARK: - View
 struct LibraryInfoView: View {
 	var app: AppInfoPresentable
+	var onSign: (() -> Void)? = nil
+	var onInstall: (() -> Void)? = nil
+	
+	@Environment(\.dismiss) private var dismiss
 	
 	// MARK: Body
 	var body: some View {
 		NBNavigationView(app.name ?? "", displayMode: .inline) {
 			List {
-				Section {} header: {
-					FRAppIconView(app: app)
-						.frame(maxWidth: .infinity, alignment: .center)
+				Section {
+					_header()
 				}
+				.listRowBackground(Color.clear)
 				
 				_infoSection(for: app)
 				_certSection(for: app)
@@ -49,6 +53,74 @@ struct LibraryInfoView: View {
 
 // MARK: - Extension: View
 extension LibraryInfoView {
+	@ViewBuilder
+	private func _header() -> some View {
+		VStack(spacing: 10) {
+			FRAppIconView(app: app, size: 84)
+				.shadow(color: .black.opacity(0.25), radius: 10, y: 4)
+			Text(app.name ?? .localized("Unknown"))
+				.font(.title2.weight(.bold))
+				.multilineTextAlignment(.center)
+			if let version = app.version {
+				Text(verbatim: String.localized("Version %@", arguments: version))
+					.font(.subheadline)
+					.foregroundStyle(.secondary)
+			}
+			HStack(spacing: 10) {
+				if app.isSigned {
+					if let onInstall {
+						_actionButton(.localized("Install"), systemImage: "square.and.arrow.down", prominent: true) {
+							_run(onInstall)
+						}
+					}
+					if let id = app.identifier {
+						_actionButton(.localized("Open"), systemImage: "arrow.up.forward.app", prominent: false) {
+							UIApplication.openApp(with: id)
+						}
+					}
+					if let onSign {
+						_actionButton(.localized("Re-sign"), systemImage: "signature", prominent: false) {
+							_run(onSign)
+						}
+					}
+				} else if let onSign {
+					_actionButton(.localized("Sign"), systemImage: "signature", prominent: true) {
+						_run(onSign)
+					}
+				}
+			}
+			.padding(.top, 4)
+		}
+		.frame(maxWidth: .infinity)
+		.padding(.vertical, 6)
+	}
+	
+	@ViewBuilder
+	private func _actionButton(_ title: String, systemImage: String, prominent: Bool, action: @escaping () -> Void) -> some View {
+		if prominent {
+			Button(action: action) {
+				Label(title, systemImage: systemImage)
+					.font(.subheadline.weight(.semibold))
+					.frame(maxWidth: .infinity)
+			}
+			.buttonStyle(.borderedProminent)
+			.controlSize(.large)
+		} else {
+			Button(action: action) {
+				Label(title, systemImage: systemImage)
+					.font(.subheadline.weight(.semibold))
+					.frame(maxWidth: .infinity)
+			}
+			.buttonStyle(.bordered)
+			.controlSize(.large)
+		}
+	}
+	
+	private func _run(_ action: @escaping () -> Void) {
+		dismiss()
+		DispatchQueue.main.asyncAfter(deadline: .now() + 0.4, execute: action)
+	}
+	
 	@ViewBuilder
 	private func _infoSection(for app: AppInfoPresentable) -> some View {
 		NBSection(.localized("Info")) {

@@ -225,7 +225,11 @@ struct LibraryView: View {
 			}
 			.environment(\.editMode, $_editMode)
 			.sheet(item: $_selectedInfoAppPresenting) { app in
-				LibraryInfoView(app: app.base)
+				LibraryInfoView(
+					app: app.base,
+					onSign: { _selectedSigningAppPresenting = AnyApp(base: app.base) },
+					onInstall: { _selectedInstallAppPresenting = AnyApp(base: app.base) }
+				)
 			}
 			.sheet(item: $_selectedInstallAppPresenting) { app in
 				InstallPreviewView(app: app.base, isSharing: app.archive)
