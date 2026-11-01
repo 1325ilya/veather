@@ -23999,6 +23999,26 @@
           }
         }
       }
+    },
+    "Sort By" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сортировка"
+          }
+        }
+      }
+    },
+    "Newest First" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сначала новые"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

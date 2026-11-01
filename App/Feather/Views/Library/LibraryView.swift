@@ -30,6 +30,8 @@ struct LibraryView: View {
 	@State private var _bulkProgress: (Int, Int)?
 	
 	@State private var _searchText = ""
+	@AppStorage("BTB.librarySort") private var _sortRaw: String = SortMode.date.rawValue
+	private var _sort: SortMode { SortMode(rawValue: _sortRaw) ?? .date }
 	@State private var _selectedScope: Scope = .all
 	
 	
@@ -37,9 +39,19 @@ struct LibraryView: View {
 	
 	// horror
 	private func filteredAndSortedApps<T>(from apps: FetchedResults<T>) -> [T] where T: NSManagedObject {
-		apps.filter {
+		let filtered = apps.filter {
 			_searchText.isEmpty ||
 				(($0.value(forKey: "name") as? String)?.localizedCaseInsensitiveContains(_searchText) ?? false)
+		}
+		switch _sort {
+		case .date:
+			return filtered
+		case .name:
+			return filtered.sorted {
+				let a = ($0.value(forKey: "name") as? String) ?? ""
+				let b = ($1.value(forKey: "name") as? String) ?? ""
+				return a.localizedCaseInsensitiveCompare(b) == .orderedAscending
+			}
 		}
 	}
 	
@@ -240,6 +252,21 @@ struct LibraryView: View {
 						}
 						.disabled(updateManager.isChecking)
 						.accessibilityLabel(.localized("Check for Updates"))
+					}
+					
+					ToolbarItem(placement: .topBarTrailing) {
+						Menu {
+							Picker(selection: $_sortRaw) {
+								ForEach(SortMode.allCases, id: \.rawValue) { mode in
+									Label(mode.title, systemImage: mode.icon).tag(mode.rawValue)
+								}
+							} label: {
+								Text(.localized("Sort By"))
+							}
+						} label: {
+							Image(systemName: "arrow.up.arrow.down")
+						}
+						.accessibilityLabel(.localized("Sort By"))
 					}
 					
 					NBToolbarMenu(
@@ -488,6 +515,25 @@ extension LibraryView {
 
 // MARK: - Extension: View (Sort)
 extension LibraryView {
+	enum SortMode: String, CaseIterable {
+		case date
+		case name
+		
+		var title: String {
+			switch self {
+			case .date: return .localized("Newest First")
+			case .name: return .localized("Name")
+			}
+		}
+		
+		var icon: String {
+			switch self {
+			case .date: return "clock"
+			case .name: return "textformat"
+			}
+		}
+	}
+	
 	enum Scope: CaseIterable {
 		case all
 		case signed
