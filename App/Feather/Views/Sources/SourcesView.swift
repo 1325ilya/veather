@@ -51,6 +51,29 @@ struct SourcesView: View {
 						}
 					}
 				}
+				if _sources.isEmpty {
+					Section {
+						VStack(alignment: .leading, spacing: 12) {
+							BTBRowLabel(
+								.localized("No Repositories"),
+								systemImage: "globe.desk.fill",
+								color: .purple,
+								subtitle: .localized("Repositories are app catalogs (AltStore format). Add one to browse and download apps right here.")
+							)
+							Button {
+								_isAddingPresenting = true
+							} label: {
+								Label(.localized("Add Source"), systemImage: "plus")
+									.font(.subheadline.weight(.semibold))
+									.frame(maxWidth: .infinity)
+							}
+							.buttonStyle(.borderedProminent)
+							.controlSize(.large)
+						}
+						.padding(.vertical, 6)
+					}
+				}
+				
 				if !_filteredSources.isEmpty {
 					Section {
 						NavigationLink {
@@ -92,19 +115,9 @@ struct SourcesView: View {
 			}
 			.searchable(text: $_searchText, placement: .platform())
 			.overlay {
-				if _filteredSources.isEmpty {
+				if !_searchText.isEmpty, !_sources.isEmpty, _filteredSources.isEmpty {
 					if #available(iOS 17, *) {
-						ContentUnavailableView {
-							Label(.localized("No Repositories"), systemImage: "globe.desk.fill")
-						} description: {
-							Text(.localized("Get started by adding your first repository."))
-						} actions: {
-							Button {
-								_isAddingPresenting = true
-							} label: {
-								NBButton(.localized("Add Source"), style: .text)
-							}
-						}
+						ContentUnavailableView.search(text: _searchText)
 					}
 				}
 			}

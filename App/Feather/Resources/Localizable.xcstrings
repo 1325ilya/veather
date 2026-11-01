@@ -23949,6 +23949,16 @@
           }
         }
       }
+    },
+    "Repositories are app catalogs (AltStore format). Add one to browse and download apps right here." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Репозитории — это каталоги приложений (формат AltStore). Добавьте один, чтобы смотреть и скачивать приложения прямо здесь."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
