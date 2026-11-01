@@ -20,10 +20,22 @@ deps:
 	rm -rf deps || true
 	mkdir -p deps
 
-	curl -fsSL "$(CERT_JSON_URL)" -o cert.json
-	jq -r '.cert' cert.json > deps/server.crt
-	jq -r '.key1, .key2' cert.json > deps/server.pem
-	jq -r '.info.domains.commonName' cert.json > deps/commonName.txt
+	# Install-server TLS certificate for a domain that resolves to 127.0.0.1.
+	# Prefer local-ip.sh (full chain); fall back to backloop.dev. The app also
+	# refreshes it at runtime (BTBServerCert), so an expired bundled one is not fatal.
+	@if curl -fsSL https://local-ip.sh/server.pem -o deps/server.crt \
+		&& curl -fsSL https://local-ip.sh/server.key -o deps/server.pem \
+		&& openssl x509 -in deps/server.crt -noout -checkend 172800 >/dev/null; then \
+		echo "127-0-0-1.local-ip.sh" > deps/commonName.txt; \
+		echo "Install certificate: local-ip.sh"; \
+	else \
+		curl -fsSL "$(CERT_JSON_URL)" -o cert.json; \
+		jq -r '.cert' cert.json > deps/server.crt; \
+		jq -r '.key1, .key2' cert.json > deps/server.pem; \
+		echo "local.backloop.dev" > deps/commonName.txt; \
+		echo "Install certificate: backloop.dev"; \
+	fi
+	@openssl x509 -in deps/server.crt -noout -subject -enddate || true
 
 
 tweaks:

@@ -20,6 +20,8 @@ struct SigningView: View {
 	@State private var _isFilePickerPresenting = false
 	@State private var _isImagePickerPresenting = false
 	@State private var _isSigning = false
+	@State private var _signFinished = false
+	@AppStorage(BTBLiveLog.enabledKey) private var _liveLogs = true
 	@State private var _cloneCount = 1
 	@State private var _cloneProgress = 0
 	@State private var _selectedPhoto: PhotosPickerItem? = nil
@@ -66,6 +68,17 @@ struct SigningView: View {
 					}
 				} footer: {
 					Text(.localized("Sign several copies with numbered bundle IDs and names (and a number on the icon) to use multiple accounts side by side."))
+				}
+				
+				Section {
+					Toggle(isOn: $_liveLogs) {
+						BTBRowLabel(
+							.localized("Live Logs"),
+							systemImage: "terminal.fill",
+							color: .green,
+							subtitle: .localized("Show logs while signing and installing")
+						)
+					}
 				}
 				
 				// horrible
@@ -140,6 +153,18 @@ struct SigningView: View {
 			}
 			.disabled(_isSigning)
 			.animation(.smooth, value: _isSigning)
+			.overlay {
+				if _isSigning {
+					BTBSigningOverlay(
+						title: _cloneCount > 1
+							? String.localized("Signing %lld of %lld", arguments: _cloneProgress, _cloneCount)
+							: String.localized("Signing…"),
+						finished: _signFinished,
+						showLogs: _liveLogs
+					)
+					.transition(.opacity)
+				}
+			}
 		}
 		.onAppear {
 			// ppq protection
@@ -300,10 +325,14 @@ extension SigningView {
 
 		let generator = UIImpactFeedbackGenerator(style: .light)
 		generator.impactOccurred()
-		_isSigning = true
+		_signFinished = false
+		withAnimation(.easeInOut(duration: 0.25)) { _isSigning = true }
+		BTBLiveLog.shared.begin(String.localized("Signing %@", arguments: app.name ?? ""))
 		
 		let completion: (Error?) -> Void = { error in
+			BTBLiveLog.shared.end()
 			if let error {
+				BTBLiveLog.shared.add(error.localizedDescription, .error)
 				let ok = UIAlertAction(title: .localized("Dismiss"), style: .cancel) { _ in
 					dismiss()
 				}
@@ -321,12 +350,19 @@ extension SigningView {
 					Storage.shared.deleteApp(for: app)
 				}
 				
-				if _temporaryOptions.post_installAppAfterSigned {
-					DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-						NotificationCenter.default.post(name: Notification.Name("Feather.installApp"), object: nil)
+				let shouldInstall = _temporaryOptions.post_installAppAfterSigned
+				UINotificationFeedbackGenerator().notificationOccurred(.success)
+				_signFinished = true
+				
+				// let the checkmark show for a moment, then close and install
+				DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) {
+					dismiss()
+					if shouldInstall {
+						DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+							NotificationCenter.default.post(name: Notification.Name("Feather.installApp"), object: nil)
+						}
 					}
 				}
-				dismiss()
 			}
 		}
 		

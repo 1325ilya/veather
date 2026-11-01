@@ -45,6 +45,18 @@ struct InstallProgressView: View {
 				)
 				.animation(.smooth, value: viewModel.overallProgress)
 		}
+		.overlay(alignment: .bottomTrailing) {
+			if viewModel.isCompleted {
+				Image(systemName: "checkmark.circle.fill")
+					.font(.system(size: 22, weight: .bold))
+					.symbolRenderingMode(.palette)
+					.foregroundStyle(.white, Color.green)
+					.background(Circle().fill(Color(UIColor.secondarySystemBackground)).padding(-2))
+					.offset(x: 8, y: 8)
+					.transition(.scale.combined(with: .opacity))
+			}
+		}
+		.animation(.spring(response: 0.4, dampingFraction: 0.6), value: viewModel.isCompleted)
 	}
 	
 	struct PieShape: Shape {

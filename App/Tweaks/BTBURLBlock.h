@@ -5,6 +5,7 @@
 typedef NS_ENUM(NSInteger, BTBURLDecision) {
 	BTBURLDecisionAllow = 0,
 	BTBURLDecisionFail,          // fail with "not connected to internet"
+	BTBURLDecisionBlockHost,     // fail like a DNS block ("cannot find host")
 	BTBURLDecisionEmptyLookup    // answer an App Store lookup with zero results
 };
 

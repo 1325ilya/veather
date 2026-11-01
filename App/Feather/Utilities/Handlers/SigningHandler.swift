@@ -46,6 +46,7 @@ final class SigningHandler: NSObject {
 		
 		let movedAppURL = _uniqueWorkDir.appendingPathComponent(appUrl.lastPathComponent)
 		
+		BTBLiveLog.log("Copying \(appUrl.lastPathComponent) to a work folder", .step)
 		try _fileManager.copyItem(at: appUrl, to: movedAppURL)
 		_movedAppPath = movedAppURL
 		Logger.misc.info("[\(self._uuid)] Moved Payload to: \(movedAppURL.path)")
@@ -64,20 +65,26 @@ final class SigningHandler: NSObject {
 			throw SigningFileHandlerError.infoPlistNotFound
 		}
 		
+		let originalIdentifier = infoDictionary["CFBundleIdentifier"] as? String
+		
 		if
 			let identifier = _options.appIdentifier,
 			let oldIdentifier = infoDictionary["CFBundleIdentifier"] as? String
 		{
+			BTBLiveLog.log("Bundle ID: \(oldIdentifier) → \(identifier)", .step)
 			try await _modifyPluginIdentifiers(old: oldIdentifier, new: identifier, for: movedAppPath)
 		}
 		
+		BTBLiveLog.log("Patching Info.plist", .step)
 		try await _modifyDict(using: infoDictionary, with: _options, to: movedAppPath)
 		
 		if let icon = appIcon {
+			BTBLiveLog.log("Replacing app icon", .step)
 			try await _modifyDict(using: infoDictionary, for: icon, to: movedAppPath)
 		}
 		
 		if let name = _options.appName {
+			BTBLiveLog.log("Renaming app to “\(name)”", .step)
 			try await _modifyLocalesForName(name, for: movedAppPath)
 		}
 		
@@ -85,14 +92,20 @@ final class SigningHandler: NSObject {
 			try await _removeFiles(for: movedAppPath, from: _options.removeFiles)
 		}
 		
+		BTBLiveLog.log("Cleaning bundle (preset files, Watch app)", .step)
 		try await _removePresetFiles(for: movedAppPath)
 		try await _removeWatchIfNeeded(for: movedAppPath)
+		BTBLiveLog.log("Applying BetterThanBox options and tweaks", .step)
 		try BTBSigningExtras.apply(to: movedAppPath, options: _options)
+		BTBBuiltinTweak.recordOriginalBundleID(originalIdentifier, in: movedAppPath, tweaks: _options.btb_builtinTweaks)
 		
 		if _options.experiment_supportLiquidGlass {
 			try await _locateMachosAndChangeToSDK26(for: movedAppPath)
 		}
 		
+		if !_options.injectionFiles.isEmpty {
+			BTBLiveLog.log("Injecting \(_options.injectionFiles.count) tweak file(s)", .step)
+		}
 		if _options.experiment_replaceSubstrateWithEllekit {
 			try await _inject(for: movedAppPath, with: _options)
 		} else {
@@ -102,6 +115,7 @@ final class SigningHandler: NSObject {
 		}
 		
 		// iOS "26" (19) needs special treatment
+		BTBLiveLog.log("Fixing arm64e slices for iOS 26+", .step)
 		try await _locateMachosAndFixupArm64eSlice(for: movedAppPath)
 		
 		if _options.mergeEntitlements && _options.appEntitlementsFile == nil {
@@ -124,6 +138,7 @@ final class SigningHandler: NSObject {
 		
 		let handler = ZsignHandler(appUrl: movedAppPath, options: _options, cert: appCertificate)
 		try await handler.disinject()
+		BTBLiveLog.log("Signing with zsign…", .step)
 		
 		if
 			_options.signingOption == .default,
@@ -138,12 +153,15 @@ final class SigningHandler: NSObject {
 			throw SigningFileHandlerError.missingCertifcate
 		}
 		
+		BTBLiveLog.log("Saving signed app to the library", .step)
 		try await self.move()
 		try await self.addToDatabase()
 		
 		if let error = handler.hadError {
+			BTBLiveLog.log("Signing error: \(error.localizedDescription)", .error)
 			throw error
 		}
+		BTBLiveLog.log("Signed successfully", .success)
 	}
 	
 	func move() async throws {

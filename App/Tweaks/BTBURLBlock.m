@@ -36,7 +36,11 @@ static BTBURLDecision BTBDecide(NSURLRequest *request) {
 		[self.client URLProtocolDidFinishLoading:self];
 		return;
 	}
-	NSError *error = [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorNotConnectedToInternet userInfo:nil];
+	NSInteger code = d == BTBURLDecisionBlockHost ? NSURLErrorCannotFindHost : NSURLErrorNotConnectedToInternet;
+	NSError *error = [NSError errorWithDomain:NSURLErrorDomain code:code userInfo:@{
+		NSURLErrorFailingURLErrorKey: self.request.URL ?: [NSNull null],
+		NSLocalizedDescriptionKey: @"Blocked by BetterThanBox"
+	}];
 	[self.client URLProtocol:self didFailWithError:error];
 }
 - (void)stopLoading {}

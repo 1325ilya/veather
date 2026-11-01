@@ -22,9 +22,13 @@ extension InstallerStatusViewModel {
 	}
 	
 	var statusLabel: String {
+		Self.label(for: status)
+	}
+	
+	static func label(for status: InstallerStatus) -> String {
 		switch status {
 		case .none: .localized("Packaging")
-		case .ready: .localized("Ready")
+		case .ready: .localized("Waiting for iOS…")
 		case .sendingManifest: .localized("Sending Manifest")
 		case .sendingPayload: .localized("Sending Payload")
 		case .installing: .localized("Installing")

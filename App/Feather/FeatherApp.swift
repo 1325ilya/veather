@@ -48,6 +48,11 @@ struct FeatherApp: App {
 			}
 			// dear god help me
 			.onAppear {
+				// keep the on-device install server certificate fresh (it expires every ~90 days)
+				Task.detached(priority: .utility) {
+					await BTBServerCert.refreshIfNeeded()
+				}
+				
 				if let style = UIUserInterfaceStyle(rawValue: UserDefaults.standard.integer(forKey: "Feather.userInterfaceStyle")) {
 					UIApplication.topViewController()?.view.window?.overrideUserInterfaceStyle = style
 				}

@@ -6,7 +6,7 @@
 #import <UIKit/UIKit.h>
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
-@interface BTBDataManager : NSObject <UIDocumentPickerDelegate>
+@interface BTBDataManager : NSObject <UIDocumentPickerDelegate, UIGestureRecognizerDelegate>
 @property (nonatomic, assign) BOOL restoring;
 @property (nonatomic, strong) NSURL *exportURL;
 + (instancetype)shared;
@@ -44,9 +44,24 @@ static UIViewController *BTBTopController(void) {
 	UILongPressGestureRecognizer *g = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handle:)];
 	g.name = @"BTBDataManager";
 	g.numberOfTouchesRequired = 3;
-	g.minimumPressDuration = 1.0;
+	g.minimumPressDuration = 0.8;
+	g.allowableMovement = 40;
 	g.cancelsTouchesInView = NO;
+	g.delaysTouchesBegan = NO;
+	g.delegate = self;
 	[window addGestureRecognizer:g];
+}
+
+// work together with scroll views, games and the app's own gestures
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)g shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)other {
+	return YES;
+}
+
+- (void)attachToAllWindows {
+	for (UIScene *scene in UIApplication.sharedApplication.connectedScenes) {
+		if (![scene isKindOfClass:[UIWindowScene class]]) continue;
+		for (UIWindow *w in ((UIWindowScene *)scene).windows) [self attachToWindow:w];
+	}
 }
 
 - (void)handle:(UILongPressGestureRecognizer *)g {
@@ -104,20 +119,34 @@ static UIViewController *BTBTopController(void) {
 }
 
 - (void)restoreFrom:(NSURL *)folder {
-	BOOL scoped = [folder startAccessingSecurityScopedResource];
+	NSURL *scopedURL = folder;
+	BOOL scoped = [scopedURL startAccessingSecurityScopedResource];
 	NSFileManager *fm = NSFileManager.defaultManager;
 	NSUInteger restored = 0;
+	// the user may pick the backup folder itself or a folder that contains it
+	if (![fm fileExistsAtPath:[folder URLByAppendingPathComponent:@"Documents"].path]
+		&& ![fm fileExistsAtPath:[folder URLByAppendingPathComponent:@"Library"].path]) {
+		for (NSURL *child in [fm contentsOfDirectoryAtURL:folder includingPropertiesForKeys:nil options:0 error:nil]) {
+			if ([child.lastPathComponent rangeOfString:@"_backup_"].location != NSNotFound) { folder = child; break; }
+		}
+	}
+	
 	for (NSString *name in self.folders) {
 		NSURL *src = [folder URLByAppendingPathComponent:name];
 		if (![fm fileExistsAtPath:src.path]) continue;
 		NSURL *dst = [self.home URLByAppendingPathComponent:name];
+		[fm createDirectoryAtURL:dst withIntermediateDirectories:YES attributes:nil error:nil];
 		for (NSURL *child in [fm contentsOfDirectoryAtURL:src includingPropertiesForKeys:nil options:0 error:nil]) {
+			if ([name isEqualToString:@"Library"] && [child.lastPathComponent isEqualToString:@"Preferences"]) {
+				restored += [self restorePreferencesFrom:child];
+				continue;
+			}
 			NSURL *target = [dst URLByAppendingPathComponent:child.lastPathComponent];
 			[fm removeItemAtURL:target error:nil];
 			if ([fm copyItemAtURL:child toURL:target error:nil]) restored++;
 		}
 	}
-	if (scoped) [folder stopAccessingSecurityScopedResource];
+	if (scoped) [scopedURL stopAccessingSecurityScopedResource];
 	
 	NSString *msg = restored > 0
 		? @"Data restored. The app will now close; open it again."
@@ -127,6 +156,29 @@ static UIViewController *BTBTopController(void) {
 		if (restored > 0) exit(0);
 	}]];
 	[BTBTopController() presentViewController:a animated:YES completion:nil];
+}
+
+/// Preferences live in cfprefsd's cache; copying the plist files would be overwritten on exit.
+- (NSUInteger)restorePreferencesFrom:(NSURL *)folder {
+	NSUInteger count = 0;
+	NSString *bundleID = NSBundle.mainBundle.bundleIdentifier;
+	for (NSURL *plist in [NSFileManager.defaultManager contentsOfDirectoryAtURL:folder includingPropertiesForKeys:nil options:0 error:nil]) {
+		if (![plist.pathExtension isEqualToString:@"plist"]) continue;
+		NSDictionary *values = [NSDictionary dictionaryWithContentsOfURL:plist];
+		if (!values) continue;
+		NSString *domain = plist.URLByDeletingPathExtension.lastPathComponent;
+		if ([domain isEqualToString:bundleID] || [domain isEqualToString:[NSBundle.mainBundle objectForInfoDictionaryKey:@"BTBOriginalBundleID"]]) {
+			NSUserDefaults *defaults = NSUserDefaults.standardUserDefaults;
+			[defaults setPersistentDomain:values forName:bundleID];
+			[defaults synchronize];
+		} else {
+			NSUserDefaults *suite = [[NSUserDefaults alloc] initWithSuiteName:domain];
+			for (NSString *key in values) [suite setObject:values[key] forKey:key];
+			[suite synchronize];
+		}
+		count++;
+	}
+	return count;
 }
 
 - (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
@@ -149,9 +201,15 @@ static UIViewController *BTBTopController(void) {
 @end
 
 void BTBFeatureDataManager(void) {
-	[[NSNotificationCenter defaultCenter] addObserverForName:UIWindowDidBecomeKeyNotification object:nil queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification *note) {
+	NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+	void (^attach)(NSNotification *) = ^(NSNotification *note) {
 		if ([note.object isKindOfClass:[UIWindow class]]) {
 			[[BTBDataManager shared] attachToWindow:note.object];
 		}
+	};
+	[center addObserverForName:UIWindowDidBecomeKeyNotification object:nil queue:NSOperationQueue.mainQueue usingBlock:attach];
+	[center addObserverForName:UIWindowDidBecomeVisibleNotification object:nil queue:NSOperationQueue.mainQueue usingBlock:attach];
+	[center addObserverForName:UIApplicationDidBecomeActiveNotification object:nil queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification *note) {
+		[[BTBDataManager shared] attachToAllWindows];
 	}];
 }

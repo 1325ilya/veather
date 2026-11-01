@@ -38,6 +38,15 @@ class ServerInstaller: Identifiable, ObservableObject {
 		_shutdownServer()
 	}
 	
+	/// BetterThanBox: restart on the same port so a refreshed TLS certificate is used.
+	func reloadTLS() throws {
+		_shutdownServer()
+		try _setup()
+		try _configureRoutes()
+		try _server?.server.start()
+		_needsShutdown = true
+	}
+	
 	private func _setup() throws {
 		self._server = try? setupApp(port: port)
 	}

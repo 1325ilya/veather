@@ -23499,6 +23499,204 @@
           }
         }
       }
+    },
+    "Blocks ads in apps and web views (AdMob, AppLovin, Unity, ironSource, Meta, Yandex, VK…). Ads fail to load, so the app never waits for one." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Блокирует рекламу в приложении и веб-страницах (AdMob, AppLovin, Unity, ironSource, Meta, Яндекс, VK…). Реклама не загружается, и приложение её не ждёт."
+          }
+        }
+      }
+    },
+    "Fixes keychain and app group errors after re-signing, and shows the app its original bundle ID." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Исправляет ошибки связки ключей и App Group после переподписи и показывает приложению его исходный bundle ID."
+          }
+        }
+      }
+    },
+    "The app gets no internet access at all, including web views and game engines." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Приложение полностью без интернета — включая веб-страницы и игровые движки."
+          }
+        }
+      }
+    },
+    "Hold three fingers on the screen inside the app: back up or restore its data and settings to Files." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удерживайте три пальца на экране в приложении: резервная копия или восстановление данных и настроек через «Файлы»."
+          }
+        }
+      }
+    },
+    "Forces the iPad layout on iPhone; menus no longer crash the app." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Включает iPad-интерфейс на iPhone; меню больше не роняют приложение."
+          }
+        }
+      }
+    },
+    "Live Logs" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Живые логи"
+          }
+        }
+      }
+    },
+    "Show logs while signing and installing" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показывать логи во время подписи и установки"
+          }
+        }
+      }
+    },
+    "Signing…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подпись…"
+          }
+        }
+      }
+    },
+    "Signing %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подпись %@"
+          }
+        }
+      }
+    },
+    "Installing %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Установка %@"
+          }
+        }
+      }
+    },
+    "Installed: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Установлено: %@"
+          }
+        }
+      }
+    },
+    "Waiting for iOS…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ждём iOS…"
+          }
+        }
+      }
+    },
+    "iOS has not requested the app yet" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iOS ещё не запросил приложение"
+          }
+        }
+      }
+    },
+    "iOS has not started the install" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iOS не начал установку"
+          }
+        }
+      }
+    },
+    "Tap “Install” in the iOS pop-up. If there was no pop-up, try again." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нажмите «Установить» во всплывающем окне iOS. Если окна не было — повторите."
+          }
+        }
+      }
+    },
+    "The install server certificate has expired. Connect to the internet and try again — a fresh one will be downloaded." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сертификат сервера установки истёк. Подключитесь к интернету и повторите — скачается свежий."
+          }
+        }
+      }
+    },
+    "Try Again" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Повторить"
+          }
+        }
+      }
+    },
+    "Downloading a fresh install certificate…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скачиваю свежий сертификат установки…"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

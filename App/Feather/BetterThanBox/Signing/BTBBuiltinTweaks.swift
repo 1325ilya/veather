@@ -36,12 +36,12 @@ enum BTBBuiltinTweak: String, CaseIterable, Codable, Identifiable {
 
 	var subtitle: String {
 		switch self {
-		case .noads: .localized("Blocks ad networks and popular ad SDKs (AdMob, AppLovin, Unity, Meta, ironSource).")
-		case .sideload: .localized("Fixes keychain and app group errors after re-signing with another team.")
-		case .nowifi: .localized("The app gets no internet access at all.")
-		case .backup: .localized("Three-finger long press inside the app: back up or restore its data to Files.")
+		case .noads: .localized("Blocks ads in apps and web views (AdMob, AppLovin, Unity, ironSource, Meta, Yandex, VK…). Ads fail to load, so the app never waits for one.")
+		case .sideload: .localized("Fixes keychain and app group errors after re-signing, and shows the app its original bundle ID.")
+		case .nowifi: .localized("The app gets no internet access at all, including web views and game engines.")
+		case .backup: .localized("Hold three fingers on the screen inside the app: back up or restore its data and settings to Files.")
 		case .norev: .localized("Suppresses \"Rate this app\" dialogs.")
-		case .ipadui: .localized("Forces the iPad layout on iPhone.")
+		case .ipadui: .localized("Forces the iPad layout on iPhone; menus no longer crash the app.")
 		case .noupd: .localized("Answers App Store version checks with \"no update\" so the app stops nagging.")
 		}
 	}
@@ -67,6 +67,20 @@ enum BTBBuiltinTweak: String, CaseIterable, Codable, Identifiable {
 	static let dylibName = "BTBTweaks.dylib"
 
 	/// Copies the dylib into the app, adds the load command and writes the feature list.
+	/// For Sideload Fixes: remember the bundle ID the app had before signing, so the
+	/// tweak can show it to the app's own code. An ID recorded by an earlier signing wins.
+	static func recordOriginalBundleID(_ original: String?, in app: URL, tweaks: [String]) {
+		guard tweaks.contains(BTBBuiltinTweak.sideload.rawValue), let original, !original.isEmpty else { return }
+		let infoURL = app.appendingPathComponent("Info.plist")
+		guard let info = NSMutableDictionary(contentsOf: infoURL) else { return }
+		if let existing = info["BTBOriginalBundleID"] as? String, !existing.isEmpty { return }
+		// recorded even when unchanged here: zsign may still switch the ID to match the
+		// provisioning profile; the tweak only acts when the IDs really differ
+		info["BTBOriginalBundleID"] = original
+		info.write(to: infoURL, atomically: true)
+		BTBLiveLog.log("Sideload Fixes: app code will see bundle ID \(original)", .step)
+	}
+	
 	static func inject(_ tweaks: [String], into app: URL) throws {
 		let enabled = tweaks.compactMap(BTBBuiltinTweak.init(rawValue:))
 		guard !enabled.isEmpty else { return }
@@ -99,5 +113,6 @@ enum BTBBuiltinTweak: String, CaseIterable, Codable, Identifiable {
 			info.write(to: infoURL, atomically: true)
 		}
 		Logger.signing.info("Injected built-in tweaks: \(enabled.map(\.rawValue).joined(separator: ","), privacy: .public)")
+		BTBLiveLog.log("Built-in tweaks: \(enabled.map(\.title).joined(separator: ", "))", .step)
 	}
 }
