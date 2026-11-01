@@ -57,6 +57,15 @@ struct InstallPreviewView: View {
 			SafariRepresentableView(url: installer.pageEndpoint).ignoresSafeArea()
 		}
 		.onReceive(viewModel.$status) { newStatus in
+			switch newStatus {
+			case .completed(.success):
+				BTBActivityLog.shared.add(.installed, name: app.name, version: app.version, bundleID: app.identifier)
+			case .broken(let error):
+				BTBActivityLog.shared.add(.failed, name: app.name, version: app.version, bundleID: app.identifier, detail: error.localizedDescription)
+			default:
+				break
+			}
+			
 			if _installationMethod == 0 {
 				if case .ready = newStatus {
 					if _serverMethod == 0 {

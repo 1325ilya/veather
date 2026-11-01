@@ -114,6 +114,8 @@ final class AppFileHandler: NSObject, @unchecked Sendable {
 		
 		let bundle = Bundle(url: appUrl)
 		
+		BTBActivityLog.shared.add(.imported, name: bundle?.name, version: bundle?.version, bundleID: bundle?.bundleIdentifier, detail: _sourceProvenance?.sourceRepositoryURL?.host)
+		
 		Storage.shared.addImported(
 			uuid: _uuid,
 			source: _sourceProvenance?.sourceRepositoryURL,

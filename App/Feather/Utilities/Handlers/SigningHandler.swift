@@ -159,6 +159,14 @@ final class SigningHandler: NSObject {
 		await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
 			let bundle = Bundle(url: appUrl)
 			
+			BTBActivityLog.shared.add(
+				.signed,
+				name: bundle?.name,
+				version: bundle?.version,
+				bundleID: bundle?.bundleIdentifier,
+				detail: _options.signingOption == .default ? appCertificate?.nickname : _options.signingOption.localizedDescription
+			)
+			
 			Storage.shared.addSigned(
 				uuid: _uuid,
 				source: _app.source,

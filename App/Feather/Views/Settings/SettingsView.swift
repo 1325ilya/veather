@@ -92,6 +92,9 @@ struct SettingsView: View {
 					NavigationLink(destination: BTBBackupView()) {
 						Label(.localized("Backup & Restore"), systemImage: "externaldrive.badge.timemachine")
 					}
+					NavigationLink(destination: BTBActivityView()) {
+						Label(.localized("Activity"), systemImage: "clock.arrow.circlepath")
+					}
 					NavigationLink(destination: BTBLogsView()) {
 						Label(.localized("Logs"), systemImage: "text.alignleft")
 					}
