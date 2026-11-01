@@ -63,6 +63,12 @@ struct SourcesView: View {
 						} label: {
 							Label(.localized("Search All Sources (newest version)"), systemImage: "magnifyingglass.circle")
 						}
+						
+						NavigationLink {
+							BTBSourceHealthView()
+						} label: {
+							Label(.localized("Source Health"), systemImage: "stethoscope")
+						}
 					}
 					
 					NBSection(
