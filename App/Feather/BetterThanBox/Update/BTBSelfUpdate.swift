@@ -36,11 +36,32 @@ enum BTBSelfUpdate {
 		Int(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "") ?? 0
 	}
 	
+	enum FetchError: LocalizedError {
+		case http(Int, String?)
+		var errorDescription: String? {
+			switch self {
+			case .http(403, _): String.localized("GitHub refused the request (rate limit). Try again later.")
+			case .http(404, _): String.localized("No release found yet.")
+			case .http(let code, let message): String.localized("GitHub answered with HTTP %lld.", arguments: code) + (message.map { "\n\($0)" } ?? "")
+			}
+		}
+	}
+	
+	private struct GitHubError: Decodable { let message: String? }
+	
 	static func fetch() async throws -> Release {
 		let url = URL(string: "https://api.github.com/repos/\(repo)/releases/tags/\(tag)")!
 		var request = URLRequest(url: url)
 		request.setValue("application/vnd.github+json", forHTTPHeaderField: "Accept")
-		let (data, _) = try await URLSession.shared.data(for: request)
+		request.setValue("2022-11-28", forHTTPHeaderField: "X-GitHub-Api-Version")
+		// GitHub rejects API requests without a User-Agent
+		let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0"
+		request.setValue("BetterThanBox/\(version) (build \(currentBuild))", forHTTPHeaderField: "User-Agent")
+		let (data, response) = try await URLSession.shared.data(for: request)
+		if let http = response as? HTTPURLResponse, http.statusCode != 200 {
+			let message = (try? JSONDecoder().decode(GitHubError.self, from: data))?.message
+			throw FetchError.http(http.statusCode, message)
+		}
 		return try JSONDecoder().decode(Release.self, from: data)
 	}
 }

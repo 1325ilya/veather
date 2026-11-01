@@ -161,7 +161,7 @@ struct BTBPlistContainerView: View {
 		}
 		.searchable(text: $_query, placement: .platform())
 		.toolbar {
-			ToolbarItem(placement: .bottomBar) {
+			ToolbarItem(placement: .topBarTrailing) {
 				Menu {
 					Button("String") { _add("") }
 					Button("Number") { _add(NSNumber(value: 0)) }

@@ -23125,6 +23125,105 @@
           }
         }
       }
+    },
+    "Info.plist has no CFBundleExecutable." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В Info.plist нет CFBundleExecutable."
+          }
+        }
+      }
+    },
+    "Not a valid executable" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Неверный исполняемый файл"
+          }
+        }
+      }
+    },
+    "%@ is not a 64-bit Mach-O file. The app is damaged." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ не является 64-битным Mach-O файлом. Приложение повреждено."
+          }
+        }
+      }
+    },
+    "ipsw.me does not know the model \"%@\". Enter the identifier manually (e.g. iPhone17,1)." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ipsw.me не знает модель «%@». Введите идентификатор вручную (например, iPhone17,1)."
+          }
+        }
+      }
+    },
+    "ipsw.me answered with HTTP %lld." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ipsw.me ответил HTTP %lld."
+          }
+        }
+      }
+    },
+    "Model identifier (auto: %@)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Идентификатор модели (авто: %@)"
+          }
+        }
+      }
+    },
+    "GitHub refused the request (rate limit). Try again later." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GitHub отклонил запрос (лимит запросов). Попробуйте позже."
+          }
+        }
+      }
+    },
+    "No release found yet." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Релиз пока не найден."
+          }
+        }
+      }
+    },
+    "GitHub answered with HTTP %lld." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GitHub ответил HTTP %lld."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

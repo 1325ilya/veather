@@ -172,6 +172,25 @@ struct BTBBrowserView: View {
 				}
 			}
 			.padding(.horizontal)
+			.padding(.top, 8)
+			
+			HStack(spacing: 22) {
+				Button { _model.webView.goBack() } label: { Image(systemName: "chevron.left") }
+					.disabled(!_model.canGoBack)
+				Button { _model.webView.goForward() } label: { Image(systemName: "chevron.right") }
+					.disabled(!_model.canGoForward)
+				Button { _model.webView.reload() } label: { Image(systemName: "arrow.clockwise") }
+				Spacer()
+				Button {
+					_model.findLinks()
+					_showLinks = true
+				} label: {
+					Label(.localized("Find IPA links"), systemImage: "doc.viewfinder")
+						.font(.subheadline)
+				}
+			}
+			.buttonStyle(.borderless)
+			.padding(.horizontal)
 			.padding(.vertical, 8)
 			
 			BTBWebView(webView: _model.webView)
@@ -188,20 +207,7 @@ struct BTBBrowserView: View {
 		.navigationTitle(_model.title.isEmpty ? String.localized("Browser") : _model.title)
 		.navigationBarTitleDisplayMode(.inline)
 		.toolbar {
-			ToolbarItemGroup(placement: .bottomBar) {
-				Button { _model.webView.goBack() } label: { Image(systemName: "chevron.left") }
-					.disabled(!_model.canGoBack)
-				Button { _model.webView.goForward() } label: { Image(systemName: "chevron.right") }
-					.disabled(!_model.canGoForward)
-				Spacer()
-				Button { _model.webView.reload() } label: { Image(systemName: "arrow.clockwise") }
-				Spacer()
-				Button {
-					_model.findLinks()
-					_showLinks = true
-				} label: {
-					Label(.localized("Find IPA links"), systemImage: "doc.viewfinder")
-				}
+			ToolbarItem(placement: .topBarTrailing) {
 				Menu {
 					Button(.localized("Set as Home Page"), systemImage: "house") { _home = _model.address }
 					Button(.localized("Copy Address"), systemImage: "doc.on.doc") { UIPasteboard.general.string = _model.address }

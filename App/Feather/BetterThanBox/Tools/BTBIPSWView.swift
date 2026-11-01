@@ -25,16 +25,42 @@ private struct BTBDeviceFirmwares: Decodable {
 	let firmwares: [BTBFirmware]
 }
 
+enum BTBIPSWError: LocalizedError {
+	case unknownModel(String)
+	case http(Int)
+	var errorDescription: String? {
+		switch self {
+		case .unknownModel(let m): String.localized("ipsw.me does not know the model \"%@\". Enter the identifier manually (e.g. iPhone17,1).", arguments: m)
+		case .http(let code): String.localized("ipsw.me answered with HTTP %lld.", arguments: code)
+		}
+	}
+}
+
 enum BTBIPSWAPI {
-	static func current() async throws -> (name: String, firmwares: [BTBFirmware]) {
-		let model = BTBIPSWAPI.deviceModel()
-		let url = URL(string: "https://api.ipsw.me/v4/device/\(model)?type=ipsw")!
-		let (data, _) = try await URLSession.shared.data(from: url)
-		let decoded = try JSONDecoder().decode(BTBDeviceFirmwares.self, from: data)
+	static let overrideKey = "BTB.ipsw.model"
+
+	/// Endpoint: https://api.ipsw.me/v4/device/<identifier>?type=ipsw
+	static func firmwares(for model: String) async throws -> (name: String, firmwares: [BTBFirmware]) {
+		let escaped = model.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? model
+		let url = URL(string: "https://api.ipsw.me/v4/device/\(escaped)?type=ipsw")!
+		let (data, response) = try await URLSession.shared.data(from: url)
+		if let http = response as? HTTPURLResponse, http.statusCode != 200 {
+			throw http.statusCode == 404 ? BTBIPSWError.unknownModel(model) : BTBIPSWError.http(http.statusCode)
+		}
+		guard let decoded = try? JSONDecoder().decode(BTBDeviceFirmwares.self, from: data) else {
+			throw BTBIPSWError.unknownModel(model)
+		}
 		return (decoded.name ?? model, decoded.firmwares)
 	}
-	
+
+	/// Manual override, else the simulated device in the Simulator, else hw.machine.
 	static func deviceModel() -> String {
+		if let manual = UserDefaults.standard.string(forKey: overrideKey), !manual.isEmpty {
+			return manual
+		}
+		if let simulated = ProcessInfo.processInfo.environment["SIMULATOR_MODEL_IDENTIFIER"], !simulated.isEmpty {
+			return simulated
+		}
 		var size = 0
 		sysctlbyname("hw.machine", nil, &size, nil, 0)
 		var machine = [CChar](repeating: 0, count: size)
@@ -49,6 +75,7 @@ struct BTBIPSWView: View {
 	@State private var _error: String?
 	@State private var _loading = true
 	@State private var _onlySigned = false
+	@AppStorage(BTBIPSWAPI.overrideKey) private var _manualModel = ""
 	
 	private var _shown: [BTBFirmware] {
 		_onlySigned ? _firmwares.filter { $0.signed } : _firmwares
@@ -57,6 +84,10 @@ struct BTBIPSWView: View {
 	var body: some View {
 		List {
 			Section {
+				TextField(String.localized("Model identifier (auto: %@)", arguments: BTBIPSWAPI.deviceModel()), text: $_manualModel)
+					.autocorrectionDisabled()
+					.textInputAutocapitalization(.never)
+					.onSubmit { Task { await _load() } }
 				Toggle(isOn: $_onlySigned) {
 					Label(.localized("Signed only"), systemImage: "checkmark.seal")
 				}
@@ -100,11 +131,12 @@ struct BTBIPSWView: View {
 		_loading = true
 		defer { _loading = false }
 		do {
-			let result = try await BTBIPSWAPI.current()
+			let result = try await BTBIPSWAPI.firmwares(for: BTBIPSWAPI.deviceModel())
 			_deviceName = result.name
 			_firmwares = result.firmwares
 			_error = nil
 		} catch {
+			_firmwares = []
 			_error = error.localizedDescription
 		}
 	}

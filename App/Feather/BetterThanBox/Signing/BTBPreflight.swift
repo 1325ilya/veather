@@ -23,7 +23,19 @@ enum BTBPreflight {
 		var issues: [BTBPreflightIssue] = []
 		guard let appURL = Storage.shared.getAppDirectory(for: app) else { return issues }
 
-		if let exec = Bundle(url: appURL)?.executableURL {
+		// Read CFBundleExecutable directly: Bundle.executableURL is nil when the
+		// file is missing, and Bundle objects are cached per path.
+		let infoPlist = NSDictionary(contentsOf: appURL.appendingPathComponent("Info.plist"))
+		let execName = infoPlist?["CFBundleExecutable"] as? String
+		if execName == nil {
+			issues.append(.init(level: .error, title: .localized("Executable not found"), detail: .localized("Info.plist has no CFBundleExecutable.")))
+		}
+		if let execName {
+			let exec = appURL.appendingPathComponent(execName)
+			guard FileManager.default.fileExists(atPath: exec.path) else {
+				issues.append(.init(level: .error, title: .localized("Executable not found"), detail: execName))
+				return issues
+			}
 			let info = BTBMachOInspector.inspect(exec)
 			if info.encrypted {
 				issues.append(.init(
@@ -33,7 +45,7 @@ enum BTBPreflight {
 				))
 			}
 			if !info.isMachO {
-				issues.append(.init(level: .error, title: .localized("Executable not found"), detail: exec.lastPathComponent))
+				issues.append(.init(level: .error, title: .localized("Not a valid executable"), detail: String.localized("%@ is not a 64-bit Mach-O file. The app is damaged.", arguments: execName)))
 			} else if !info.hasArm64 {
 				issues.append(.init(
 					level: .error,

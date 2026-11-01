@@ -216,7 +216,7 @@ struct BTBStorageCategoryView: View {
 			if !_items.isEmpty {
 				ToolbarItem(placement: .topBarTrailing) { EditButton() }
 				if !_selection.isEmpty {
-					ToolbarItem(placement: .bottomBar) {
+					ToolbarItem(placement: .topBarTrailing) {
 						Button(role: .destructive) {
 							_deleteItems(_items.filter { _selection.contains($0.url) })
 						} label: {
