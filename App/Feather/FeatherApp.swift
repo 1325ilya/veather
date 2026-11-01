@@ -19,6 +19,13 @@ struct FeatherApp: App {
 	@StateObject var downloadManager = DownloadManager.shared
 	let storage = Storage.shared
 	
+	init() {
+		// BetterThanBox: dark theme by default (users can still pick System/Light in Appearance)
+		UserDefaults.standard.register(defaults: [
+			"Feather.userInterfaceStyle": UIUserInterfaceStyle.dark.rawValue
+		])
+	}
+	
 	var body: some Scene {
 		WindowGroup {
 			VStack {

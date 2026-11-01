@@ -13,7 +13,7 @@ import UIKit
 // dear god help me
 struct AppearanceView: View {
 	@AppStorage("Feather.userInterfaceStyle")
-	private var _userIntefacerStyle: Int = UIUserInterfaceStyle.unspecified.rawValue
+	private var _userIntefacerStyle: Int = UIUserInterfaceStyle.dark.rawValue
 	
 	@AppStorage("Feather.shouldTintIcons")
 	private var _shouldTintIcons: Bool = false
