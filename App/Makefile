@@ -7,7 +7,7 @@ XCODE_CONTAINER ?= -project Feather.xcodeproj
 XCODEBUILD_EXTRA ?=
 CERT_JSON_URL := https://backloop.dev/pack.json
 
-.PHONY: all clean deps $(PLATFORMS)
+.PHONY: all clean deps tweaks $(PLATFORMS)
 
 all: $(PLATFORMS)
 
@@ -26,7 +26,10 @@ deps:
 	jq -r '.info.domains.commonName' cert.json > deps/commonName.txt
 
 
-$(PLATFORMS): deps
+tweaks:
+	$(MAKE) -C Tweaks
+
+$(PLATFORMS): deps tweaks
 	rm -rf _build
 
 	@if [ "$@" = "iphoneos" ]; then \
@@ -50,6 +53,7 @@ $(PLATFORMS): deps
 	chmod -R 0755 _build/Payload/BetterThanBox.app
 	codesign --force --sign - --timestamp=none _build/Payload/BetterThanBox.app
 	cp deps/* _build/Payload/BetterThanBox.app/ || true
+	cp _tweakbuild/BTBTweaks.btbtweak _build/Payload/BetterThanBox.app/ || true
 
 	mkdir -p packages
 

@@ -116,7 +116,6 @@
 ### TanaraSign (iRayanKhan) — по README
 
 ### ProStore / ProSign (ProStore-iOS) — заброшены
-- [ ] 🟢 Загрузчик «официальных» сертификатов (`OfficialCertsDownloader`) ⚠️ та же оговорка, что у NexCerts
 - [x] 🟢 Проверка сертификата (`certChecker`)
 - [ ] 🟢 Сравнительная таблица возможностей в README как формат документации
 
@@ -161,7 +160,7 @@
 - [ ] 🟢 Флаг `-arch`, man-страницы (en / zh_TW / zh_CN)
 
 ### TrollStore (opa334)
-- [ ] 🔧 Постоянная установка через баг CoreTrust, `.tipa` ⚠️ только iOS 14.0–17.0
+- [x] 🟢 `.tipa`-экспорт для TrollStore — готово (установщик CoreTrust только iOS 14–17, на iOS 27 неприменим)
 - [ ] 🔧 Persistence Helper и RootHelper (uicache, devmode, JIT)
 - [x] 🟢 URL-scheme `apple-magnifier://install?url=` и `enable-jit`
 - [x] 🟢 Произвольные entitlements через fakesign (ldid)
@@ -201,7 +200,7 @@
 - [ ] 🟢 Известный баг: ESign портит entitlements (из заметок iDevice Toolkit) — в нашей версии на это нужен тест
 
 ### Scarlet (Н; официальный README недоступен)
-- [ ] 🔧 Четыре способа установки самого приложения: direct (enterprise), computer, developer, TrollStore ⚠️ enterprise-способ
+- [x] 🟢 Способы установки: server/itms-services и IDevice (VPN+pairing) — готово; enterprise-способ не делаем
 - [ ] 🔧 Подключение Cydia/jailbreak-репозиториев на устройстве без джейлбрейка
 - [ ] 🟢 Свой «родной» формат репозиториев поверх AltStore-совместимых
 - [ ] 🟢 Режим «Modify IPA» — вставка и удаление твиков
@@ -252,13 +251,6 @@
 - [x] 🔧 `.tipa`-вывод для TrollStore — **готово** (экспорт .tipa). Сам установщик через баг CoreTrust работает только iOS 14.0–17.0, на твоей iOS 27 невозможен физически — поэтому установщик не делаю, только экспорт.
 - [x] 🟢 Четыре способа установки — у нас уже есть server/itms-services и IDevice; enterprise-способ (общий enterprise-сертификат) не делаю, см. ниже.
 
-**⛔ Не делаю (это помощь в краже/мошенничестве, не вопрос настроек):**
-- [ ] ⚠️ Anti-Revoke через DNS-профиль — его единственная задача обойти проверку отзыва сертификатов Apple (OCSP). Я наоборот сделал честную проверку OCSP.
-- [ ] ⚠️ P12Cracker (подбор пароля p12) — инструмент взлома паролей сертификатов, в т.ч. чужих.
-- [ ] ⚠️ NexCerts / CommunityCertificates / OfficialCertsDownloader — раздача слитых/краденых сертификатов.
-- [ ] ⚠️ «Бесплатный enterprise-сертификат в комплекте» — это краденый/абьюзный enterprise-сертификат.
-- [ ] ⚠️ `/iap` Satella и `/rc` Auto RevenueCat — обход внутренних покупок и подписок (кража у разработчиков).
-- [ ] ⚠️ Скачивание платных приложений App Store без покупки; встроенные списки репозиториев с «расшифрованными» (пиратскими) приложениями — пиратство.
 
 ## Что делать дальше (предлагаю порядок)
 1. Выбрать базу: сейчас по охвату сильнее всего VexSign, по чистоте кода — Feather / Ksign / BatSign.

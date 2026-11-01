@@ -146,6 +146,31 @@ struct SigningOptionsView: View {
 			Text(.localized("By default, localized titles for the app won't be changed, however this option overrides it."))
 		}
 		
+		if BTBBuiltinTweak.isAvailable {
+			NBSection(.localized("Built-in Tweaks")) {
+				ForEach(BTBBuiltinTweak.allCases) { tweak in
+					Toggle(isOn: Binding(
+						get: { options.btb_builtinTweaks.contains(tweak.rawValue) },
+						set: { on in
+							options.btb_builtinTweaks.removeAll { $0 == tweak.rawValue }
+							if on { options.btb_builtinTweaks.append(tweak.rawValue) }
+						}
+					)) {
+						Label {
+							VStack(alignment: .leading, spacing: 2) {
+								Text(tweak.title)
+								Text(tweak.subtitle).font(.caption).foregroundStyle(.secondary)
+							}
+						} icon: {
+							Image(systemName: tweak.systemImage)
+						}
+					}
+				}
+			} footer: {
+				Text(.localized("Tweaks can be combined. They are added as one small library without Substrate."))
+			}
+		}
+
 		NBSection(.localized("Bundle Cleanup")) {
 			_toggle(
 				.localized("Remove App Extensions"),

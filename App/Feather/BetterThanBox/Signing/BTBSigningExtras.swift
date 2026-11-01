@@ -59,6 +59,10 @@ enum BTBSigningExtras {
 			info.write(to: infoURL, atomically: true)
 		}
 		
+		if !options.btb_builtinTweaks.isEmpty {
+			try BTBBuiltinTweak.inject(options.btb_builtinTweaks, into: app)
+		}
+
 		if options.btb_thinToArm64 {
 			var thinned = 0
 			for url in machOFiles(in: app) {

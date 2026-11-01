@@ -136,6 +136,8 @@ struct Options: Codable, Equatable {
 	var btb_thinToArm64: Bool
 	/// Give the app its own keychain access group (TEAMID.bundleid)
 	var btb_keychainIsolation: Bool
+	/// Built-in tweaks to inject (`BTBBuiltinTweak` raw values)
+	var btb_builtinTweaks: [String]
 
 	// MARK: Experiments
 	
@@ -193,6 +195,7 @@ struct Options: Codable, Equatable {
 		btb_fixIcons: false,
 		btb_thinToArm64: false,
 		btb_keychainIsolation: false,
+		btb_builtinTweaks: [],
 		
 		// MARK: Experiments
 		
