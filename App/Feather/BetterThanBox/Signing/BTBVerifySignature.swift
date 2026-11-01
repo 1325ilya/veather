@@ -30,3 +30,5 @@ enum BTBVerifySignature {
 		UIAlertController.showAlertWithOk(title: .localized("Verify Signature"), message: lines.joined(separator: "\n"))
 	}
 }
+
+// BetterThanBox build 1793541783
