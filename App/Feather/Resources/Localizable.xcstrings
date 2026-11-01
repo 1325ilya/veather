@@ -22487,6 +22487,391 @@
           }
         }
       }
+    },
+    "Add .deb / .dylib" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавить .deb / .dylib"
+          }
+        }
+      }
+    },
+    "Answers App Store version checks with \"no update\" so the app stops nagging." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отвечает на проверку версии в App Store «обновлений нет», чтобы приложение не напоминало."
+          }
+        }
+      }
+    },
+    "Blocks ad networks and popular ad SDKs (AdMob, AppLovin, Unity, Meta, ironSource)." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Блокирует рекламные сети и популярные рекламные SDK (AdMob, AppLovin, Unity, Meta, ironSource)."
+          }
+        }
+      }
+    },
+    "Builds an AltStore-compatible source JSON. Host the IPA files yourself and paste each download URL below." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Собирает source.json формата AltStore. IPA размещаете сами и вставляете ссылку на загрузку ниже."
+          }
+        }
+      }
+    },
+    "Built-in Tweaks" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Встроенные твики"
+          }
+        }
+      }
+    },
+    "Bypass Update Checks" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Обход проверок обновлений"
+          }
+        }
+      }
+    },
+    "Data Manager" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Менеджер данных"
+          }
+        }
+      }
+    },
+    "Download URL" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ссылка загрузки"
+          }
+        }
+      }
+    },
+    "Download failed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Загрузка не удалась"
+          }
+        }
+      }
+    },
+    "Export source.json" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Экспортировать source.json"
+          }
+        }
+      }
+    },
+    "Firmware" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прошивки"
+          }
+        }
+      }
+    },
+    "Firmware for %@ from ipsw.me. \"Signed\" means Apple still allows installing it." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прошивки для %@ с ipsw.me. «Подписана» — Apple всё ещё разрешает установку."
+          }
+        }
+      }
+    },
+    "Fixes keychain and app group errors after re-signing with another team." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Исправляет ошибки keychain и app groups после переподписи другой командой."
+          }
+        }
+      }
+    },
+    "Forces the iPad layout on iPhone." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Включает интерфейс iPad на iPhone."
+          }
+        }
+      }
+    },
+    "IPSW" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IPSW"
+          }
+        }
+      }
+    },
+    "Icon URL" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ссылка на иконку"
+          }
+        }
+      }
+    },
+    "Network Blocker" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Блокировка сети"
+          }
+        }
+      }
+    },
+    "No Ads" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Без рекламы"
+          }
+        }
+      }
+    },
+    "No Rate Prompts" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Без запросов оценки"
+          }
+        }
+      }
+    },
+    "No download URL" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет ссылки загрузки"
+          }
+        }
+      }
+    },
+    "Repository" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Репозиторий"
+          }
+        }
+      }
+    },
+    "Repository Builder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Конструктор репозитория"
+          }
+        }
+      }
+    },
+    "Retry" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Повторить"
+          }
+        }
+      }
+    },
+    "Save to Tweak Vault" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сохранить в хранилище твиков"
+          }
+        }
+      }
+    },
+    "Saved tweaks can be switched on for any app in the signing screen (Tweaks)." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сохранённые твики можно включить для любого приложения на экране подписи (Твики)."
+          }
+        }
+      }
+    },
+    "Sideload Fixes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Фиксы сайдлоада"
+          }
+        }
+      }
+    },
+    "Signed only" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Только подписанные"
+          }
+        }
+      }
+    },
+    "Suppresses \"Rate this app\" dialogs." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подавляет окна «Оцените приложение»."
+          }
+        }
+      }
+    },
+    "The app gets no internet access at all." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Приложение полностью лишается доступа в интернет."
+          }
+        }
+      }
+    },
+    "The vault is empty. Add tweaks in Settings → Tweak Vault, or save imported ones there." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Хранилище пусто. Добавьте твики в «Настройки → Хранилище твиков» или сохраните туда импортированные."
+          }
+        }
+      }
+    },
+    "Three-finger long press inside the app: back up or restore its data to Files." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Долгое нажатие тремя пальцами внутри приложения: резервная копия или восстановление данных в Файлы."
+          }
+        }
+      }
+    },
+    "Tools" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Инструменты"
+          }
+        }
+      }
+    },
+    "Tweak Vault" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Хранилище твиков"
+          }
+        }
+      }
+    },
+    "Tweaks can be combined. They are added as one small library without Substrate." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Твики можно комбинировать. Добавляются одной небольшой библиотекой без Substrate."
+          }
+        }
+      }
+    },
+    "iPad Interface" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Интерфейс iPad"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

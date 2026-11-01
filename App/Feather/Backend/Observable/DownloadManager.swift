@@ -15,6 +15,7 @@ class Download: Identifiable, @unchecked Sendable {
 	@Published var bytesDownloaded: Int64 = 0
 	@Published var totalBytes: Int64 = 0
 	@Published var unpackageProgress: Double = 0.0
+	@Published var failed: Bool = false   // BetterThanBox: download rescue
 	
 	var overallProgress: Double {
 		onlyArchiving
@@ -240,17 +241,35 @@ extension DownloadManager: URLSessionDownloadDelegate {
 	
 	func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
 		guard
-			let _ = error,
+			let error = error,
 			let downloadTask = task as? URLSessionDownloadTask,
 			let download = getDownloadTask(by: downloadTask)
 		else {
 			return
 		}
 		
-		DispatchQueue.main.async {
-			if let index = self.getDownloadIndex(by: download.id) {
-				self.downloads.remove(at: index)
+		// BetterThanBox Download Rescue: a cancel is a user action; any other
+		// error keeps the download so it can be resumed from where it stopped.
+		let nsError = error as NSError
+		if nsError.code == NSURLErrorCancelled {
+			DispatchQueue.main.async {
+				if let index = self.getDownloadIndex(by: download.id) {
+					self.downloads.remove(at: index)
+				}
 			}
+			return
 		}
+		
+		let resume = nsError.userInfo[NSURLSessionDownloadTaskResumeData] as? Data
+		DispatchQueue.main.async {
+			download.resumeData = resume
+			download.failed = true
+		}
+	}
+	
+	/// BetterThanBox: retry a failed download (resumes from resume data when possible).
+	func retryDownload(_ download: Download) {
+		download.failed = false
+		resumeDownload(download)
 	}
 }

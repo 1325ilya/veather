@@ -36,6 +36,8 @@ struct SigningTweaksView: View {
 				}
 			}
 			
+			BTBTweakVaultSection(options: $options)
+			
 			NBSection(.localized("Tweaks")) {
 				if !options.injectionFiles.isEmpty {
 					ForEach(options.injectionFiles, id: \.absoluteString) { tweak in
@@ -94,10 +96,22 @@ extension SigningTweaksView {
 	
 	@ViewBuilder
 	private func _fileActions(tweak: URL) -> some View {
+		if !tweak.path.hasPrefix(BTBTweakVault.directory.path) {
+			Button {
+				BTBTweakVault.add(tweak)
+			} label: {
+				Label(.localized("Save to Tweak Vault"), systemImage: "tray.and.arrow.down")
+			}
+		}
 		Button(role: .destructive) {
-			FileManager.default.deleteStored(tweak) { url in
-				if let index = options.injectionFiles.firstIndex(where: { $0 == url }) {
-					options.injectionFiles.remove(at: index)
+			if tweak.path.hasPrefix(BTBTweakVault.directory.path) {
+				// vault files stay in the vault; only remove them from this app
+				options.injectionFiles.removeAll { $0 == tweak }
+			} else {
+				FileManager.default.deleteStored(tweak) { url in
+					if let index = options.injectionFiles.firstIndex(where: { $0 == url }) {
+						options.injectionFiles.remove(at: index)
+					}
 				}
 			}
 		} label: {

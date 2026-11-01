@@ -78,6 +78,9 @@ struct SettingsView: View {
 				}
                 
 				NBSection(.localized("Tools")) {
+					NavigationLink(destination: BTBTweakVaultView()) {
+						Label(.localized("Tweak Vault"), systemImage: "tray.full")
+					}
 					NavigationLink(destination: BTBRepoBuilderView()) {
 						Label(.localized("Repository Builder"), systemImage: "hammer")
 					}

@@ -168,7 +168,7 @@ final class BTBStorageManager {
 			return []
 		case .other:
 			let known: Set<String> = [
-				_fm.unsigned, _fm.signed, _fm.archives, _fm.certificates
+				_fm.unsigned, _fm.signed, _fm.archives, _fm.certificates, BTBTweakVault.directory
 			].map { $0.standardizedFileURL.path }.reduce(into: []) { $0.insert($1) }
 			let docs = (try? _fm.contentsOfDirectory(at: URL.documentsDirectory, includingPropertiesForKeys: nil)) ?? []
 			urls = docs.filter { !known.contains($0.standardizedFileURL.path) && !isProtected($0) }

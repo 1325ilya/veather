@@ -46,6 +46,7 @@ struct DownloadItemView: View {
 	@State private var bytesDownloaded: Int64 = 0
 	@State private var totalBytes: Int64 = 0
 	@State private var unpackageProgress: Double = 0
+	@State private var failed: Bool = false
 	
 	var body: some View {
 		VStack(alignment: .leading, spacing: 4) {
@@ -53,8 +54,24 @@ struct DownloadItemView: View {
 				.font(.subheadline)
 				.lineLimit(1)
 			
-			ProgressView(value: overallProgress)
-				.progressViewStyle(.linear)
+			if failed {
+				HStack {
+					Text(.localized("Download failed")).foregroundColor(.red)
+					Spacer()
+					Button(.localized("Retry"), systemImage: "arrow.clockwise") {
+						DownloadManager.shared.retryDownload(download)
+					}
+					.buttonStyle(.borderless)
+					Button(.localized("Cancel"), systemImage: "xmark") {
+						DownloadManager.shared.cancelDownload(download)
+					}
+					.buttonStyle(.borderless)
+				}
+				.font(.caption)
+			} else {
+				ProgressView(value: overallProgress)
+					.progressViewStyle(.linear)
+			}
 			
 			HStack {
 				Text(verbatim: "\(Int(overallProgress * 100))%")
@@ -73,6 +90,7 @@ struct DownloadItemView: View {
 		.onReceive(download.$bytesDownloaded) { self.bytesDownloaded = $0 }
 		.onReceive(download.$totalBytes) { self.totalBytes = $0 }
 		.onReceive(download.$unpackageProgress) { self.unpackageProgress = $0 }
+		.onReceive(download.$failed) { self.failed = $0 }
 	}
 	
 	private var overallProgress: Double {
