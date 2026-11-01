@@ -150,15 +150,43 @@ struct FeatherApp: App {
 				)
 			}
 		} else {
-			if url.pathExtension == "ipa" || url.pathExtension == "tipa" {
-				if FileManager.default.isFileFromFileProvider(at: url) {
-					guard url.startAccessingSecurityScopedResource() else { return }
-					FR.handlePackageFile(url) { _ in }
-				} else {
-					FR.handlePackageFile(url) { _ in }
-				}
-				
+			let ext = url.pathExtension.lowercased()
+			if ext == "ipa" || ext == "tipa" {
+				_importSharedPackage(url)
 				return
+			}
+		}
+	}
+}
+
+// MARK: - BetterThanBox: "Share → BetterThanBox" import
+extension FeatherApp {
+	/// Files / Safari / Telegram share an .ipa → import it straight into the Library.
+	private func _importSharedPackage(_ url: URL) {
+		let scoped = url.startAccessingSecurityScopedResource()
+		let name = url.deletingPathExtension().lastPathComponent
+		let generator = UINotificationFeedbackGenerator()
+		generator.prepare()
+		
+		FR.handlePackageFile(url) { error in
+			if scoped { url.stopAccessingSecurityScopedResource() }
+			// "Copy to app" puts a copy into Documents/Inbox; it is no longer needed
+			if url.path.contains("/Documents/Inbox/") {
+				try? FileManager.default.removeItem(at: url)
+			}
+			
+			if let error {
+				generator.notificationOccurred(.error)
+				UIAlertController.showAlertWithOk(
+					title: .localized("Import Failed"),
+					message: error.localizedDescription
+				)
+			} else {
+				generator.notificationOccurred(.success)
+				UIAlertController.showAlertWithOk(
+					title: .localized("Imported"),
+					message: String.localized("“%@” is now in your Library. Tap it to sign.", arguments: name)
+				)
 			}
 		}
 	}

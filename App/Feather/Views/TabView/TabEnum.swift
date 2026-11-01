@@ -48,8 +48,8 @@ enum TabEnum: String, CaseIterable, Hashable {
 	
 	static var defaultTabs: [TabEnum] {
 		return [
-			.sources,
 			.library,
+			.sources,
 			.tools,
 			.settings
 		]

@@ -23697,6 +23697,28 @@
           }
         }
       }
+    },
+    "Import Failed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Импорт не удался"
+          }
+        }
+      }
+    },
+    "“%@” is now in your Library. Tap it to sign." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» теперь в Библиотеке. Нажмите, чтобы подписать."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
