@@ -19,6 +19,23 @@ jobs:
   build:
     runs-on: macos-26
     timeout-minutes: 60
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        # Xcode crashes while registering Swift packages (IDESwiftPackageCore,
+        # "count of array (32) differs from count of index set (31)").
+        # Several workarounds are tried in parallel; any green one publishes the IPA.
+        include:
+          - variant: noresolved
+            xcode: '26.3.0'
+          - variant: workspace
+            xcode: '26.3.0'
+          - variant: clonedir
+            xcode: '26.3.0'
+          - variant: noresolved-26.6
+            xcode: '26.6.0'
     defaults:
       run:
         working-directory: App
@@ -28,35 +45,36 @@ jobs:
 
       - name: Select Xcode
         run: |
-          ls -d /Applications/Xcode*.app
-          # upstream Feather builds with 26.3; newer Xcode crashes on this project
-          XCODE=/Applications/Xcode_26.3.0.app
+          XCODE=/Applications/Xcode_${{ matrix.xcode }}.app
           [ -d "$XCODE" ] || XCODE=$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)
           echo "Using $XCODE"
           sudo xcode-select -s "$XCODE"
           xcodebuild -version
 
-      - name: Prepare Xcode
+      - name: Prepare
         run: |
-          # repos/ holds 26 reference submodules that are not checked out here;
-          # keep Xcode's source-control scanner away from them
+          # repos/ holds reference submodules that are not checked out here
           defaults write com.apple.dt.Xcode IDESourceControlEnableSourceControl_10_0 -bool NO
-          defaults write com.apple.dt.Xcode IDEPackageSupportUseBuiltinSCM -bool YES
           rm -f ../.gitmodules
-
-      - name: Cache SwiftPM
-        uses: actions/cache@v4
-        with:
-          path: ${{ runner.temp }}/BetterThanBox/iphoneos/SourcePackages
-          key: spm-${{ hashFiles('App/Feather.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
+          case "${{ matrix.variant }}" in
+            noresolved*)
+              # Package.resolved pins packages no manifest uses any more; let Xcode resolve fresh
+              rm -f Feather.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+              ;;
+            workspace)
+              echo "XCODE_CONTAINER=-workspace Feather.xcworkspace" >> "$GITHUB_ENV"
+              ;;
+            clonedir)
+              echo "XCODEBUILD_EXTRA=-clonedSourcePackagesDirPath $RUNNER_TEMP/spm -scmProvider system" >> "$GITHUB_ENV"
+              ;;
+          esac
 
       - name: Build unsigned IPA
         env:
           TMPDIR: ${{ runner.temp }}/
         run: |
-          agvtool new-version -all ${{ github.run_number }}
-          set -o pipefail
-          make 2>&1 | tee build.log | grep -E 'error:|warning: unused|BUILD (SUCCEEDED|FAILED)|\*\*' || true
+          agvtool new-version -all ${{ github.run_number }} || true
+          make 2>&1 | tee build.log | grep -E 'error:|BUILD (SUCCEEDED|FAILED)|\*\*' || true
           test -f packages/BetterThanBox.ipa
 
       - name: Show errors
@@ -64,12 +82,12 @@ jobs:
         run: |
           grep -n -B2 -A6 'error:' build.log | head -300 || true
           echo '----- tail -----'
-          tail -n 120 build.log || true
+          tail -n 60 build.log || true
 
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
-          name: BetterThanBox-${{ github.run_number }}
+          name: BetterThanBox-${{ github.run_number }}-${{ matrix.variant }}
           path: App/packages/BetterThanBox.ipa
           if-no-files-found: error
 
@@ -81,7 +99,6 @@ jobs:
           name: BetterThanBox nightly (${{ github.ref_name }})
           prerelease: true
           files: App/packages/BetterThanBox.ipa
+          overwrite_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    permissions:
-      contents: write

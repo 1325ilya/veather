@@ -3,6 +3,8 @@ SCHEME := Feather
 PLATFORMS := iphoneos
 
 TMP := $(TMPDIR)/$(NAME)
+XCODE_CONTAINER ?= -project Feather.xcodeproj
+XCODEBUILD_EXTRA ?=
 CERT_JSON_URL := https://backloop.dev/pack.json
 
 .PHONY: all clean deps $(PLATFORMS)
@@ -33,8 +35,9 @@ $(PLATFORMS): deps
 		DEST="generic/platform=macOS,variant=Mac Catalyst"; \
 	fi; \
 	xcodebuild \
-		-project Feather.xcodeproj \
+		$(XCODE_CONTAINER) \
 		-scheme $(SCHEME) \
+		$(XCODEBUILD_EXTRA) \
 		-configuration Release \
 		-destination "$$DEST" \
 		-derivedDataPath $(TMP)/$@ \
