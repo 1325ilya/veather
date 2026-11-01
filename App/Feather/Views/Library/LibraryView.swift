@@ -26,6 +26,7 @@ struct LibraryView: View {
 	// MARK: Selection State
 	@State private var _selectedAppUUIDs: Set<String> = []
 	@State private var _editMode: EditMode = .inactive
+	@State private var _bulkProgress: (Int, Int)?
 	
 	@State private var _searchText = ""
 	@State private var _selectedScope: Scope = .all
@@ -148,6 +149,13 @@ struct LibraryView: View {
 				
 				if _editMode.isEditing {
 					NBToolbarButton(
+						_bulkProgress.map { String.localized("Signing %lld of %lld", arguments: $0.0, $0.1) } ?? String.localized("Sign"),
+						systemImage: "signature",
+						isDisabled: _selectedAppUUIDs.isEmpty || _bulkProgress != nil
+					) {
+						_bulkSignSelectedApps()
+					}
+					NBToolbarButton(
 						.localized("Delete"),
 						systemImage: "trash",
 						isDisabled: _selectedAppUUIDs.isEmpty
@@ -256,6 +264,22 @@ extension LibraryView {
 
 // MARK: - Extension: Bulk Delete
 extension LibraryView {
+	private func _bulkSignSelectedApps() {
+		let selectedApps = _getAllApps().filter { app in
+			guard let uuid = app.uuid else { return false }
+			return _selectedAppUUIDs.contains(uuid)
+		}
+		guard !selectedApps.isEmpty else { return }
+		BTBBulkSigner.sign(selectedApps, progress: { _bulkProgress = ($0, $1) }) { ok, errors in
+			_bulkProgress = nil
+			_selectedAppUUIDs.removeAll()
+			UIAlertController.showAlertWithOk(
+				title: String.localized("Signed %lld of %lld", arguments: ok, selectedApps.count),
+				message: errors.joined(separator: "\n")
+			)
+		}
+	}
+	
 	private func _bulkDeleteSelectedApps() {
 		let selectedApps = _getAllApps().filter { app in
 			guard let uuid = app.uuid else { return false }
