@@ -80,12 +80,14 @@ struct BTBCard: View {
 				Text(title)
 					.font(.subheadline.weight(.semibold))
 					.foregroundStyle(.primary)
-					.lineLimit(1)
-					.minimumScaleFactor(0.85)
+					.lineLimit(2, reservesSpace: true)
+					.minimumScaleFactor(0.8)
+					.multilineTextAlignment(.leading)
 				Text(subtitle)
 					.font(.caption)
-					.foregroundStyle(.secondary)
+					.foregroundStyle(Color(uiColor: .secondaryLabel))
 					.lineLimit(2, reservesSpace: true)
+					.minimumScaleFactor(0.85)
 					.multilineTextAlignment(.leading)
 			}
 		}

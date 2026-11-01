@@ -67,7 +67,7 @@ struct BTBUniversalSearchView: View {
 				}
 			}
 		}
-		.navigationTitle(.localized("Search All Sources"))
+		.navigationTitle(.localized("Search Sources"))
 		.searchable(text: $_query, placement: .platform(), prompt: Text(.localized("Name or bundle ID")))
 		.refreshable {
 			await _viewModel.fetchSources(_sources, refresh: true)

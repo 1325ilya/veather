@@ -92,7 +92,12 @@ struct BTBSourceHealthView: View {
 	private func _stat(_ value: String, _ title: String, _ color: Color) -> some View {
 		VStack {
 			Text(value).font(.title3.bold()).foregroundStyle(color)
-			Text(title).font(.caption2).foregroundStyle(.secondary).lineLimit(1).minimumScaleFactor(0.7)
+			Text(title)
+				.font(.caption2)
+				.foregroundStyle(.secondary)
+				.multilineTextAlignment(.center)
+				.lineLimit(2, reservesSpace: true)
+				.minimumScaleFactor(0.75)
 		}
 		.frame(maxWidth: .infinity)
 	}

@@ -160,16 +160,16 @@ extension SettingsView {
 	}
 	
 	private func _statusPill(_ text: String, icon: String, color: Color) -> some View {
-		Label {
-			Text(verbatim: text)
-		} icon: {
+		HStack(spacing: 4) {
 			Image(systemName: icon)
+				.foregroundStyle(color)
+			Text(verbatim: text)
+				.foregroundStyle(.primary)
 		}
 		.font(.caption.weight(.semibold))
-		.foregroundStyle(color)
 		.padding(.horizontal, 8)
 		.padding(.vertical, 3)
-		.background(Capsule().fill(color.opacity(0.14)))
+		.background(Capsule().fill(color.opacity(0.18)))
 	}
 	
 	@ViewBuilder
