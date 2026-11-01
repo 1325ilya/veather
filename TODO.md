@@ -31,7 +31,7 @@
 - [ ] 🔧 Автообновление в фоне: расписание (час…сутки), только Wi-Fi, ночное окно, «пропустить версию», «заморозить обновления», тихая установка через туннель (`AutoUpdateManager`, `BSBackgroundTasks`, `BSContinuedProcessing`) — *частично: фоновая проверка + уведомления (BTBBackgroundRefresh), без тихой установки*
 - [ ] 🔧 Live Activity / Dynamic Island с прогрессом, скоростью и ETA (`LiveActivityController`, `BatSignLiveActivity`, `DownloadActivityAttributes`)
 - [ ] 🔧 Serial-очередь подписи и «Pending Sign» (`BSPendingSign`, `BSBulkSign`, `AutoSignManager`)
-- [ ] 🔧 Self-Heal: обнаружить отозванный сертификат и автоматически переподписать приложения лучшим живым (`CertHealthView`)
+- [x] 🔧 Self-Heal: обнаружить отозванный сертификат и автоматически переподписать приложения лучшим живым (`CertHealthView`) — *баннер в Библиотеке «Переподписать все» текущим живым сертификатом*
 - [x] 🟢 Дашборд здоровья сертификатов: кольца срока, статус отзыва, «Renew All»
 - [x] 🔧 Install Ledger / Install Watcher: журнал установок и отслеживание, что приложение реально установилось (`BSInstallLedger`, `BSInstallWatcher`)
 - [x] 🔧 Download Rescue — дозагрузка после обрыва (`DownloadRescue`)
