@@ -196,10 +196,6 @@
 - [ ] 🔧 `apple-dev-apis` — Xcode developer API
 - [ ] 🔧 `apple-codesign-wrapper` — обёртка над `apple-codesign` (подпись без OpenSSL/zsign)
 
-## althea (vyvir)
-- [ ] 🟢 GUI-обёртка (GTK/Python) над AltServer-Linux с иконкой в трее, хранение пароля в системном keyring
-- [ ] 🟢 Поддержка x86_64 / aarch64 / armv7
-
 ---
 
 ## Нижний уровень
