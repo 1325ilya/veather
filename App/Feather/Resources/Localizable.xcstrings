@@ -24019,6 +24019,16 @@
           }
         }
       }
+    },
+    "Add your certificate first: tap “Add a Certificate” on this screen." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сначала добавьте сертификат: нажмите «Добавить сертификат» на этом экране."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

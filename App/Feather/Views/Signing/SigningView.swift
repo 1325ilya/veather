@@ -324,7 +324,7 @@ extension SigningView {
 		else {
 			UIAlertController.showAlertWithOk(
 				title: .localized("No Certificate"),
-				message: .localized("Please go to settings and import a valid certificate"),
+				message: .localized("Add your certificate first: tap “Add a Certificate” on this screen."),
 				isCancel: true
 			)
 			return
