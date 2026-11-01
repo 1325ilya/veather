@@ -9,6 +9,7 @@
 //
 
 import SwiftUI
+import UIKit
 import WebKit
 
 final class BTBBrowserModel: NSObject, ObservableObject, WKNavigationDelegate, WKUIDelegate {

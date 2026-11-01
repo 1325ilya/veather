@@ -62,7 +62,7 @@ struct BTBIPSWView: View {
 				}
 			} footer: {
 				if let _error { Text(_error).foregroundStyle(.red) }
-				else { Text(.localized("Firmware for %@ from ipsw.me. \"Signed\" means Apple still allows installing it.", arguments: _deviceName)) }
+				else { Text(verbatim: String.localized("Firmware for %@ from ipsw.me. \"Signed\" means Apple still allows installing it.", arguments: _deviceName)) }
 			}
 			NBSection(.localized("Firmware"), secondary: _shown.count.description) {
 				ForEach(_shown) { fw in
