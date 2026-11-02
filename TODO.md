@@ -40,7 +40,7 @@
 - [x] 🟢 Экраны Storage, Activity log, Backup/Restore, Discover, Updates, Tweak Vault
 - [x] 🟢 Tweak Vault: сохранённые .deb/.dylib, внедрение в один тап
 - [ ] 🟢 Определение устройства через MobileGestalt (`MobileGestalt`)
-- [ ] 🟢 «One View Install» — установка и подпись на одном экране (`OneViewInstallView`)
+- [x] 🟢 «One View Install» — установка и подпись на одном экране (`OneViewInstallView`) — *«Подписывать сразу после импорта»: импорт → подпись → окно установки*
 - [x] 🟢 Настраиваемая компрессия при упаковке (`CompressionMode`)
 
 ### SignOs (ihateios)
