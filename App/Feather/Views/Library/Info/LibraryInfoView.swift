@@ -67,21 +67,23 @@ extension LibraryInfoView {
 					.font(.subheadline)
 					.foregroundStyle(.secondary)
 			}
-			HStack(spacing: 10) {
+			VStack(spacing: 10) {
 				if app.isSigned {
 					if let onInstall {
 						_actionButton(.localized("Install"), systemImage: "square.and.arrow.down", prominent: true) {
 							_run(onInstall)
 						}
 					}
-					if let id = app.identifier {
-						_actionButton(.localized("Open"), systemImage: "arrow.up.forward.app", prominent: false) {
-							UIApplication.openApp(with: id)
+					HStack(spacing: 10) {
+						if let id = app.identifier {
+							_actionButton(.localized("Open"), systemImage: "arrow.up.forward.app", prominent: false) {
+								UIApplication.openApp(with: id)
+							}
 						}
-					}
-					if let onSign {
-						_actionButton(.localized("Re-sign"), systemImage: "signature", prominent: false) {
-							_run(onSign)
+						if let onSign {
+							_actionButton(.localized("Re-sign"), systemImage: "signature", prominent: false) {
+								_run(onSign)
+							}
 						}
 					}
 				} else if let onSign {
@@ -96,25 +98,22 @@ extension LibraryInfoView {
 		.padding(.vertical, 6)
 	}
 	
-	@ViewBuilder
 	private func _actionButton(_ title: String, systemImage: String, prominent: Bool, action: @escaping () -> Void) -> some View {
-		if prominent {
-			Button(action: action) {
-				Label(title, systemImage: systemImage)
-					.font(.subheadline.weight(.semibold))
-					.frame(maxWidth: .infinity)
-			}
-			.buttonStyle(.borderedProminent)
-			.controlSize(.large)
-		} else {
-			Button(action: action) {
-				Label(title, systemImage: systemImage)
-					.font(.subheadline.weight(.semibold))
-					.frame(maxWidth: .infinity)
-			}
-			.buttonStyle(.bordered)
-			.controlSize(.large)
+		// plain style: bordered buttons inside a List row collapse to narrow ovals
+		Button(action: action) {
+			Label(title, systemImage: systemImage)
+				.font(.subheadline.weight(.semibold))
+				.lineLimit(1)
+				.minimumScaleFactor(0.75)
+				.foregroundStyle(prominent ? Color.white : Color.accentColor)
+				.frame(maxWidth: .infinity, minHeight: 44)
+				.background(
+					RoundedRectangle(cornerRadius: 14, style: .continuous)
+						.fill(prominent ? Color.accentColor : Color.accentColor.opacity(0.14))
+				)
+				.contentShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
 		}
+		.buttonStyle(BTBPressableStyle())
 	}
 	
 	nonisolated private static func _directorySize(_ url: URL) -> Int64 {

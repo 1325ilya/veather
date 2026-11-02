@@ -57,10 +57,11 @@ struct SettingsView: View {
 				}
 				
 				NBSection(.localized("Certificates")) {
-					if let cert = selectedCertificate {
-						CertificatesCellView(cert: cert)
-					} else {
-						NavigationLink(destination: CertificatesView()) {
+					// one row with a stable identity whether or not a certificate exists
+					NavigationLink(destination: CertificatesView()) {
+						if let cert = selectedCertificate {
+							CertificatesCellView(cert: cert)
+						} else {
 							BTBRowLabel(
 								.localized("Add a Certificate"),
 								systemImage: "exclamationmark.shield.fill",

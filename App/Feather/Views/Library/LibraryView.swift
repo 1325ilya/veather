@@ -18,6 +18,7 @@ struct LibraryView: View {
 	@State private var _selectedInfoAppPresenting: AnyApp?
 	@State private var _selectedSigningAppPresenting: AnyApp?
 	@State private var _selectedInstallAppPresenting: AnyApp?
+	@State private var _deleteAppPresenting: AnyApp?
 	@State private var _isImportingPresenting = false
 	@State private var _isDownloadingPresenting = false
 	@State private var _alertDownloadString: String = "" // for _isDownloadingPresenting
@@ -160,7 +161,8 @@ struct LibraryView: View {
 								selectedInfoAppPresenting: $_selectedInfoAppPresenting,
 								selectedSigningAppPresenting: $_selectedSigningAppPresenting,
 								selectedInstallAppPresenting: $_selectedInstallAppPresenting,
-								selectedAppUUIDs: $_selectedAppUUIDs
+								selectedAppUUIDs: $_selectedAppUUIDs,
+								deleteAppPresenting: $_deleteAppPresenting
 							)
 							.compatMatchedTransitionSource(id: app.uuid ?? "", ns: _namespace)
 						}
@@ -181,7 +183,8 @@ struct LibraryView: View {
 								selectedInfoAppPresenting: $_selectedInfoAppPresenting,
 								selectedSigningAppPresenting: $_selectedSigningAppPresenting,
 								selectedInstallAppPresenting: $_selectedInstallAppPresenting,
-								selectedAppUUIDs: $_selectedAppUUIDs
+								selectedAppUUIDs: $_selectedAppUUIDs,
+								deleteAppPresenting: $_deleteAppPresenting
 							)
 							.compatMatchedTransitionSource(id: app.uuid ?? "", ns: _namespace)
 						}
@@ -303,6 +306,22 @@ struct LibraryView: View {
 				}
 			}
 			.environment(\.editMode, $_editMode)
+			.confirmationDialog(
+				String.localized("Delete “%@”?", arguments: _deleteAppPresenting?.base.name ?? .localized("Unknown")),
+				isPresented: Binding(
+					get: { _deleteAppPresenting != nil },
+					set: { if !$0 { _deleteAppPresenting = nil } }
+				),
+				titleVisibility: .visible,
+				presenting: _deleteAppPresenting
+			) { app in
+				Button(.localized("Delete"), role: .destructive) {
+					Storage.shared.deleteApp(for: app.base)
+				}
+				Button(.localized("Cancel"), role: .cancel) {}
+			} message: { _ in
+				Text(.localized("The file is removed from BetterThanBox. Apps already installed on your iPhone stay."))
+			}
 			.sheet(item: $_selectedInfoAppPresenting) { app in
 				LibraryInfoView(
 					app: app.base,

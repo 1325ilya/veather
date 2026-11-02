@@ -10489,7 +10489,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Больше"
+            "value" : "Дополнительно"
           }
         }
       }
@@ -24225,7 +24225,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "В библиотеке"
+            "value" : "Есть"
           }
         }
       }
@@ -24276,6 +24276,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "https://example.com/app.ipa"
+          }
+        }
+      }
+    },
+    "The URL is invalid." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Недопустимый адрес."
+          }
+        }
+      }
+    },
+    "Network error: %@" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ошибка сети: %@"
+          }
+        }
+      }
+    },
+    "No data received." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Данные не получены."
+          }
+        }
+      }
+    },
+    "Failed to parse data: %@" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось разобрать данные: %@"
           }
         }
       }

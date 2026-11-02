@@ -66,7 +66,7 @@ struct CertificatesAddView: View {
 					allowedContentTypes: [.p12],
 					onDocumentsPicked: { urls in
 						guard let selectedFileURL = urls.first else { return }
-						self._p12URL = selectedFileURL
+						self._p12URL = Self._keepCopy(of: selectedFileURL)
 					}
 				)
 				.ignoresSafeArea()
@@ -76,7 +76,7 @@ struct CertificatesAddView: View {
 					allowedContentTypes: [.mobileProvision],
 					onDocumentsPicked: { urls in
 						guard let selectedFileURL = urls.first else { return }
-						self._provisionURL = selectedFileURL
+						self._provisionURL = Self._keepCopy(of: selectedFileURL)
 					}
 				)
 				.ignoresSafeArea()
@@ -87,6 +87,22 @@ struct CertificatesAddView: View {
 
 // MARK: - Extension: View
 extension CertificatesAddView {
+	/// The picker's temporary copy can disappear (iOS cleans Inbox), so keep our own
+	/// until the certificate is saved.
+	private static func _keepCopy(of url: URL) -> URL {
+		let dir = FileManager.default.temporaryDirectory
+			.appendingPathComponent("BTBCertImport", isDirectory: true)
+			.appendingPathComponent(UUID().uuidString, isDirectory: true)
+		let destination = dir.appendingPathComponent(url.lastPathComponent)
+		do {
+			try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+			try FileManager.default.copyItem(at: url, to: destination)
+			return destination
+		} catch {
+			return url
+		}
+	}
+
 	@ViewBuilder
 	private func _importButton(
 		_ title: String,

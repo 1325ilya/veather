@@ -65,7 +65,7 @@ struct DownloadButtonView: View {
 						}
 					}
 						.lineLimit(1)
-						.padding(.horizontal, 24)
+						.padding(.horizontal, _inLibrary ? 14 : 24)
 						.padding(.vertical, 6)
 						.background(Color(uiColor: .quaternarySystemFill))
 						.clipShape(Capsule())
