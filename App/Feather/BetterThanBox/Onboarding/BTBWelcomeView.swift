@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CoreData
 
 struct BTBWelcomeView: View {
 	static let seenKey = "BTB.welcomeSeen"
@@ -120,12 +121,28 @@ struct BTBWelcomeModifier: ViewModifier {
 	func body(content: Content) -> some View {
 		content
 			.onAppear {
-				if !_seen { _isPresented = true }
+				guard !_seen else { return }
+				// people updating from an older build already know the app
+				if _hasExistingData() {
+					_seen = true
+				} else {
+					_isPresented = true
+				}
 			}
 			.sheet(isPresented: $_isPresented, onDismiss: { _seen = true }) {
 				BTBWelcomeView()
 			}
 	}
+}
+
+private func _hasExistingData() -> Bool {
+	let context = Storage.shared.context
+	for entity in ["CertificatePair", "Imported", "Signed"] {
+		let request = NSFetchRequest<NSManagedObject>(entityName: entity)
+		request.fetchLimit = 1
+		if let count = try? context.count(for: request), count > 0 { return true }
+	}
+	return false
 }
 
 extension View {
