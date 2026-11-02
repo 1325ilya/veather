@@ -25,6 +25,21 @@
 - Сборка: `.github/workflows/build.yml`, runner `macos-26`, Xcode новейший. Фикс крэша Xcode на SwiftPM — **НЕ коммитить `Package.resolved`** (стоковый из Feather ломал граф пакетов). Готовый IPA — артефакт и релиз `nightly-dev` (в теле релиза «Build N» = CFBundleVersion).
 - Локально собрать нельзя (Linux) — проверка только через CI. Статус прогонов: `curl https://api.github.com/repos/1325ilya/BetterThanBox/actions/runs?per_page=1`.
 
+## Работа с пользователем и Devin (важно)
+- Пользователь общается в Telegram-группе «конфа нейронок» (скрипты вне репо: `~/.config/btb/tg.sh`, `tg_poll.py`). Писать ему простым текстом, без тега бота.
+- **IPA собирать только на Mac у Devin** (бот @fiidushejfifibot): он проверяет в симуляторе и подписывает сборку сертификатом пользователя. CI — только проверка компиляции. Claude сертификаты/ключи не скачивает и не хранит.
+- Если один агент замолчал — у него кончились лимиты, второй продолжает один. Devin кидает zip-бэкапы в чат (без сертификатов/паролей).
+- Цель: продакшен-качество, «user friendly», дизайн тёмный по умолчанию, донатов/баннеров нет.
+
+## UX-изменения (ноябрь 2026)
+- Библиотека — первая вкладка; плитки «Файлы / Ссылка / Вставить ссылку»; пустой экран с кнопками; тап — инфо, свайп вправо — подписать/установить; сортировка; баннер «Проблема с сертификатом» → «Переподписать все» (self-heal).
+- Инфо о приложении: крупные кнопки Установить / Открыть / Переподписать.
+- Подпись: сначала приложение и сертификат; при отсутствии — строка «Добавить сертификат».
+- Приветствие при первом запуске (`BetterThanBox/Onboarding/BTBWelcomeView.swift`), подсказка «Доверять разработчику / Режим разработчика» после первой установки.
+- Импорт: окно с причиной при ошибке; импорт через «Поделиться» из Файлов (`com.apple.itunes.ipa`).
+- Иконка: куб с искрами, генерируется `App/Tools/make_icon.py`.
+- Сертификат сервера установки обновляется сам (`BetterThanBox/Install/BTBServerCert.swift`, local-ip.sh).
+
 ## Что уже сделано
 1. Найдено и склонировано 26 open-source репозиториев (shallow clone) в `repos/`, оформлены как git-сабмодули (`.gitmodules`). README.md в корне описывает клонирование через `--recurse-submodules --shallow-submodules`.
    Список: claration/feather, Nyasami/Ksign, Mesutcydev/ForgeSign-iOS, iRayanKhan/TanaraSign, cc158999/EnSign, SWING1993/ABox_iOS, ProStore-iOS/ProSign, ProStore-iOS/ProStore, 8yy/BatSign, raynmahbub/VexSign, ihateios/SignOs, altstoreio/AltStore, SideStore/SideStore, claration/impactor, nab138/iloader, Dadoum/Sideloader, vyvir/althea, NyaMisty/AltServer-Linux, pwnapplehat/iPASide, opa334/TrollStore, zhlynn/zsign, DanTheMan827/ios-app-signer, ProcursusTeam/ldid, SideStore/apple-private-apis, xhzq233/altsign-cli, togettoyou/ipashare.
