@@ -13,6 +13,7 @@ typedef NS_ENUM(NSInteger, BTBMode) { BTBModeExact, BTBModeChanged, BTBModeSame,
 typedef struct { uint64_t address; uint64_t raw; } BTBHit;
 
 static const size_t kMaxHits = 2000000;
+static const size_t kChunk = 1 << 20;
 
 static size_t BTBSize(BTBType t) { return t == BTBTypeDouble ? 8 : 4; }
 
@@ -79,7 +80,9 @@ static UIViewController *BTBTop(void) {
 	UILabel *_status;
 	UITableView *_table;
 	UIButton *_scanButton, *_nextButton;
-	NSMutableData *_hits;        // BTBHit[]
+	BTBHit *_store;              // vm_allocate'd, so scans can skip it (it would find itself)
+	size_t _count;
+	uint8_t *_readBuffer;        // same
 	BTBType _hitType;
 	BOOL _busy;
 	NSMutableDictionary<NSNumber *, NSNumber *> *_frozen; // address -> raw
@@ -132,7 +135,10 @@ static UIViewController *BTBTop(void) {
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	self.view.backgroundColor = UIColor.systemBackgroundColor;
-	_hits = [NSMutableData data];
+	vm_address_t a = 0;
+	if (vm_allocate(mach_task_self(), &a, kMaxHits * sizeof(BTBHit), VM_FLAGS_ANYWHERE) == KERN_SUCCESS) _store = (BTBHit *)a;
+	a = 0;
+	if (vm_allocate(mach_task_self(), &a, kChunk, VM_FLAGS_ANYWHERE) == KERN_SUCCESS) _readBuffer = (uint8_t *)a;
 	_frozen = [NSMutableDictionary dictionary];
 
 	UILabel *title = [UILabel new];
@@ -206,8 +212,15 @@ static UIViewController *BTBTop(void) {
 	BTBOnMain(^{ self->_status.text = text; });
 }
 
-- (BTBHit *)hits { return (BTBHit *)_hits.mutableBytes; }
-- (NSUInteger)hitCount { return _hits.length / sizeof(BTBHit); }
+- (BTBHit *)hits { return _store; }
+- (NSUInteger)hitCount { return _count; }
+
+- (BOOL)overlapsOwnMemory:(vm_address_t)start size:(vm_size_t)size {
+	vm_address_t end = start + size;
+	vm_address_t s1 = (vm_address_t)_store, e1 = s1 + kMaxHits * sizeof(BTBHit);
+	vm_address_t s2 = (vm_address_t)_readBuffer, e2 = s2 + kChunk;
+	return (start < e1 && end > s1) || (start < e2 && end > s2);
+}
 
 #pragma mark - Scanning
 
@@ -217,13 +230,17 @@ static UIViewController *BTBTop(void) {
 	uint64_t target;
 	if (!BTBParse(_field.text, type, &target)) { [self setStatus:@"Type a value first."]; return; }
 	[self.view endEditing:YES];
+	if (!_store || !_readBuffer) { [self setStatus:@"Out of memory."]; return; }
 	_busy = YES;
+	_count = 0;
+	[_table reloadData];
 	[self setStatus:@"Scanning memory…"];
 	dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
-		NSMutableData *found = [NSMutableData data];
+		size_t found = 0;
 		size_t size = BTBSize(type);
-		const size_t chunk = 1 << 20;
-		uint8_t *buffer = malloc(chunk);
+		const size_t chunk = kChunk;
+		uint8_t *buffer = self->_readBuffer;
+		BTBHit *store = self->_store;
 		vm_address_t address = 0;
 		BOOL full = NO;
 		while (!full) {
@@ -233,24 +250,23 @@ static UIViewController *BTBTop(void) {
 			mach_port_t object;
 			if (vm_region_64(mach_task_self(), &address, &regionSize, VM_REGION_BASIC_INFO_64, (vm_region_info_t)&info, &count, &object) != KERN_SUCCESS) break;
 			BOOL rw = (info.protection & VM_PROT_READ) && (info.protection & VM_PROT_WRITE);
-			if (rw && regionSize < (1ULL << 32)) {
+			if (rw && regionSize < (1ULL << 32) && ![self overlapsOwnMemory:address size:regionSize]) {
 				for (vm_size_t off = 0; off < regionSize && !full; off += chunk) {
 					size_t n = (size_t)MIN((vm_size_t)chunk, regionSize - off);
 					if (!BTBReadMemory(address + off, buffer, n)) continue;
 					for (size_t i = 0; i + size <= n; i += size) {
 						if (memcmp(buffer + i, &target, size) == 0) {
-							BTBHit h = { address + off + i, target };
-							[found appendBytes:&h length:sizeof(h)];
-							if (found.length / sizeof(BTBHit) >= kMaxHits) { full = YES; break; }
+							store[found].address = address + off + i;
+							store[found].raw = target;
+							if (++found >= kMaxHits) { full = YES; break; }
 						}
 					}
 				}
 			}
 			address += regionSize;
 		}
-		free(buffer);
 		dispatch_async(dispatch_get_main_queue(), ^{
-			self->_hits = found;
+			self->_count = found;
 			self->_hitType = type;
 			self->_busy = NO;
 			[self setStatus:[NSString stringWithFormat:@"%lu results%@. Change the value in the game, then tap Next scan.", (unsigned long)[self hitCount], full ? @" (limit reached — search for a more unusual value)" : @""]];
@@ -269,11 +285,13 @@ static UIViewController *BTBTop(void) {
 	[self.view endEditing:YES];
 	_busy = YES;
 	[self setStatus:@"Filtering…"];
-	NSData *old = [_hits copy];
+	size_t total = _count;
+	_count = 0;
+	[_table reloadData];
 	dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
-		NSMutableData *kept = [NSMutableData data];
-		const BTBHit *src = (const BTBHit *)old.bytes;
-		size_t total = old.length / sizeof(BTBHit), size = BTBSize(type);
+		size_t kept = 0;
+		BTBHit *src = self->_store; // filtered in place: the write index never passes the read index
+		size_t size = BTBSize(type);
 		for (size_t i = 0; i < total; i++) {
 			uint64_t now = 0;
 			if (!BTBReadMemory(src[i].address, &now, size)) continue;
@@ -285,10 +303,10 @@ static UIViewController *BTBTop(void) {
 				case BTBModeBigger: keep = BTBCompare(now, src[i].raw, type) > 0; break;
 				case BTBModeSmaller: keep = BTBCompare(now, src[i].raw, type) < 0; break;
 			}
-			if (keep) { BTBHit h = { src[i].address, now }; [kept appendBytes:&h length:sizeof(h)]; }
+			if (keep) { src[kept].address = src[i].address; src[kept].raw = now; kept++; }
 		}
 		dispatch_async(dispatch_get_main_queue(), ^{
-			self->_hits = kept;
+			self->_count = kept;
 			self->_busy = NO;
 			NSUInteger n = [self hitCount];
 			[self setStatus:n == 0 ? @"No results left. Start over with New scan." : [NSString stringWithFormat:@"%lu results%@", (unsigned long)n, n <= 200 ? @". Tap one to edit it." : @". Scan again to narrow it down."]];

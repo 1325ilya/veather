@@ -242,7 +242,7 @@ struct BTBSigningOverlay: View {
 			if showLogs {
 				BTBLiveLogView(fontSize: 11)
 					.padding(.top, 60)
-					.padding(.bottom, 170)
+					.padding(.bottom, finished && onInstall != nil ? 340 : 170)
 			}
 
 			VStack(spacing: 14) {
