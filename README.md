@@ -1,4 +1,4 @@
-# BetterThanBox
+# Veather
 
 On-device iOS IPA-подписчик и менеджер приложений — «лучшее из всех» (аналог GBox / KSign / ESign / Feather). Основа — [Feather](https://github.com/khcrysalis/Feather) (GPL-3.0), код приложения в `App/`.
 
@@ -8,7 +8,7 @@ On-device iOS IPA-подписчик и менеджер приложений �
 
 ## Что умеет
 
-| Возможность | BetterThanBox |
+| Возможность | Veather |
 |---|---|
 | Подпись p12/mobileprovision, ad-hoc, «только изменить» | ✅ |
 | Пресеты подписи, массовая подпись, предпроверка | ✅ |

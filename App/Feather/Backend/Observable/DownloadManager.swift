@@ -269,7 +269,7 @@ extension DownloadManager: URLSessionDownloadDelegate {
 			return
 		}
 		
-		// BetterThanBox Download Rescue: a cancel is a user action; any other
+		// Veather Download Rescue: a cancel is a user action; any other
 		// error keeps the download so it can be resumed from where it stopped.
 		let nsError = error as NSError
 		if nsError.code == NSURLErrorCancelled {
@@ -288,7 +288,7 @@ extension DownloadManager: URLSessionDownloadDelegate {
 		}
 	}
 	
-	/// BetterThanBox: retry a failed download (resumes from resume data when possible).
+	/// Veather: retry a failed download (resumes from resume data when possible).
 	func retryDownload(_ download: Download) {
 		download.failed = false
 		resumeDownload(download)

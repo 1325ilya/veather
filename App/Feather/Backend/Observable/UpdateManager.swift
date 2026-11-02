@@ -36,7 +36,7 @@ final class UpdateManager: ObservableObject {
 	
 	private init() {}
 	
-	/// BetterThanBox: hide this update until a newer version appears.
+	/// Veather: hide this update until a newer version appears.
 	func skip(_ update: AppUpdate) {
 		BTBUpdateRules.ignore(bundleID: update.bundleIdentifier, version: update.remoteVersion)
 		updates[update.localUUID] = nil
@@ -162,7 +162,7 @@ final class UpdateManager: ObservableObject {
 				continue
 			}
 			
-			// BetterThanBox: look for the app in every source (or only the one it came
+			// Veather: look for the app in every source (or only the one it came
 			// from, if the user turned that off), honour a pinned source, and only
 			// report versions that are actually newer than the installed one.
 			let searchAllSources = UserDefaults.standard.object(forKey: BTBUpdateRules.allSourcesKey) as? Bool ?? true

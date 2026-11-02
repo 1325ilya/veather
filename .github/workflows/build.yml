@@ -1,4 +1,4 @@
-name: Build BetterThanBox
+name: Build Veather
 
 on:
   push:
@@ -48,7 +48,7 @@ jobs:
       - name: Cache DerivedData
         uses: actions/cache@v4
         with:
-          path: ${{ runner.temp }}/BetterThanBox/iphoneos
+          path: ${{ runner.temp }}/Veather/iphoneos
           key: deriveddata-v1-${{ hashFiles('App/Feather.xcodeproj/project.pbxproj') }}
           restore-keys: |
             deriveddata-v1-
@@ -61,7 +61,9 @@ jobs:
         run: |
           agvtool new-version -all ${{ github.run_number }} || true
           make 2>&1 | tee build.log | grep -E 'error:|BUILD (SUCCEEDED|FAILED)|\*\*' || true
-          test -f packages/BetterThanBox.ipa
+          test -f packages/Veather.ipa
+          # old installs look for any .ipa asset; keep the former file name published too
+          cp packages/Veather.ipa packages/BetterThanBox.ipa
 
       - name: Show errors
         if: failure()
@@ -73,8 +75,8 @@ jobs:
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
-          name: BetterThanBox-${{ github.run_number }}
-          path: App/packages/BetterThanBox.ipa
+          name: Veather-${{ github.run_number }}
+          path: App/packages/Veather.ipa
           if-no-files-found: error
 
       - name: Publish rolling release
@@ -82,10 +84,12 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: nightly-${{ github.ref_name == 'master' && 'master' || 'dev' }}
-          name: BetterThanBox nightly (${{ github.ref_name }})
+          name: Veather nightly (${{ github.ref_name }})
           prerelease: true
           body: "Build ${{ github.run_number }} (${{ github.sha }})"
-          files: App/packages/BetterThanBox.ipa
+          files: |
+            App/packages/Veather.ipa
+            App/packages/BetterThanBox.ipa
           overwrite_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -2,7 +2,7 @@
 //  with a different team or bundle ID:
 //   * keychain: drop kSecAttrAccessGroup (old team prefix → errSecMissingEntitlement)
 //   * app groups: give the app a private folder when the group container is unavailable
-//   * bundle ID: when BetterThanBox changed it, the app's own code sees the original ID
+//   * bundle ID: when Veather changed it, the app's own code sees the original ID
 //     (Info.plist `BTBOriginalBundleID`); iOS frameworks keep seeing the real one, so
 //     preferences, notifications and the keychain keep working
 

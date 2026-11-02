@@ -49,7 +49,7 @@ final class SourcesViewModel: ObservableObject {
 							return (source, nil)
 						}
 						
-						// BetterThanBox: conditional fetch + offline cache
+						// Veather: conditional fetch + offline cache
 						let repo = await BTBSourceCache.fetch(from: url)
 						return (source, repo)
 					}

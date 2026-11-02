@@ -120,7 +120,7 @@ struct Options: Codable, Equatable {
 	/// If app should merge entitlements with the binary.
 	var mergeEntitlements: Bool
 	
-	// MARK: BetterThanBox
+	// MARK: Veather
 	
 	/// Remove all app extensions (`PlugIns/`, `Extensions/`)
 	var btb_removeExtensions: Bool
@@ -186,7 +186,7 @@ struct Options: Codable, Equatable {
 		injectIntoExtensions: false,
 		mergeEntitlements: false,
 		
-		// MARK: BetterThanBox
+		// MARK: Veather
 		
 		btb_removeExtensions: false,
 		btb_removeWatchApp: false,

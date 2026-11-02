@@ -1,19 +1,19 @@
 # Задание для агента на macOS (сборка + симулятор)
 
-Ты работаешь над iOS-приложением BetterThanBox — on-device подписчиком IPA на основе Feather (Swift/SwiftUI, GPL-3.0).
+Ты работаешь над iOS-приложением Veather — on-device подписчиком IPA на основе Feather (Swift/SwiftUI, GPL-3.0).
 
 Репозиторий: https://github.com/1325ilya/BetterThanBox
 Ветка: `claude/ios-signers-collection` — работай и пушь только в неё.
 Язык общения с пользователем: русский.
 
-Сначала прочитай `AGENTS.md` в корне: там контекст, что уже сделано и что осталось (TODO). Код приложения лежит в `App/`, наш код — в `App/Feather/BetterThanBox/` (префикс `BTB`).
+Сначала прочитай `AGENTS.md` в корне: там контекст, что уже сделано и что осталось (TODO). Код приложения лежит в `App/`, наш код — в `App/Feather/Veather/` (префикс `BTB`).
 
 ## Задача 1 — собрать и починить сборку
 
 1. `git clone https://github.com/1325ilya/BetterThanBox -b claude/ios-signers-collection`
    Без `--recurse-submodules`: сабмодули в `repos/` — чужие проекты для анализа, для сборки они не нужны.
 2. `cd App && make`
-   Makefile собирает твики (`make -C Tweaks`), потом выполняет xcodebuild с `CODE_SIGNING_ALLOWED=NO` и кладёт неподписанный IPA в `App/packages/BetterThanBox.ipa`.
+   Makefile собирает твики (`make -C Tweaks`), потом выполняет xcodebuild с `CODE_SIGNING_ALLOWED=NO` и кладёт неподписанный IPA в `App/packages/Veather.ipa`.
    Для быстрых итераций можно сразу:
    `xcodebuild -project Feather.xcodeproj -scheme Feather -configuration Debug -destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO build`
 3. Исправь все ошибки компиляции. Большая часть нового кода ещё ни разу не компилировалась: он написан на Linux, а проверяется только через CI. Чини минимально и не меняй смысл фич.

@@ -1,4 +1,4 @@
-NAME := BetterThanBox
+NAME := Veather
 SCHEME := Feather
 PLATFORMS := iphoneos
 
@@ -61,16 +61,16 @@ $(PLATFORMS): deps tweaks
 		ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES=NO
 
 	mkdir -p _build/Payload
-	cp -R _build/Applications/*.app _build/Payload/BetterThanBox.app
-	chmod -R 0755 _build/Payload/BetterThanBox.app
-	codesign --force --sign - --timestamp=none _build/Payload/BetterThanBox.app
-	cp deps/* _build/Payload/BetterThanBox.app/ || true
-	cp _tweakbuild/BTBTweaks.btbtweak _build/Payload/BetterThanBox.app/ || true
+	cp -R _build/Applications/*.app _build/Payload/Veather.app
+	chmod -R 0755 _build/Payload/Veather.app
+	codesign --force --sign - --timestamp=none _build/Payload/Veather.app
+	cp deps/* _build/Payload/Veather.app/ || true
+	cp _tweakbuild/BTBTweaks.btbtweak _build/Payload/Veather.app/ || true
 
 	mkdir -p packages
 
 	@if [ "$@" = "iphoneos" ]; then \
-		ditto -c -k --sequesterRsrc --keepParent _build/Payload "packages/BetterThanBox.ipa"; \
+		ditto -c -k --sequesterRsrc --keepParent _build/Payload "packages/Veather.ipa"; \
 	else \
-		ditto -c -k --sequesterRsrc --keepParent _build/Payload/BetterThanBox.app "packages/BetterThanBox_Catalyst.zip"; \
+		ditto -c -k --sequesterRsrc --keepParent _build/Payload/Veather.app "packages/Veather_Catalyst.zip"; \
 	fi

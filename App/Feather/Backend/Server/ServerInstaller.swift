@@ -38,7 +38,7 @@ class ServerInstaller: Identifiable, ObservableObject {
 		_shutdownServer()
 	}
 	
-	/// BetterThanBox: restart on the same port so a refreshed TLS certificate is used.
+	/// Veather: restart on the same port so a refreshed TLS certificate is used.
 	func reloadTLS() throws {
 		_shutdownServer()
 		try _setup()

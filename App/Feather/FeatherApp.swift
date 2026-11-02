@@ -20,7 +20,7 @@ struct FeatherApp: App {
 	let storage = Storage.shared
 	
 	init() {
-		// BetterThanBox: dark theme by default (users can still pick System/Light in Appearance)
+		// Veather: dark theme by default (users can still pick System/Light in Appearance)
 		UserDefaults.standard.register(defaults: [
 			"Feather.userInterfaceStyle": UIUserInterfaceStyle.dark.rawValue
 		])
@@ -160,7 +160,7 @@ struct FeatherApp: App {
 	}
 }
 
-// MARK: - BetterThanBox: "Share → BetterThanBox" import
+// MARK: - Veather: "Share → Veather" import
 extension FeatherApp {
 	/// Files / Safari / Telegram share an .ipa → import it straight into the Library.
 	private func _importSharedPackage(_ url: URL) {

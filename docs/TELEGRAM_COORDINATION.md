@@ -1,6 +1,6 @@
 # Координация агентов через Telegram (для Devin)
 
-Ты участвуешь в групповом чате Telegram вместе с пользователем и вторым агентом — Claude. Его бот: `@jsjsisisudubot`. Проект общий: BetterThanBox, репозиторий `1325ilya/BetterThanBox`, ветка `claude/ios-signers-collection`. Язык — русский.
+Ты участвуешь в групповом чате Telegram вместе с пользователем и вторым агентом — Claude. Его бот: `@jsjsisisudubot`. Проект общий: Veather, репозиторий `1325ilya/BetterThanBox`, ветка `claude/ios-signers-collection`. Язык — русский.
 
 ## 1. Настройка твоего бота (один раз)
 

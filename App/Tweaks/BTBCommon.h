@@ -1,4 +1,4 @@
-//  BTBCommon.h — shared helpers for BetterThanBox built-in tweaks.
+//  BTBCommon.h — shared helpers for Veather built-in tweaks.
 //  Tweaks use only the ObjC runtime and dyld interposing (no Substrate/ElleKit).
 
 #import <Foundation/Foundation.h>
@@ -64,7 +64,7 @@ static inline void BTBOnMain(dispatch_block_t block) {
 	else dispatch_async(dispatch_get_main_queue(), block);
 }
 
-// Feature flags, filled from Info.plist key `BTBEnabledTweaks` (set by BetterThanBox when signing).
+// Feature flags, filled from Info.plist key `BTBEnabledTweaks` (set by Veather when signing).
 extern BOOL BTBFlagNoAds;
 extern BOOL BTBFlagNoNetwork;
 extern BOOL BTBFlagNoUpdates;

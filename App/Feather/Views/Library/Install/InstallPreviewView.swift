@@ -304,7 +304,7 @@ struct InstallPreviewView: View {
 		}
 	}
 
-	// MARK: BetterThanBox: logs and "stuck on Ready" help
+	// MARK: Veather: logs and "stuck on Ready" help
 	
 	private func _openInstallPrompt() {
 		if _serverMethod == 0 {

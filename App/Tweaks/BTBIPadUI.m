@@ -1,5 +1,5 @@
 //  BTBIPadUI.m — /ipadui: make the app use its iPad interface on iPhone.
-//  BetterThanBox also adds iPad (2) to UIDeviceFamily when this tweak is chosen.
+//  Veather also adds iPad (2) to UIDeviceFamily when this tweak is chosen.
 //
 //  On the iPad idiom UIKit shows action sheets and share sheets as popovers and
 //  throws an exception when the app gave no anchor (code written for iPhone never

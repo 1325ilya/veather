@@ -13,7 +13,7 @@ struct SigningEntitlementsView: View {
 	@State private var _isAddingPresenting = false
 	
 	@Binding var bindingValue: URL?
-	/// BetterThanBox: app whose embedded entitlements can be used as a starting point
+	/// Veather: app whose embedded entitlements can be used as a starting point
 	var app: AppInfoPresentable? = nil
 	
 	// MARK: Body
@@ -63,7 +63,7 @@ struct SigningEntitlementsView: View {
 	}
 }
 
-// MARK: - BetterThanBox: entitlements builder
+// MARK: - Veather: entitlements builder
 extension SigningEntitlementsView {
 	private func _create(_ dict: [String: Any]) {
 		let tmp = FileManager.default.temporaryDirectory.appendingPathComponent("BTBEntitlements_\(UUID().uuidString).plist")

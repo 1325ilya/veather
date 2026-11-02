@@ -91,7 +91,7 @@ extension ServerInstaller {
 		let bundlesURL = Bundle.main.url(forResource: name, withExtension: ext)
 		let documentsCertificate = URL.documentsDirectory.appendingPathComponent("server.crt")
 		
-		// BetterThanBox: a user-provided certificate in Documents wins while it is valid,
+		// Veather: a user-provided certificate in Documents wins while it is valid,
 		// then the auto-refreshed one, then whatever exists (bundled may be expired)
 		if fileManager.fileExists(atPath: documentsURL.path), BTBServerCert.isUsable(documentsCertificate) {
 			return documentsURL
