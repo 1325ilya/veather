@@ -83,6 +83,7 @@ struct SettingsView: View {
 					NavigationLink(destination: ConfigurationView()) {
 						BTBRowLabel(.localized("Signing Options"), systemImage: "signature", color: .purple)
 					}
+					BTBAutoSignToggle()
 					NavigationLink(destination: InstallationView()) {
 						BTBRowLabel(.localized("Installation"), systemImage: "arrow.down.app.fill", color: .blue)
 					}

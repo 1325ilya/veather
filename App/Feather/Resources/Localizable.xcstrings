@@ -24119,6 +24119,46 @@
           }
         }
       }
+    },
+    "Auto-signing %@…" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Автоподпись %@…"
+          }
+        }
+      }
+    },
+    "Auto-Sign Failed" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Автоподпись не удалась"
+          }
+        }
+      }
+    },
+    "Sign Right After Import" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подписывать сразу после импорта"
+          }
+        }
+      }
+    },
+    "Import → sign → install prompt, in one step" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Импорт → подпись → установка за один шаг"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

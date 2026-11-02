@@ -182,6 +182,9 @@ extension FeatherApp {
 					title: .localized("Import Failed"),
 					message: error.localizedDescription
 				)
+			} else if BTBAutoSign.isEnabled {
+				generator.notificationOccurred(.success)
+				Task { @MainActor in BTBAutoSign.handleImportFinished() }
 			} else {
 				generator.notificationOccurred(.success)
 				UIAlertController.showAlertWithOk(

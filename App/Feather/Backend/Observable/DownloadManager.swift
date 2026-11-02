@@ -183,6 +183,8 @@ extension DownloadManager: URLSessionDownloadDelegate {
 			generator.notificationOccurred(err == nil ? .success : .error)
 			if let err {
 				DownloadManager.reportImportFailure(name: url.lastPathComponent, error: err)
+			} else {
+				Task { @MainActor in BTBAutoSign.handleImportFinished() }
 			}
 			
 			DispatchQueue.main.async {
