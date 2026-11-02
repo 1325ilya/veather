@@ -19,9 +19,16 @@ enum BTBAutoSign {
 		UserDefaults.standard.bool(forKey: enabledKey)
 	}
 
+	private static var _signedUUIDs: Set<String> = []
+
 	/// Call after an import finished successfully.
 	static func handleImportFinished() {
 		guard isEnabled, let app = _latestImported() else { return }
+		// several imports can finish close together: sign each app only once
+		if let uuid = app.uuid {
+			guard !_signedUUIDs.contains(uuid) else { return }
+			_signedUUIDs.insert(uuid)
+		}
 		BTBLiveLog.log(String.localized("Auto-signing %@…", arguments: app.name ?? ""), .step)
 		BTBBulkSigner.sign([app], progress: { _, _ in }) { ok, errors in
 			if ok > 0 {
