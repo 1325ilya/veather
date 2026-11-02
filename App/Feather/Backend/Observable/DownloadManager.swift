@@ -7,7 +7,8 @@
 
 import Foundation
 import Combine
-import UIKit.UIImpactFeedbackGenerator
+import UIKit
+import NimbleExtensions
 import BackgroundTasks
 
 class Download: ObservableObject, Identifiable, @unchecked Sendable {
@@ -178,9 +179,10 @@ extension DownloadManager: URLSessionDownloadDelegate {
 	
 	func handlePachageFile(url: URL, dl: Download) throws {
 		FR.handlePackageFile(url, download: dl) { err in
-			if err != nil {
-				let generator = UINotificationFeedbackGenerator()
-				generator.notificationOccurred(.error)
+			let generator = UINotificationFeedbackGenerator()
+			generator.notificationOccurred(err == nil ? .success : .error)
+			if let err {
+				DownloadManager.reportImportFailure(name: url.lastPathComponent, error: err)
 			}
 			
 			DispatchQueue.main.async {
@@ -218,6 +220,23 @@ extension DownloadManager: URLSessionDownloadDelegate {
 			try handlePachageFile(url: destinationURL, dl: download)
 		} catch {
 			print("Error handling downloaded file: \(error.localizedDescription)")
+			DispatchQueue.main.async {
+				if let index = self.getDownloadIndex(by: download.id) {
+					self.downloads.remove(at: index)
+				}
+			}
+			DownloadManager.reportImportFailure(name: download.fileName, error: error)
+		}
+	}
+	
+	/// Tells the user why an import did not work instead of failing silently.
+	static func reportImportFailure(name: String, error: Error) {
+		DispatchQueue.main.async {
+			UIAlertController.showAlertWithOk(
+				title: .localized("Import Failed"),
+				message: String.localized("Couldn't import %@. Make sure it is a valid .ipa or .tipa file (a broken or incomplete download often looks like this).", arguments: name)
+					+ "\n\n" + error.localizedDescription
+			)
 		}
 	}
 	

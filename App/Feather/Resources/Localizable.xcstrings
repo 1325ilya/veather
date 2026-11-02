@@ -24029,6 +24029,16 @@
           }
         }
       }
+    },
+    "Couldn't import %@. Make sure it is a valid .ipa or .tipa file (a broken or incomplete download often looks like this)." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось импортировать %@. Убедитесь, что это рабочий файл .ipa или .tipa (так часто выглядит битая или недокачанная загрузка)."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
