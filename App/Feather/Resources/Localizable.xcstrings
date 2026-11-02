@@ -24159,6 +24159,36 @@
           }
         }
       }
+    },
+    "Certificate Expires Soon" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сертификат скоро истечёт"
+          }
+        }
+      }
+    },
+    "Your certificate expires today. Apps signed with it will stop opening." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сертификат истекает сегодня. Подписанные им приложения перестанут открываться."
+          }
+        }
+      }
+    },
+    "%lld days left. Get a new certificate and re-sign your apps before then." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Осталось дней: %lld. Получите новый сертификат и переподпишите приложения до этого."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

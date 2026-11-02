@@ -74,6 +74,11 @@ struct LibraryView: View {
 		return cert
 	}
 	
+	private var _certificateDaysLeft: Int? {
+		guard let expiration = _healthyCertificate?.expiration else { return nil }
+		return Calendar.current.dateComponents([.day], from: Date(), to: expiration).day
+	}
+	
 	private var _appsNeedingResign: [Signed] {
 		guard let healthy = _healthyCertificate else { return [] }
 		return _signedApps.filter { app in
@@ -110,6 +115,21 @@ struct LibraryView: View {
 					if !broken.isEmpty {
 						Section {
 							_resignBanner(broken)
+						}
+					} else if let days = _certificateDaysLeft, days <= 7 {
+						Section {
+							NavigationLink {
+								BTBCertHealthView()
+							} label: {
+								BTBRowLabel(
+									.localized("Certificate Expires Soon"),
+									systemImage: "clock.badge.exclamationmark.fill",
+									color: .orange,
+									subtitle: days <= 0
+										? .localized("Your certificate expires today. Apps signed with it will stop opening.")
+										: .localized("%lld days left. Get a new certificate and re-sign your apps before then.", arguments: days)
+								)
+							}
 						}
 					}
 				}
