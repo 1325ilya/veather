@@ -56,6 +56,7 @@ struct SigningView: View {
 				_cert()
 				BTBPreflightSection(app: app, options: _temporaryOptions, certificate: _selectedCert())
 				BTBSigningPresetsSection(options: $_temporaryOptions)
+				BTBBuiltinTweaksSection(options: $_temporaryOptions)
 				_customizationProperties(for: app)
 				
 				Section {
