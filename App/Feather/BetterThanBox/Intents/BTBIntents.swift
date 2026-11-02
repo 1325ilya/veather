@@ -51,7 +51,7 @@ struct BTBCleanStorageIntent: AppIntent {
 }
 
 struct BTBOpenAppIntent: AppIntent {
-	static var title: LocalizedStringResource = "Open BetterThanBox"
+	static var title: LocalizedStringResource = "Open Veather"
 	static var openAppWhenRun: Bool = true
 	
 	func perform() async throws -> some IntentResult { .result() }

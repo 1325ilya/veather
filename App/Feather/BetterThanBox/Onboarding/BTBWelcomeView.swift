@@ -21,7 +21,7 @@ struct BTBWelcomeView: View {
 					VStack(spacing: 12) {
 						FRAppIconView(size: 88)
 							.shadow(color: Color.accentColor.opacity(0.4), radius: 18, y: 8)
-						Text(.localized("Welcome to BetterThanBox"))
+						Text(.localized("Welcome to Veather"))
 							.font(.largeTitle.weight(.bold))
 							.multilineTextAlignment(.center)
 						Text(.localized("Sign and install apps right on your iPhone"))

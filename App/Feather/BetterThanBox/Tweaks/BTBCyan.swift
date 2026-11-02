@@ -17,7 +17,7 @@ import NimbleViews
 
 enum BTBCyan {
 	struct Manifest: Codable {
-		var generator = "BetterThanBox"
+		var generator = "Veather"
 		var files: [String]
 		var replaceSubstrateWithEllekit: Bool = true
 		var injectIntoExtensions: Bool = false

@@ -21267,13 +21267,13 @@
         }
       }
     },
-    "Only BetterThanBox messages" : {
+    "Only Veather messages" : {
       "extractionState" : "manual",
       "localizations" : {
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Только сообщения BetterThanBox"
+            "value" : "Только сообщения Veather"
           }
         }
       }
@@ -21850,13 +21850,13 @@
         }
       }
     },
-    "This file is not a BetterThanBox backup or the password is wrong." : {
+    "This file is not a Veather backup or the password is wrong." : {
       "extractionState" : "manual",
       "localizations" : {
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Это не резервная копия BetterThanBox или неверный пароль."
+            "value" : "Это не резервная копия Veather или неверный пароль."
           }
         }
       }
@@ -22180,13 +22180,13 @@
         }
       }
     },
-    "Every few hours iOS lets BetterThanBox look for updates of your library apps (in your sources) and for revoked or expiring certificates, and you get a notification. iOS decides the exact time; Low Power Mode pauses it." : {
+    "Every few hours iOS lets Veather look for updates of your library apps (in your sources) and for revoked or expiring certificates, and you get a notification. iOS decides the exact time; Low Power Mode pauses it." : {
       "extractionState" : "manual",
       "localizations" : {
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Раз в несколько часов iOS даёт BetterThanBox проверить обновления приложений из библиотеки (в ваших источниках) и отозванные или истекающие сертификаты — и присылает уведомление. Точное время выбирает iOS; режим энергосбережения приостанавливает проверки."
+            "value" : "Раз в несколько часов iOS даёт Veather проверить обновления приложений из библиотеки (в ваших источниках) и отозванные или истекающие сертификаты — и присылает уведомление. Точное время выбирает iOS; режим энергосбережения приостанавливает проверки."
           }
         }
       }
@@ -22356,13 +22356,13 @@
         }
       }
     },
-    "Unlock BetterThanBox" : {
+    "Unlock Veather" : {
       "extractionState" : "manual",
       "localizations" : {
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Разблокировать BetterThanBox"
+            "value" : "Разблокировать Veather"
           }
         }
       }
@@ -22477,13 +22477,13 @@
         }
       }
     },
-    "Search Apple's catalogue by name, or paste an App Store link. BetterThanBox shows the app info only; the installable file comes from the sources you added or from the App Store itself." : {
+    "Search Apple's catalogue by name, or paste an App Store link. Veather shows the app info only; the installable file comes from the sources you added or from the App Store itself." : {
       "extractionState" : "manual",
       "localizations" : {
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Поиск по каталогу Apple по названию или по ссылке App Store. BetterThanBox показывает только информацию о приложении; сам файл берётся из добавленных вами источников или из самого App Store."
+            "value" : "Поиск по каталогу Apple по названию или по ссылке App Store. Veather показывает только информацию о приложении; сам файл берётся из добавленных вами источников или из самого App Store."
           }
         }
       }
@@ -23720,22 +23720,22 @@
         }
       }
     },
-    "BetterThanBox is based on Feather and is distributed under the GPL-3.0 license." : {
+    "Veather is based on Feather and is distributed under the GPL-3.0 license." : {
       "localizations" : {
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "BetterThanBox основан на Feather и распространяется по лицензии GPL-3.0."
+            "value" : "Veather основан на Feather и распространяется по лицензии GPL-3.0."
           }
         }
       }
     },
-    "BetterThanBox project" : {
+    "Veather project" : {
       "localizations" : {
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Проект BetterThanBox"
+            "value" : "Проект Veather"
           }
         }
       }
@@ -23780,12 +23780,12 @@
         }
       }
     },
-    "Tip: in the Files app, tap Share on an .ipa and choose BetterThanBox." : {
+    "Tip: in the Files app, tap Share on an .ipa and choose Veather." : {
       "localizations" : {
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Совет: в приложении «Файлы» нажмите «Поделиться» на .ipa и выберите BetterThanBox."
+            "value" : "Совет: в приложении «Файлы» нажмите «Поделиться» на .ipa и выберите Veather."
           }
         }
       }
@@ -23860,12 +23860,12 @@
         }
       }
     },
-    "Welcome to BetterThanBox" : {
+    "Welcome to Veather" : {
       "localizations" : {
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Добро пожаловать в BetterThanBox"
+            "value" : "Добро пожаловать в Veather"
           }
         }
       }
@@ -24210,12 +24210,12 @@
         }
       }
     },
-    "The file is removed from BetterThanBox. Apps already installed on your iPhone stay." : {
+    "The file is removed from Veather. Apps already installed on your iPhone stay." : {
       "localizations" : {
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Файл удалится из BetterThanBox. Уже установленные на iPhone приложения останутся."
+            "value" : "Файл удалится из Veather. Уже установленные на iPhone приложения останутся."
           }
         }
       }

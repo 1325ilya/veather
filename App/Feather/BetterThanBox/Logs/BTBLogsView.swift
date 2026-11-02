@@ -106,7 +106,7 @@ struct BTBLogsView: View {
 					Label(.localized("Errors only"), systemImage: "exclamationmark.triangle")
 				}
 				Toggle(isOn: $_onlyOwn) {
-					Label(.localized("Only BetterThanBox messages"), systemImage: "line.3.horizontal.decrease.circle")
+					Label(.localized("Only Veather messages"), systemImage: "line.3.horizontal.decrease.circle")
 				}
 			} footer: {
 				if let _error { Text(_error).foregroundStyle(.red) }
@@ -177,7 +177,7 @@ struct BTBLogsView: View {
 	
 	private func _share() {
 		let url = FileManager.default.temporaryDirectory
-			.appendingPathComponent("BetterThanBox-log-\(Int(Date().timeIntervalSince1970)).txt")
+			.appendingPathComponent("Veather-log-\(Int(Date().timeIntervalSince1970)).txt")
 		try? _export().write(to: url, atomically: true, encoding: .utf8)
 		let controller = UIActivityViewController(activityItems: [url], applicationActivities: nil)
 		if let top = UIApplication.topViewController() {

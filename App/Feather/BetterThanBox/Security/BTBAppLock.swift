@@ -37,7 +37,7 @@ final class BTBAppLock: ObservableObject {
 			_isAuthenticating = false
 			return
 		}
-		context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: String.localized("Unlock BetterThanBox")) { success, _ in
+		context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: String.localized("Unlock Veather")) { success, _ in
 			DispatchQueue.main.async {
 				self._isAuthenticating = false
 				if success { self.isLocked = false }
@@ -74,7 +74,7 @@ struct BTBAppLockOverlay: View {
 					.ignoresSafeArea()
 				VStack(spacing: 16) {
 					Image(systemName: "lock.fill").font(.system(size: 44))
-					Text(verbatim: "BetterThanBox").font(.title2.bold())
+					Text(verbatim: "Veather").font(.title2.bold())
 					Button {
 						_lock.unlock()
 					} label: {

@@ -30,7 +30,7 @@ enum BTBBackupManager {
 
 	enum BackupError: LocalizedError {
 		case invalid
-		var errorDescription: String? { .localized("This file is not a BetterThanBox backup or the password is wrong.") }
+		var errorDescription: String? { .localized("This file is not a Veather backup or the password is wrong.") }
 	}
 
 	private static let _defaultsPrefixes = ["signing_options", "Feather.", "feather.", "BTB."]
@@ -72,7 +72,7 @@ enum BTBBackupManager {
 
 		let formatter = DateFormatter()
 		formatter.dateFormat = "yyyy-MM-dd_HH-mm"
-		let zipURL = work.appendingPathComponent("BetterThanBox_\(formatter.string(from: Date())).zip")
+		let zipURL = work.appendingPathComponent("Veather_\(formatter.string(from: Date())).zip")
 		try Zip.zipFiles(
 			paths: [content],
 			zipFilePath: zipURL,

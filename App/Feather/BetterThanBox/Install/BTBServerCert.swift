@@ -160,7 +160,7 @@ enum BTBServerCert {
 	private static func _data(_ string: String) async throws -> Data {
 		guard let url = URL(string: string) else { throw URLError(.badURL) }
 		var request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 20)
-		request.setValue("BetterThanBox", forHTTPHeaderField: "User-Agent")
+		request.setValue("Veather", forHTTPHeaderField: "User-Agent")
 		let (data, response) = try await URLSession.shared.data(for: request)
 		guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
 			throw URLError(.badServerResponse)

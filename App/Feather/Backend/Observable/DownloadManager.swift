@@ -16,7 +16,7 @@ class Download: ObservableObject, Identifiable, @unchecked Sendable {
 	@Published var bytesDownloaded: Int64 = 0
 	@Published var totalBytes: Int64 = 0
 	@Published var unpackageProgress: Double = 0.0
-	@Published var failed: Bool = false   // BetterThanBox: download rescue
+	@Published var failed: Bool = false   // Veather: download rescue
 	
 	var overallProgress: Double {
 		onlyArchiving

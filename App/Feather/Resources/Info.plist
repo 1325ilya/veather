@@ -144,7 +144,7 @@
 		</dict>
 	</dict>
 	<key>NSFaceIDUsageDescription</key>
-	<string>BetterThanBox uses Face ID to protect your certificates when App Lock is on.</string>
+	<string>Veather uses Face ID to protect your certificates when App Lock is on.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>

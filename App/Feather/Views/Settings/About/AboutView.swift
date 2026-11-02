@@ -21,7 +21,7 @@ extension AboutView {
 // MARK: - View
 struct AboutView: View {
 	@State private var _credits: [CreditsModel] = [
-		.init(name: "BetterThanBox", desc: "BetterThanBox project", github: "1325ilya/BetterThanBox"),
+		.init(name: "Veather", desc: "Veather project", github: "1325ilya/BetterThanBox"),
 		.init(name: "C", desc: "Feather developer", github: "claration"),
 		.init(name: "Asami", desc: "Feather developer", github: "Nyasami"),
 		.init(name: "Lakhan Lothiyi", desc: "AltStore repositories", github: "llsc12"),
@@ -36,7 +36,7 @@ struct AboutView: View {
 					FRAppIconView(size: 84)
 						.shadow(color: Color.accentColor.opacity(0.35), radius: 14, y: 6)
 					
-					Text(verbatim: "BetterThanBox")
+					Text(verbatim: "Veather")
 						.font(.largeTitle.weight(.bold))
 						.foregroundStyle(Color.accentColor.gradient)
 						.padding(.top, 6)
@@ -69,7 +69,7 @@ struct AboutView: View {
 			}
 
 			Section {
-				Text(.localized("BetterThanBox is based on Feather and is distributed under the GPL-3.0 license."))
+				Text(.localized("Veather is based on Feather and is distributed under the GPL-3.0 license."))
 					.font(.footnote)
 					.foregroundStyle(.secondary)
 			}

@@ -55,7 +55,7 @@ void BTBInstallWebContentBlock(NSString *identifier, NSString *json) {
 	
 	// WebKit objects must be used on the main thread
 	dispatch_async(dispatch_get_main_queue(), ^{
-		NSString *fullIdentifier = [@"BetterThanBox." stringByAppendingString:identifier];
+		NSString *fullIdentifier = [@"Veather." stringByAppendingString:identifier];
 		[[WKContentRuleListStore defaultStore] compileContentRuleListForIdentifier:fullIdentifier
 			encodedContentRuleList:json
 			completionHandler:^(WKContentRuleList *list, NSError *error) {

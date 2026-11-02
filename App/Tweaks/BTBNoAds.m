@@ -71,7 +71,7 @@ BOOL BTBIsAdHost(const char *cHost) {
 
 static NSError *BTBAdBlockedError(void) {
 	return [NSError errorWithDomain:@"BetterThanBox.NoAds" code:-1
-		userInfo:@{NSLocalizedDescriptionKey: @"No ad available (blocked by BetterThanBox)."}];
+		userInfo:@{NSLocalizedDescriptionKey: @"No ad available (blocked by Veather)."}];
 }
 
 /// Class method `+load…:completionHandler:` (last argument is a block (ad, error)) → fail at once.

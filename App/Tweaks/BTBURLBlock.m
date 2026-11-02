@@ -39,7 +39,7 @@ static BTBURLDecision BTBDecide(NSURLRequest *request) {
 	NSInteger code = d == BTBURLDecisionBlockHost ? NSURLErrorCannotFindHost : NSURLErrorNotConnectedToInternet;
 	NSError *error = [NSError errorWithDomain:NSURLErrorDomain code:code userInfo:@{
 		NSURLErrorFailingURLErrorKey: self.request.URL ?: [NSNull null],
-		NSLocalizedDescriptionKey: @"Blocked by BetterThanBox"
+		NSLocalizedDescriptionKey: @"Blocked by Veather"
 	}];
 	[self.client URLProtocol:self didFailWithError:error];
 }

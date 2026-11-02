@@ -95,7 +95,7 @@ final class SigningHandler: NSObject {
 		BTBLiveLog.log("Cleaning bundle (preset files, Watch app)", .step)
 		try await _removePresetFiles(for: movedAppPath)
 		try await _removeWatchIfNeeded(for: movedAppPath)
-		BTBLiveLog.log("Applying BetterThanBox options and tweaks", .step)
+		BTBLiveLog.log("Applying Veather options and tweaks", .step)
 		try BTBSigningExtras.apply(to: movedAppPath, options: _options)
 		BTBBuiltinTweak.recordOriginalBundleID(originalIdentifier, in: movedAppPath, tweaks: _options.btb_builtinTweaks)
 		

@@ -8,7 +8,7 @@
 #import <os/log.h>
 #import <dlfcn.h>
 
-#define BTB_LOG(fmt, ...) os_log(OS_LOG_DEFAULT, "[BetterThanBox] " fmt, ##__VA_ARGS__)
+#define BTB_LOG(fmt, ...) os_log(OS_LOG_DEFAULT, "[Veather] " fmt, ##__VA_ARGS__)
 
 // dyld interposing: replaces calls to `_replacee` with `_replacement` in the app's own images
 #define BTB_INTERPOSE(_replacement, _replacee) \

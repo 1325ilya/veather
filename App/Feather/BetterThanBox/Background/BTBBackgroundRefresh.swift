@@ -101,7 +101,7 @@ enum BTBBackgroundRefresh {
 		
 		guard !lines.isEmpty else { return }
 		let content = UNMutableNotificationContent()
-		content.title = "BetterThanBox"
+		content.title = "Veather"
 		content.body = lines.joined(separator: "\n")
 		content.sound = .default
 		let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
@@ -149,7 +149,7 @@ struct BTBBackgroundSettingsView: View {
 				}
 				.disabled(!_enabled)
 			} footer: {
-				Text(.localized("Every few hours iOS lets BetterThanBox look for updates of your library apps (in your sources) and for revoked or expiring certificates, and you get a notification. iOS decides the exact time; Low Power Mode pauses it."))
+				Text(.localized("Every few hours iOS lets Veather look for updates of your library apps (in your sources) and for revoked or expiring certificates, and you get a notification. iOS decides the exact time; Low Power Mode pauses it."))
 			}
 			Section {
 				Button {

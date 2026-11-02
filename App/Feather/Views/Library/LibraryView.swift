@@ -213,7 +213,7 @@ struct LibraryView: View {
 							} description: {
 								Text(.localized("Get started by importing your first IPA file."))
 								+ Text(verbatim: "\n\n")
-								+ Text(.localized("Tip: in the Files app, tap Share on an .ipa and choose BetterThanBox."))
+								+ Text(.localized("Tip: in the Files app, tap Share on an .ipa and choose Veather."))
 							} actions: {
 								VStack(spacing: 10) {
 									Button {
@@ -320,7 +320,7 @@ struct LibraryView: View {
 				}
 				Button(.localized("Cancel"), role: .cancel) {}
 			} message: { _ in
-				Text(.localized("The file is removed from BetterThanBox. Apps already installed on your iPhone stay."))
+				Text(.localized("The file is removed from Veather. Apps already installed on your iPhone stay."))
 			}
 			.sheet(item: $_selectedInfoAppPresenting) { app in
 				LibraryInfoView(

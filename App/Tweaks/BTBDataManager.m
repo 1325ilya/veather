@@ -73,7 +73,7 @@ static UIViewController *BTBTopController(void) {
 	UIViewController *top = BTBTopController();
 	if (!top) return;
 	UIAlertController *a = [UIAlertController alertControllerWithTitle:@"Data Manager"
-		message:@"BetterThanBox: back up or restore this app's data (documents, settings, saves)."
+		message:@"Veather: back up or restore this app's data (documents, settings, saves)."
 		preferredStyle:UIAlertControllerStyleAlert];
 	[a addAction:[UIAlertAction actionWithTitle:@"Back Up to Files" style:UIAlertActionStyleDefault handler:^(UIAlertAction *x) { [self backup]; }]];
 	[a addAction:[UIAlertAction actionWithTitle:@"Restore from Files" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *x) { [self pickRestore]; }]];
