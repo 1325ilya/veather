@@ -4,7 +4,7 @@
 #import "BTBCommon.h"
 #import <netdb.h>
 
-BOOL BTBFlagNoAds, BTBFlagNoNetwork, BTBFlagNoUpdates, BTBFlagNoRate, BTBFlagIPadUI, BTBFlagSideloadFix, BTBFlagDataManager, BTBFlagGameGuard, BTBFlagSpoofAds;
+BOOL BTBFlagNoAds, BTBFlagNoNetwork, BTBFlagNoUpdates, BTBFlagNoRate, BTBFlagIPadUI, BTBFlagSideloadFix, BTBFlagDataManager, BTBFlagGameGuard;
 
 // single getaddrinfo interposer shared by the network features
 static int btb_getaddrinfo(const char *node, const char *service, const struct addrinfo *hints, struct addrinfo **res) {
@@ -30,13 +30,10 @@ __attribute__((constructor)) static void BTBTweaksInit(void) {
 		BTBFlagSideloadFix = [set containsObject:@"sideload"];
 		BTBFlagDataManager = [set containsObject:@"backup"];
 		BTBFlagGameGuard = [set containsObject:@"gameguard"];
-		BTBFlagSpoofAds = [set containsObject:@"spoofads"];
-		if (BTBFlagSpoofAds) BTBFlagNoAds = YES; // banners, interstitials and ad domains stay blocked
 		
 		if (BTBFlagSideloadFix) BTBFeatureSideloadFix();
 		if (BTBFlagNoNetwork) BTBFeatureNoNetwork();
 		if (BTBFlagNoAds) BTBFeatureNoAds();
-		if (BTBFlagSpoofAds) BTBFeatureSpoofAds();
 		if (BTBFlagNoUpdates) BTBFeatureNoUpdates();
 		if (BTBFlagNoRate) BTBFeatureNoRate();
 		if (BTBFlagIPadUI) BTBFeatureIPadUI();

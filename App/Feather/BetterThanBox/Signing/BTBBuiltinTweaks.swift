@@ -20,7 +20,6 @@ enum BTBBuiltinTweak: String, CaseIterable, Codable, Identifiable {
 	case ipadui
 	case noupd
 	case gameguard
-	case spoofads
 
 	var id: String { rawValue }
 
@@ -34,7 +33,6 @@ enum BTBBuiltinTweak: String, CaseIterable, Codable, Identifiable {
 		case .ipadui: .localized("iPad Interface")
 		case .noupd: .localized("Bypass Update Checks")
 		case .gameguard: .localized("GameGuardian")
-		case .spoofads: .localized("Skip Rewarded Ads")
 		}
 	}
 
@@ -47,7 +45,6 @@ enum BTBBuiltinTweak: String, CaseIterable, Codable, Identifiable {
 		case .norev: .localized("Suppresses \"Rate this app\" dialogs.")
 		case .ipadui: .localized("Forces the iPad layout on iPhone; menus no longer crash the app.")
 		case .noupd: .localized("Answers App Store version checks with \"no update\" so the app stops nagging.")
-		case .spoofads: .localized("Rewarded ads are not shown, but the app still gives you the reward (AdMob, AppLovin MAX). Also blocks all other ads. Rewards that the game's server checks can't be skipped.")
 		case .gameguard: .localized("Memory editor for offline games: hold four fingers on the screen, search a value (coins, lives), change or freeze it. Offline games only.")
 		}
 	}
@@ -62,7 +59,6 @@ enum BTBBuiltinTweak: String, CaseIterable, Codable, Identifiable {
 		case .ipadui: "ipad"
 		case .noupd: "arrow.down.app"
 		case .gameguard: "gamecontroller.fill"
-		case .spoofads: "gift.fill"
 		}
 	}
 
