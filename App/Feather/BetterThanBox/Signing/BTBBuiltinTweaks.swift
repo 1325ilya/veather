@@ -19,6 +19,7 @@ enum BTBBuiltinTweak: String, CaseIterable, Codable, Identifiable {
 	case norev
 	case ipadui
 	case noupd
+	case gameguard
 
 	var id: String { rawValue }
 
@@ -31,6 +32,7 @@ enum BTBBuiltinTweak: String, CaseIterable, Codable, Identifiable {
 		case .norev: .localized("No Rate Prompts")
 		case .ipadui: .localized("iPad Interface")
 		case .noupd: .localized("Bypass Update Checks")
+		case .gameguard: .localized("GameGuardian")
 		}
 	}
 
@@ -43,6 +45,7 @@ enum BTBBuiltinTweak: String, CaseIterable, Codable, Identifiable {
 		case .norev: .localized("Suppresses \"Rate this app\" dialogs.")
 		case .ipadui: .localized("Forces the iPad layout on iPhone; menus no longer crash the app.")
 		case .noupd: .localized("Answers App Store version checks with \"no update\" so the app stops nagging.")
+		case .gameguard: .localized("Memory editor for offline games: hold four fingers on the screen, search a value (coins, lives), change or freeze it. Offline games only.")
 		}
 	}
 
@@ -55,6 +58,17 @@ enum BTBBuiltinTweak: String, CaseIterable, Codable, Identifiable {
 		case .norev: "star.slash"
 		case .ipadui: "ipad"
 		case .noupd: "arrow.down.app"
+		case .gameguard: "gamecontroller.fill"
+		}
+	}
+
+	/// Tweaks that need the user to read and confirm a warning before they are switched on.
+	var warning: String? {
+		switch self {
+		case .gameguard:
+			.localized("Use GameGuardian only in offline, single-player games. In online games it can get your account banned, and it breaks the game for other players. You are responsible for how you use it.")
+		default:
+			nil
 		}
 	}
 

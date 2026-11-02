@@ -72,6 +72,7 @@ extern BOOL BTBFlagNoRate;
 extern BOOL BTBFlagIPadUI;
 extern BOOL BTBFlagSideloadFix;
 extern BOOL BTBFlagDataManager;
+extern BOOL BTBFlagGameGuard;
 
 void BTBFeatureNoAds(void);
 void BTBFeatureNoNetwork(void);
@@ -80,5 +81,6 @@ void BTBFeatureNoRate(void);
 void BTBFeatureIPadUI(void);
 void BTBFeatureSideloadFix(void);
 void BTBFeatureDataManager(void);
+void BTBFeatureGameGuard(void);
 BOOL BTBIsAdHost(const char *host);
 NSArray<NSString *> *BTBAdHosts(void);

@@ -24319,6 +24319,46 @@
           }
         }
       }
+    },
+    "GameGuardian" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GameGuardian"
+          }
+        }
+      }
+    },
+    "Memory editor for offline games: hold four fingers on the screen, search a value (coins, lives), change or freeze it. Offline games only." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Редактор памяти для оффлайн-игр: удерживайте четыре пальца на экране, найдите значение (монеты, жизни), измените или заморозьте его. Только оффлайн-игры."
+          }
+        }
+      }
+    },
+    "Use GameGuardian only in offline, single-player games. In online games it can get your account banned, and it breaks the game for other players. You are responsible for how you use it." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Используйте GameGuardian только в оффлайн-играх для одного игрока. В онлайн-играх вас могут забанить, и это портит игру другим игрокам. Ответственность за использование на вас."
+          }
+        }
+      }
+    },
+    "Offline Games Only — Enable" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Только оффлайн-игры — включить"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

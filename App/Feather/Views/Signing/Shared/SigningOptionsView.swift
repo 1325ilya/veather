@@ -152,6 +152,21 @@ struct SigningOptionsView: View {
 					Toggle(isOn: Binding(
 						get: { options.btb_builtinTweaks.contains(tweak.rawValue) },
 						set: { on in
+							if on, let warning = tweak.warning {
+								// must be accepted before the tweak is switched on
+								UIAlertController.showAlert(
+									title: tweak.title,
+									message: warning,
+									actions: [
+										UIAlertAction(title: .localized("Offline Games Only — Enable"), style: .destructive) { _ in
+											options.btb_builtinTweaks.removeAll { $0 == tweak.rawValue }
+											options.btb_builtinTweaks.append(tweak.rawValue)
+										},
+										UIAlertAction(title: .localized("Cancel"), style: .cancel)
+									]
+								)
+								return
+							}
 							options.btb_builtinTweaks.removeAll { $0 == tweak.rawValue }
 							if on { options.btb_builtinTweaks.append(tweak.rawValue) }
 						}

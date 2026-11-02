@@ -4,7 +4,7 @@
 #import "BTBCommon.h"
 #import <netdb.h>
 
-BOOL BTBFlagNoAds, BTBFlagNoNetwork, BTBFlagNoUpdates, BTBFlagNoRate, BTBFlagIPadUI, BTBFlagSideloadFix, BTBFlagDataManager;
+BOOL BTBFlagNoAds, BTBFlagNoNetwork, BTBFlagNoUpdates, BTBFlagNoRate, BTBFlagIPadUI, BTBFlagSideloadFix, BTBFlagDataManager, BTBFlagGameGuard;
 
 // single getaddrinfo interposer shared by the network features
 static int btb_getaddrinfo(const char *node, const char *service, const struct addrinfo *hints, struct addrinfo **res) {
@@ -29,6 +29,7 @@ __attribute__((constructor)) static void BTBTweaksInit(void) {
 		BTBFlagIPadUI = [set containsObject:@"ipadui"];
 		BTBFlagSideloadFix = [set containsObject:@"sideload"];
 		BTBFlagDataManager = [set containsObject:@"backup"];
+		BTBFlagGameGuard = [set containsObject:@"gameguard"];
 		
 		if (BTBFlagSideloadFix) BTBFeatureSideloadFix();
 		if (BTBFlagNoNetwork) BTBFeatureNoNetwork();
@@ -37,6 +38,7 @@ __attribute__((constructor)) static void BTBTweaksInit(void) {
 		if (BTBFlagNoRate) BTBFeatureNoRate();
 		if (BTBFlagIPadUI) BTBFeatureIPadUI();
 		if (BTBFlagDataManager) BTBFeatureDataManager();
+		if (BTBFlagGameGuard) BTBFeatureGameGuard();
 		BTB_LOG("enabled tweaks: %{public}@", [enabled componentsJoinedByString:@","]);
 	}
 }
