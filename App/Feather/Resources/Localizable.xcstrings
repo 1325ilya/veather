@@ -24189,6 +24189,16 @@
           }
         }
       }
+    },
+    "Clones: sign several copies with numbered bundle IDs and names (and a number on the icon) to use multiple accounts side by side." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Клоны: подпись нескольких копий с пронумерованными bundle ID и названиями (и цифрой на иконке), чтобы держать несколько аккаунтов рядом."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

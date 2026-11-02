@@ -66,11 +66,6 @@ struct SigningView: View {
 							systemImage: "square.on.square"
 						)
 					}
-				} footer: {
-					Text(.localized("Sign several copies with numbered bundle IDs and names (and a number on the icon) to use multiple accounts side by side."))
-				}
-				
-				Section {
 					Toggle(isOn: $_liveLogs) {
 						BTBRowLabel(
 							.localized("Live Logs"),
@@ -79,6 +74,10 @@ struct SigningView: View {
 							subtitle: .localized("Show logs while signing and installing")
 						)
 					}
+				} header: {
+					Text(.localized("More"))
+				} footer: {
+					Text(.localized("Clones: sign several copies with numbered bundle IDs and names (and a number on the icon) to use multiple accounts side by side."))
 				}
 				
 				// horrible
