@@ -24199,6 +24199,26 @@
           }
         }
       }
+    },
+    "Delete “%@”?" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить «%@»?"
+          }
+        }
+      }
+    },
+    "The file is removed from BetterThanBox. Apps already installed on your iPhone stay." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Файл удалится из BetterThanBox. Уже установленные на iPhone приложения останутся."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

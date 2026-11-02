@@ -16,6 +16,7 @@ struct LibraryCellView: View {
 	@ObservedObject private var updateManager = UpdateManager.shared
 	@State private var _signedUpdateConfirmation: AppUpdate?
 	@State private var _isSignedUpdateConfirmationPresented = false
+	@State private var _isDeleteConfirmationPresented = false
 
 	var certInfo: Date.ExpirationInfo? {
 		Storage.shared.getCertificate(from: app)?.expiration?.expirationInfo()
@@ -120,6 +121,18 @@ struct LibraryCellView: View {
 			}
 		}
 		.confirmationDialog(
+			String.localized("Delete “%@”?", arguments: app.name ?? .localized("Unknown")),
+			isPresented: $_isDeleteConfirmationPresented,
+			titleVisibility: .visible
+		) {
+			Button(.localized("Delete"), role: .destructive) {
+				Storage.shared.deleteApp(for: app)
+			}
+			Button(.localized("Cancel"), role: .cancel) {}
+		} message: {
+			Text(.localized("The file is removed from BetterThanBox. Apps already installed on your iPhone stay."))
+		}
+		.confirmationDialog(
 			.localized("Update Available"),
 			isPresented: $_isSignedUpdateConfirmationPresented,
 			titleVisibility: .visible
@@ -179,7 +192,7 @@ extension LibraryCellView {
 	@ViewBuilder
 	private func _actions(for app: AppInfoPresentable) -> some View {
 		Button(.localized("Delete"), systemImage: "trash", role: .destructive) {
-			Storage.shared.deleteApp(for: app)
+			_isDeleteConfirmationPresented = true
 		}
 	}
 	

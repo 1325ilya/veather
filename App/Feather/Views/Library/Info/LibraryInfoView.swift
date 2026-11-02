@@ -16,6 +16,7 @@ struct LibraryInfoView: View {
 	var onInstall: (() -> Void)? = nil
 	
 	@Environment(\.dismiss) private var dismiss
+	@State private var _size: String?
 	
 	// MARK: Body
 	var body: some View {
@@ -116,6 +117,20 @@ extension LibraryInfoView {
 		}
 	}
 	
+	nonisolated private static func _directorySize(_ url: URL) -> Int64 {
+		let keys: [URLResourceKey] = [.totalFileAllocatedSizeKey, .isRegularFileKey]
+		guard let enumerator = FileManager.default.enumerator(at: url, includingPropertiesForKeys: keys) else { return 0 }
+		var total: Int64 = 0
+		for case let file as URL in enumerator {
+			guard
+				let values = try? file.resourceValues(forKeys: Set(keys)),
+				values.isRegularFile == true
+			else { continue }
+			total += Int64(values.totalFileAllocatedSize ?? 0)
+		}
+		return total
+	}
+	
 	private func _run(_ action: @escaping () -> Void) {
 		dismiss()
 		DispatchQueue.main.asyncAfter(deadline: .now() + 0.4, execute: action)
@@ -139,6 +154,13 @@ extension LibraryInfoView {
 			if let date = app.date {
 				_infoCell(.localized("Date Added"), desc: date.formatted())
 			}
+			
+			_infoCell(.localized("Size"), desc: _size ?? "…")
+				.task {
+					guard _size == nil, let dir = Storage.shared.getUuidDirectory(for: app) else { return }
+					let bytes = await Task.detached(priority: .utility) { Self._directorySize(dir) }.value
+					_size = ByteCountFormatter.string(fromByteCount: bytes, countStyle: .file)
+				}
 			
 			if 
 				let name = app.name, 
