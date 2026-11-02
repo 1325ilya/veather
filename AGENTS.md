@@ -1,6 +1,6 @@
 # AGENTS.md — контекст проекта Veather (передача между моделями)
 
-Язык общения с пользователем: **русский**. Пользователь: medical.azart@gmail.com, репозиторий `1325ilya/BetterThanBox`.
+Язык общения с пользователем: **русский**. Пользователь: medical.azart@gmail.com, репозиторий `1325ilya/veather`.
 
 ## Цель пользователя
 Собрать лучшее из всех iOS-подписчиков/сайдлоадеров (аналоги GBox, KSign, ESign и т.п.) — найти у каждого уникальные функции, которых нет у других, выписать в TODO и **в будущем** реализовать в собственном приложении «Veather».
@@ -23,7 +23,7 @@
 - Встроенные твики: `App/Tweaks/*` (ObjC, один `BTBTweaks.dylib`, собирается `make tweaks` → `App/_tweakbuild/`, копируется в .app, в Xcode-группу НЕ входит). Включаются per-app через Info.plist `BTBEnabledTweaks`. Это noads/nowifi/norev/ipadui/noupd/sideload/backup. `/iap` и `/rc` (обход оплаты) — НЕ реализованы сознательно.
 - ⚠️-пункты: решение по каждому в конце TODO.md («✅ Делаю» оставлено, вредные — обход отзыва/взлом p12/краденые сертификаты/обход оплаты/пиратство — удалены по просьбе пользователя).
 - Сборка: `.github/workflows/build.yml`, runner `macos-26`, Xcode новейший. Фикс крэша Xcode на SwiftPM — **НЕ коммитить `Package.resolved`** (стоковый из Feather ломал граф пакетов). Готовый IPA — артефакт и релиз `nightly-dev` (в теле релиза «Build N» = CFBundleVersion).
-- Локально собрать нельзя (Linux) — проверка только через CI. Статус прогонов: `curl https://api.github.com/repos/1325ilya/BetterThanBox/actions/runs?per_page=1`.
+- Локально собрать нельзя (Linux) — проверка только через CI. Статус прогонов: `curl https://api.github.com/repos/1325ilya/veather/actions/runs?per_page=1`.
 
 ## Работа с пользователем и Devin (важно)
 - Пользователь общается в Telegram-группе «конфа нейронок» (скрипты вне репо: `~/.config/btb/tg.sh`, `tg_poll.py`). Писать ему простым текстом, без тега бота.

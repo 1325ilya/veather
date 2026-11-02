@@ -12,7 +12,7 @@ import Foundation
 import SwiftUI
 
 enum BTBSelfUpdate {
-	static let repo = "1325ilya/BetterThanBox"
+	static let repo = "1325ilya/veather"
 	static let tag = "nightly-dev"
 	
 	struct Release: Decodable {

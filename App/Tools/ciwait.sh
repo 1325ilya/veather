@@ -1,6 +1,6 @@
 sha=$1
 while true; do
-  r=$(curl -s "https://api.github.com/repos/1325ilya/BetterThanBox/actions/runs?per_page=10" | python3 -c "
+  r=$(curl -s "https://api.github.com/repos/1325ilya/veather/actions/runs?per_page=10" | python3 -c "
 import json,sys
 d=json.load(sys.stdin)
 for x in d.get('workflow_runs',[]):

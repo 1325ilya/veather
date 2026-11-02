@@ -4,7 +4,7 @@ On-device iOS IPA-подписчик и менеджер приложений �
 
 ## Сборка
 
-Собирается в GitHub Actions (`.github/workflows/build.yml`), готовый **неподписанный** IPA — в релизе [`nightly-dev`](https://github.com/1325ilya/BetterThanBox/releases/tag/nightly-dev). Подпишите его своим сертификатом (p12 + mobileprovision) в самом приложении.
+Собирается в GitHub Actions (`.github/workflows/build.yml`), готовый **неподписанный** IPA — в релизе [`nightly-dev`](https://github.com/1325ilya/veather/releases/tag/nightly-dev). Подпишите его своим сертификатом (p12 + mobileprovision) в самом приложении.
 
 ## Что умеет
 
@@ -36,7 +36,7 @@ On-device iOS IPA-подписчик и менеджер приложений �
 Для анализа в `repos/` лежат сабмодули других проектов. Клонировать с ними:
 
 ```
-git clone --recurse-submodules --shallow-submodules https://github.com/1325ilya/BetterThanBox
+git clone --recurse-submodules --shallow-submodules https://github.com/1325ilya/veather
 ```
 
 ESign, GBox, Scarlet и Sideloadly — закрытые, их исходников нет.

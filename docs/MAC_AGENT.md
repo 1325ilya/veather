@@ -2,7 +2,7 @@
 
 Ты работаешь над iOS-приложением Veather — on-device подписчиком IPA на основе Feather (Swift/SwiftUI, GPL-3.0).
 
-Репозиторий: https://github.com/1325ilya/BetterThanBox
+Репозиторий: https://github.com/1325ilya/veather
 Ветка: `claude/ios-signers-collection` — работай и пушь только в неё.
 Язык общения с пользователем: русский.
 
@@ -10,7 +10,7 @@
 
 ## Задача 1 — собрать и починить сборку
 
-1. `git clone https://github.com/1325ilya/BetterThanBox -b claude/ios-signers-collection`
+1. `git clone https://github.com/1325ilya/veather -b claude/ios-signers-collection`
    Без `--recurse-submodules`: сабмодули в `repos/` — чужие проекты для анализа, для сборки они не нужны.
 2. `cd App && make`
    Makefile собирает твики (`make -C Tweaks`), потом выполняет xcodebuild с `CODE_SIGNING_ALLOWED=NO` и кладёт неподписанный IPA в `App/packages/Veather.ipa`.

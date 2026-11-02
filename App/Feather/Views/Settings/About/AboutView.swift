@@ -21,7 +21,7 @@ extension AboutView {
 // MARK: - View
 struct AboutView: View {
 	@State private var _credits: [CreditsModel] = [
-		.init(name: "Veather", desc: "Veather project", github: "1325ilya/BetterThanBox"),
+		.init(name: "Veather", desc: "Veather project", github: "1325ilya/veather"),
 		.init(name: "C", desc: "Feather developer", github: "claration"),
 		.init(name: "Asami", desc: "Feather developer", github: "Nyasami"),
 		.init(name: "Lakhan Lothiyi", desc: "AltStore repositories", github: "llsc12"),
