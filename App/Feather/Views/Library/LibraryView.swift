@@ -174,6 +174,9 @@ struct LibraryView: View {
 				}
 			}
 			.scrollDismissesKeyboard(.interactively)
+			.refreshable {
+				await _checkForUpdates()
+			}
 			.overlay {
 				if
 					_filteredSignedApps.isEmpty,
