@@ -336,15 +336,29 @@ struct LibraryView: View {
 				.ignoresSafeArea()
 			}
 			.alert(.localized("Import from URL"), isPresented: $_isDownloadingPresenting) {
-				TextField(.localized("URL"), text: $_alertDownloadString)
+				TextField(.localized("https://example.com/app.ipa"), text: $_alertDownloadString)
 					.textInputAutocapitalization(.never)
+					.autocorrectionDisabled()
+					.keyboardType(.URL)
 				Button(.localized("Cancel"), role: .cancel) {
 					_alertDownloadString = ""
 				}
-				Button(.localized("OK")) {
-					if let url = URL(string: _alertDownloadString) {
-						_ = downloadManager.startDownload(from: url, id: "FeatherManualDownload_\(UUID().uuidString)")
+				Button(.localized("Download")) {
+					let text = _alertDownloadString.trimmingCharacters(in: .whitespacesAndNewlines)
+					_alertDownloadString = ""
+					guard
+						let url = URL(string: text),
+						let scheme = url.scheme?.lowercased(),
+						scheme == "http" || scheme == "https"
+					else {
+						UIAlertController.showAlertWithOk(
+							title: .localized("Invalid Link"),
+							message: .localized("Paste a direct link that starts with https:// and points to an .ipa or .tipa file.")
+						)
+						return
 					}
+					UINotificationFeedbackGenerator().notificationOccurred(.success)
+					_ = downloadManager.startDownload(from: url, id: "FeatherManualDownload_\(UUID().uuidString)")
 				}
 			}
 			.onReceive(NotificationCenter.default.publisher(for: Notification.Name("Feather.installApp"))) { _ in

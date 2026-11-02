@@ -24239,6 +24239,46 @@
           }
         }
       }
+    },
+    "Download" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скачать"
+          }
+        }
+      }
+    },
+    "Invalid Link" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Неверная ссылка"
+          }
+        }
+      }
+    },
+    "Paste a direct link that starts with https:// and points to an .ipa or .tipa file." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вставьте прямую ссылку, которая начинается с https:// и ведёт на файл .ipa или .tipa."
+          }
+        }
+      }
+    },
+    "https://example.com/app.ipa" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://example.com/app.ipa"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
