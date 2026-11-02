@@ -13,6 +13,7 @@ struct CertificatesCellView: View {
 	@State var data: Certificate?
 	
 	@ObservedObject var cert: CertificatePair
+	@AppStorage("BTB.hidePersonalInfo") private var _hidePersonal = false
 	
 	// MARK: Body
 	var body: some View {
@@ -31,6 +32,8 @@ struct CertificatesCellView: View {
 				title: title,
 				subtitle: data?.AppIDName ?? .localized("Unknown")
 			)
+			.blur(radius: _hidePersonal ? 7 : 0)
+			.animation(.easeInOut(duration: 0.2), value: _hidePersonal)
 			
 			_certInfoPill(data: cert)
 		}

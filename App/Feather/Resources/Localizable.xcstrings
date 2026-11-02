@@ -24099,6 +24099,26 @@
           }
         }
       }
+    },
+    "Hide Personal Info" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скрыть личные данные"
+          }
+        }
+      }
+    },
+    "Blur certificate names for screenshots and screen recordings" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Размывает имена сертификатов на скриншотах и записях экрана"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

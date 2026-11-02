@@ -53,6 +53,7 @@ struct SettingsView: View {
 						BTBRowLabel(.localized("App Icon"), systemImage: "app.badge.fill", color: .orange)
 					}
 					BTBAppLockToggle()
+					BTBHidePersonalInfoToggle()
 				}
 				
 				NBSection(.localized("Certificates")) {
@@ -213,6 +214,22 @@ extension SettingsView {
 			}
 		} footer: {
 			Text(.localized("All of the apps files are contained in the documents directory, here are some quick links to these."))
+		}
+	}
+}
+
+/// Blurs certificate names (and other personal info) for screenshots and screen recordings.
+struct BTBHidePersonalInfoToggle: View {
+	@AppStorage("BTB.hidePersonalInfo") private var _hidePersonal = false
+	
+	var body: some View {
+		Toggle(isOn: $_hidePersonal) {
+			BTBRowLabel(
+				.localized("Hide Personal Info"),
+				systemImage: "eye.slash.fill",
+				color: .gray,
+				subtitle: .localized("Blur certificate names for screenshots and screen recordings")
+			)
 		}
 	}
 }
