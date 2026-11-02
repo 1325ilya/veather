@@ -20,6 +20,7 @@ struct SigningView: View {
 	@State private var _isFilePickerPresenting = false
 	@State private var _isImagePickerPresenting = false
 	@State private var _isSigning = false
+	@State private var _showInstallButton = false
 	@State private var _signFinished = false
 	@AppStorage(BTBLiveLog.enabledKey) private var _liveLogs = true
 	@State private var _cloneCount = 1
@@ -159,7 +160,14 @@ struct SigningView: View {
 							? String.localized("Signing %lld of %lld", arguments: _cloneProgress, _cloneCount)
 							: String.localized("Signing…"),
 						finished: _signFinished,
-						showLogs: _liveLogs
+						showLogs: _liveLogs,
+						onInstall: _showInstallButton ? {
+							dismiss()
+							DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+								NotificationCenter.default.post(name: Notification.Name("Feather.installApp"), object: nil)
+							}
+						} : nil,
+						onDone: { dismiss() }
 					)
 					.transition(.opacity)
 				}
@@ -360,15 +368,17 @@ extension SigningView {
 				UINotificationFeedbackGenerator().notificationOccurred(.success)
 				_signFinished = true
 				
-				// let the checkmark show for a moment, then close and install
-				DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) {
-					dismiss()
-					if shouldInstall {
+				// "install after signing" on: close and install by itself.
+				// Otherwise keep the screen open with an Install button right here.
+				if shouldInstall {
+					DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) {
+						dismiss()
 						DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
 							NotificationCenter.default.post(name: Notification.Name("Feather.installApp"), object: nil)
 						}
 					}
 				}
+				_showInstallButton = !shouldInstall
 			}
 		}
 		

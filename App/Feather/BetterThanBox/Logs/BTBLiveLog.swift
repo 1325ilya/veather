@@ -231,6 +231,9 @@ struct BTBSigningOverlay: View {
 	var title: String
 	var finished: Bool
 	var showLogs: Bool
+	/// When set, the finished state shows Install / Done buttons right here.
+	var onInstall: (() -> Void)? = nil
+	var onDone: (() -> Void)? = nil
 
 	var body: some View {
 		ZStack {
@@ -262,6 +265,26 @@ struct BTBSigningOverlay: View {
 				Text(verbatim: finished ? String.localized("Signed") : title)
 					.font(.headline)
 					.foregroundStyle(.white)
+				if finished, let onInstall {
+					VStack(spacing: 10) {
+						Button(action: onInstall) {
+							Label(.localized("Install"), systemImage: "square.and.arrow.down")
+								.font(.headline)
+								.foregroundStyle(.white)
+								.frame(maxWidth: .infinity, minHeight: 50)
+								.background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(Color.accentColor))
+						}
+						Button(action: { onDone?() }) {
+							Text(.localized("Done"))
+								.font(.subheadline.weight(.semibold))
+								.foregroundStyle(.white.opacity(0.8))
+								.frame(maxWidth: .infinity, minHeight: 40)
+						}
+					}
+					.padding(.horizontal, 32)
+					.padding(.top, 12)
+					.transition(.move(edge: .bottom).combined(with: .opacity))
+				}
 			}
 			.padding(.bottom, 60)
 			.animation(.spring(response: 0.4, dampingFraction: 0.7), value: finished)
