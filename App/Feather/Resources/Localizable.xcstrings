@@ -24039,6 +24039,56 @@
           }
         }
       }
+    },
+    "Certificate (.p12)" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сертификат (.p12)"
+          }
+        }
+      }
+    },
+    "Provisioning Profile (.mobileprovision)" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Профиль (.mobileprovision)"
+          }
+        }
+      }
+    },
+    "Both files come from whoever issued your certificate. They are stored only on this device." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Оба файла выдаёт тот, у кого вы получили сертификат. Хранятся только на этом устройстве."
+          }
+        }
+      }
+    },
+    "Tap to choose a file" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нажмите, чтобы выбрать файл"
+          }
+        }
+      }
+    },
+    "Check the password, and that the .p12 and the .mobileprovision belong to the same certificate." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Проверьте пароль и что .p12 и .mobileprovision относятся к одному сертификату."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

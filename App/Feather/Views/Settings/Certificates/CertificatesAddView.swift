@@ -30,12 +30,14 @@ struct CertificatesAddView: View {
 		NBNavigationView(.localized("New Certificate"), displayMode: .inline) {
 			Form {
 				NBSection(.localized("Files")) {
-					_importButton(.localized("Import Certificate File"), file: _p12URL) {
+					_importButton(.localized("Certificate (.p12)"), systemImage: "key.fill", color: .orange, file: _p12URL) {
 						_isImportingP12Presenting = true
 					}
-					_importButton(.localized("Import Provisioning File"), file: _provisionURL) {
+					_importButton(.localized("Provisioning Profile (.mobileprovision)"), systemImage: "doc.badge.gearshape.fill", color: .blue, file: _provisionURL) {
 						_isImportingMobileProvisionPresenting = true
 					}
+				} footer: {
+					Text(.localized("Both files come from whoever issued your certificate. They are stored only on this device."))
 				}
 				NBSection(.localized("Password")) {
 					SecureField(.localized("Enter Password"), text: $_p12Password)
@@ -88,14 +90,28 @@ extension CertificatesAddView {
 	@ViewBuilder
 	private func _importButton(
 		_ title: String,
+		systemImage: String,
+		color: Color,
 		file: URL?,
 		action: @escaping () -> Void
 	) -> some View {
-		Button(title) {
+		Button {
 			action()
+		} label: {
+			HStack {
+				BTBRowLabel(
+					title,
+					systemImage: systemImage,
+					color: color,
+					subtitle: file?.lastPathComponent ?? .localized("Tap to choose a file")
+				)
+				Spacer(minLength: 8)
+				Image(systemName: file == nil ? "plus.circle" : "checkmark.circle.fill")
+					.font(.title3)
+					.foregroundStyle(file == nil ? Color.accentColor : Color.green)
+			}
 		}
-		.foregroundColor(file == nil ? .accentColor : .disabled())
-		.disabled(file != nil)
+		.foregroundStyle(.primary)
 		.animation(.easeInOut(duration: 0.3), value: file != nil)
 	}
 }
@@ -110,7 +126,7 @@ extension CertificatesAddView {
 		else {
 			UIAlertController.showAlertWithOk(
 				title: .localized("Bad Password"),
-				message: .localized("Please check the password and try again.")
+				message: .localized("Check the password, and that the .p12 and the .mobileprovision belong to the same certificate.")
 			)
 			return
 		}
