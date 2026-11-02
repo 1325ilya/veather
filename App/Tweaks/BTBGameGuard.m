@@ -91,15 +91,18 @@ static UIViewController *BTBTop(void) {
 @end
 
 @implementation BTBGameGuard {
-	UISegmentedControl *_typeControl, *_modeControl;
+	UISegmentedControl *_typeControl;
 	UITextField *_field;
-	UILabel *_status;
+	UILabel *_step, *_hint, *_status;
+	UIButton *_primary, *_reset, *_more;
+	UIStackView *_secondaryRow;
 	UITableView *_table;
-	UIButton *_scanButton, *_nextButton;
 	BTBHit *_store;              // vm_allocate'd, so scans can skip it (it would find itself)
 	size_t _count;
 	uint8_t *_readBuffer;        // same
 	BTBType _hitType;
+	BTBMode _mode;
+	BOOL _refining;
 	BOOL _busy;
 	NSMutableDictionary<NSNumber *, NSNumber *> *_frozen; // address -> raw
 	NSTimer *_freezeTimer;
@@ -187,12 +190,40 @@ static BTBGGWindow *gOverlay;
 	self.modalPresentationStyle = UIModalPresentationPageSheet;
 	if (@available(iOS 15.0, *)) {
 		UISheetPresentationController *sheet = self.sheetPresentationController;
-		sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
+		sheet.detents = @[UISheetPresentationControllerDetent.largeDetent];
 	}
 	[top presentViewController:self animated:YES completion:nil];
 }
 
 #pragma mark - UI
+
+static BOOL BTBRussian(void) {
+	NSString *lang = NSLocale.preferredLanguages.firstObject;
+	return [lang hasPrefix:@"ru"];
+}
+static NSString *L(NSString *en, NSString *ru) { return BTBRussian() ? ru : en; }
+
+static UIColor *BTBAccent(void) { return [UIColor colorWithRed:0.49 green:0.36 blue:1 alpha:1]; }
+
+static UIButton *BTBBigButton(NSString *title, BOOL filled, id target, SEL action) {
+	UIButton *b = [UIButton buttonWithType:UIButtonTypeSystem];
+	[b setTitle:title forState:UIControlStateNormal];
+	b.titleLabel.font = [UIFont boldSystemFontOfSize:17];
+	b.backgroundColor = filled ? BTBAccent() : [BTBAccent() colorWithAlphaComponent:0.15];
+	[b setTitleColor:filled ? UIColor.whiteColor : BTBAccent() forState:UIControlStateNormal];
+	b.layer.cornerRadius = 14;
+	[b.heightAnchor constraintEqualToConstant:50].active = YES;
+	if (action) [b addTarget:target action:action forControlEvents:UIControlEventTouchUpInside];
+	return b;
+}
+
+static UILabel *BTBLabel(UIFont *font, UIColor *color) {
+	UILabel *l = [UILabel new];
+	l.font = font;
+	l.textColor = color;
+	l.numberOfLines = 0;
+	return l;
+}
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
@@ -202,50 +233,52 @@ static BTBGGWindow *gOverlay;
 	a = 0;
 	if (vm_allocate(mach_task_self(), &a, kChunk, VM_FLAGS_ANYWHERE) == KERN_SUCCESS) _readBuffer = (uint8_t *)a;
 	_frozen = [NSMutableDictionary dictionary];
+	_mode = BTBModeExact;
 
-	UILabel *title = [UILabel new];
-	title.text = @"GameGuardian · BetterThanBox";
-	title.font = [UIFont boldSystemFontOfSize:17];
-	UILabel *warn = [UILabel new];
-	warn.text = @"Offline single-player games only. Using it online can get your account banned.";
-	warn.font = [UIFont systemFontOfSize:12];
-	warn.textColor = UIColor.systemOrangeColor;
-	warn.numberOfLines = 2;
+	UILabel *title = BTBLabel([UIFont boldSystemFontOfSize:20], UIColor.labelColor);
+	title.text = @"GameGuardian";
+	UIButton *close = [UIButton buttonWithType:UIButtonTypeSystem];
+	[close setTitle:L(@"Close", @"Закрыть") forState:UIControlStateNormal];
+	close.titleLabel.font = [UIFont systemFontOfSize:17];
+	[close addTarget:self action:@selector(closePanel) forControlEvents:UIControlEventTouchUpInside];
+	UIStackView *header = [[UIStackView alloc] initWithArrangedSubviews:@[title, close]];
+	header.alignment = UIStackViewAlignmentCenter;
 
-	_typeControl = [[UISegmentedControl alloc] initWithItems:@[@"Int32", @"Float", @"Double"]];
+	UILabel *warn = BTBLabel([UIFont systemFontOfSize:12], UIColor.systemOrangeColor);
+	warn.text = L(@"Offline single-player games only. Online, you can get banned.", @"Только оффлайн-игры для одного игрока. В онлайне могут забанить.");
+
+	_step = BTBLabel([UIFont boldSystemFontOfSize:22], UIColor.labelColor);
+	_hint = BTBLabel([UIFont systemFontOfSize:15], UIColor.secondaryLabelColor);
+
+	_typeControl = [[UISegmentedControl alloc] initWithItems:@[L(@"Whole number", @"Целое число"), L(@"Decimal", @"Дробное"), L(@"Decimal ×2", @"Дробное ×2")]];
 	_typeControl.selectedSegmentIndex = 0;
+
 	_field = [UITextField new];
-	_field.placeholder = @"Value to search (e.g. your coins)";
 	_field.borderStyle = UITextBorderStyleRoundedRect;
+	_field.font = [UIFont monospacedSystemFontOfSize:20 weight:UIFontWeightMedium];
 	_field.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
 	_field.clearButtonMode = UITextFieldViewModeWhileEditing;
-	_modeControl = [[UISegmentedControl alloc] initWithItems:@[@"Equals", @"Changed", @"Same", @"Bigger", @"Smaller"]];
-	_modeControl.selectedSegmentIndex = 0;
+	_field.textAlignment = NSTextAlignmentCenter;
+	[_field.heightAnchor constraintEqualToConstant:50].active = YES;
 
-	_scanButton = [UIButton buttonWithType:UIButtonTypeSystem];
-	[_scanButton setTitle:@"New scan" forState:UIControlStateNormal];
-	[_scanButton addTarget:self action:@selector(newScan) forControlEvents:UIControlEventTouchUpInside];
-	_nextButton = [UIButton buttonWithType:UIButtonTypeSystem];
-	[_nextButton setTitle:@"Next scan" forState:UIControlStateNormal];
-	[_nextButton addTarget:self action:@selector(nextScan) forControlEvents:UIControlEventTouchUpInside];
-	UIButton *close = [UIButton buttonWithType:UIButtonTypeSystem];
-	[close setTitle:@"Close" forState:UIControlStateNormal];
-	[close addTarget:self action:@selector(closePanel) forControlEvents:UIControlEventTouchUpInside];
-	UIStackView *buttons = [[UIStackView alloc] initWithArrangedSubviews:@[_scanButton, _nextButton, close]];
-	buttons.distribution = UIStackViewDistributionFillEqually;
+	_primary = BTBBigButton(@"", YES, self, @selector(primaryTapped));
+	_reset = BTBBigButton(L(@"Start over", @"Сначала"), NO, self, @selector(startOver));
+	_more = BTBBigButton(L(@"Other options", @"Другие варианты"), NO, nil, nil);
+	[self buildModeMenu];
+	UIStackView *secondary = [[UIStackView alloc] initWithArrangedSubviews:@[_reset, _more]];
+	secondary.spacing = 10;
+	secondary.distribution = UIStackViewDistributionFillEqually;
+	_secondaryRow = secondary;
 
-	_status = [UILabel new];
-	_status.font = [UIFont monospacedSystemFontOfSize:12 weight:UIFontWeightRegular];
-	_status.textColor = UIColor.secondaryLabelColor;
-	_status.numberOfLines = 2;
-	_status.text = @"1) Type the value you see in the game and tap New scan. 2) Change it in the game, type the new value, tap Next scan. Repeat until a few results are left, then tap one to edit it.";
+	_status = BTBLabel([UIFont systemFontOfSize:13], UIColor.secondaryLabelColor);
 
-	UIStackView *top = [[UIStackView alloc] initWithArrangedSubviews:@[title, warn, _typeControl, _field, _modeControl, buttons, _status]];
+	UIStackView *top = [[UIStackView alloc] initWithArrangedSubviews:@[header, warn, _step, _hint, _typeControl, _field, _primary, secondary, _status]];
 	top.axis = UILayoutConstraintAxisVertical;
-	top.spacing = 8;
+	top.spacing = 10;
+	[top setCustomSpacing:14 afterView:warn];
 	top.translatesAutoresizingMaskIntoConstraints = NO;
 
-	_table = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+	_table = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleInsetGrouped];
 	_table.dataSource = self;
 	_table.delegate = self;
 	_table.translatesAutoresizingMaskIntoConstraints = NO;
@@ -256,13 +289,76 @@ static BTBGGWindow *gOverlay;
 	UILayoutGuide *g = self.view.safeAreaLayoutGuide;
 	[NSLayoutConstraint activateConstraints:@[
 		[top.topAnchor constraintEqualToAnchor:g.topAnchor constant:16],
-		[top.leadingAnchor constraintEqualToAnchor:g.leadingAnchor constant:16],
-		[top.trailingAnchor constraintEqualToAnchor:g.trailingAnchor constant:-16],
+		[top.leadingAnchor constraintEqualToAnchor:g.leadingAnchor constant:20],
+		[top.trailingAnchor constraintEqualToAnchor:g.trailingAnchor constant:-20],
 		[_table.topAnchor constraintEqualToAnchor:top.bottomAnchor constant:8],
 		[_table.leadingAnchor constraintEqualToAnchor:g.leadingAnchor],
 		[_table.trailingAnchor constraintEqualToAnchor:g.trailingAnchor],
 		[_table.bottomAnchor constraintEqualToAnchor:g.bottomAnchor],
 	]];
+	[self refreshUI];
+}
+
+- (void)buildModeMenu {
+	NSArray *items = @[
+		@[@(BTBModeExact), L(@"Exact new value", @"Точное новое значение")],
+		@[@(BTBModeChanged), L(@"Value changed", @"Значение изменилось")],
+		@[@(BTBModeSame), L(@"Value did not change", @"Значение не менялось")],
+		@[@(BTBModeBigger), L(@"Value increased", @"Значение выросло")],
+		@[@(BTBModeSmaller), L(@"Value decreased", @"Значение уменьшилось")],
+	];
+	NSMutableArray *actions = [NSMutableArray array];
+	for (NSArray *item in items) {
+		BTBMode mode = (BTBMode)[item[0] integerValue];
+		[actions addObject:[UIAction actionWithTitle:item[1] image:nil identifier:nil handler:^(UIAction *x) {
+			self->_mode = mode;
+			[self refreshUI];
+		}]];
+	}
+	_more.menu = [UIMenu menuWithChildren:actions];
+	_more.showsMenuAsPrimaryAction = YES;
+}
+
+- (void)refreshUI {
+	BOOL refining = _refining;
+	BOOL exact = (_mode == BTBModeExact);
+	_typeControl.hidden = refining;
+	_secondaryRow.hidden = !refining;
+	_field.hidden = refining && !exact;
+	NSUInteger n = [self hitCount];
+	if (!refining) {
+		_step.text = L(@"1. What are you looking for?", @"1. Что ищем?");
+		_hint.text = L(@"Type the number you see in the game right now (coins, lives, score) and tap Find.", @"Введи число, которое сейчас видишь в игре (монеты, жизни, очки), и нажми «Найти».");
+		_field.placeholder = L(@"e.g. 250", @"например, 250");
+		[_primary setTitle:L(@"Find", @"Найти") forState:UIControlStateNormal];
+	} else if (n > 0 && n <= 20) {
+		_step.text = L(@"3. Pick the address", @"3. Выбери адрес");
+		_hint.text = L(@"Tap a line below to change the number. If it does not work, tap Refine again after changing the number in the game.", @"Нажми на строку ниже, чтобы изменить число. Если не получилось, поменяй число в игре и нажми «Уточнить» ещё раз.");
+		_field.placeholder = L(@"the new number from the game", @"новое число из игры");
+		[_primary setTitle:L(@"Refine", @"Уточнить") forState:UIControlStateNormal];
+	} else {
+		_step.text = L(@"2. Change the number in the game", @"2. Измени число в игре");
+		NSString *modeText = @"";
+		switch (_mode) {
+			case BTBModeExact: modeText = L(@"Spend or earn some, type the new number here and tap Refine. Repeat until a few lines are left.", @"Потрать или заработай немного, введи новое число здесь и нажми «Уточнить». Повторяй, пока не останется несколько строк."); break;
+			case BTBModeChanged: modeText = L(@"Change the number in the game, then tap Refine: only places whose value changed stay.", @"Измени число в игре и нажми «Уточнить»: останутся места, где значение изменилось."); break;
+			case BTBModeSame: modeText = L(@"Do nothing in the game, tap Refine: only places whose value did not change stay.", @"Ничего не меняй в игре и нажми «Уточнить»: останутся места, где значение не менялось."); break;
+			case BTBModeBigger: modeText = L(@"Make the number bigger in the game, then tap Refine.", @"Сделай число в игре больше и нажми «Уточнить»."); break;
+			case BTBModeSmaller: modeText = L(@"Make the number smaller in the game, then tap Refine.", @"Сделай число в игре меньше и нажми «Уточнить»."); break;
+		}
+		_hint.text = modeText;
+		_field.placeholder = L(@"the new number from the game", @"новое число из игры");
+		[_primary setTitle:L(@"Refine", @"Уточнить") forState:UIControlStateNormal];
+	}
+	NSString *modeTitle = @"";
+	switch (_mode) {
+		case BTBModeExact: modeTitle = L(@"Other options", @"Другие варианты"); break;
+		case BTBModeChanged: modeTitle = L(@"Changed ▾", @"Изменилось ▾"); break;
+		case BTBModeSame: modeTitle = L(@"Same ▾", @"Не менялось ▾"); break;
+		case BTBModeBigger: modeTitle = L(@"Increased ▾", @"Выросло ▾"); break;
+		case BTBModeSmaller: modeTitle = L(@"Decreased ▾", @"Уменьшилось ▾"); break;
+	}
+	[_more setTitle:modeTitle forState:UIControlStateNormal];
 }
 
 - (void)closePanel {
@@ -284,19 +380,36 @@ static BTBGGWindow *gOverlay;
 	return (start < e1 && end > s1) || (start < e2 && end > s2);
 }
 
+- (void)primaryTapped {
+	if (_refining) [self nextScan]; else [self newScan];
+}
+
+- (void)startOver {
+	if (_busy) return;
+	_refining = NO;
+	_count = 0;
+	_mode = BTBModeExact;
+	_field.text = @"";
+	[_frozen removeAllObjects];
+	[self updateFreezeTimer];
+	_status.text = @"";
+	[self refreshUI];
+	[_table reloadData];
+}
+
 #pragma mark - Scanning
 
 - (void)newScan {
 	if (_busy) return;
 	BTBType type = (BTBType)_typeControl.selectedSegmentIndex;
 	uint64_t target;
-	if (!BTBParse(_field.text, type, &target)) { [self setStatus:@"Type a value first."]; return; }
+	if (!BTBParse(_field.text, type, &target)) { [self setStatus:L(@"Type the number from the game first.", @"Сначала введи число из игры.")]; return; }
 	[self.view endEditing:YES];
-	if (!_store || !_readBuffer) { [self setStatus:@"Out of memory."]; return; }
+	if (!_store || !_readBuffer) { [self setStatus:L(@"Out of memory.", @"Не хватает памяти.")]; return; }
 	_busy = YES;
 	_count = 0;
 	[_table reloadData];
-	[self setStatus:@"Scanning memory…"];
+	[self setStatus:L(@"Searching memory… this can take a few seconds.", @"Ищу в памяти… это может занять несколько секунд.")];
 	dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
 		size_t found = 0;
 		size_t size = BTBSize(type);
@@ -331,7 +444,15 @@ static BTBGGWindow *gOverlay;
 			self->_count = found;
 			self->_hitType = type;
 			self->_busy = NO;
-			[self setStatus:[NSString stringWithFormat:@"%lu results%@. Change the value in the game, then tap Next scan.", (unsigned long)[self hitCount], full ? @" (limit reached — search for a more unusual value)" : @""]];
+			self->_refining = found > 0;
+			if (found == 0) {
+				[self setStatus:L(@"Nothing found. Check the number and the type (try Decimal for numbers with a dot).", @"Ничего не найдено. Проверь число и тип (для чисел с точкой попробуй «Дробное»).")];
+			} else {
+				[self setStatus:[NSString stringWithFormat:L(@"Found %lu places%@.", @"Найдено мест: %lu%@."), (unsigned long)found,
+					full ? L(@" (limit reached)", @" (достигнут предел)") : @""]];
+				self->_field.text = @"";
+			}
+			[self refreshUI];
 			[self->_table reloadData];
 		});
 	});
@@ -339,14 +460,14 @@ static BTBGGWindow *gOverlay;
 
 - (void)nextScan {
 	if (_busy) return;
-	if ([self hitCount] == 0) { [self setStatus:@"Run New scan first."]; return; }
+	if ([self hitCount] == 0) { [self startOver]; return; }
 	BTBType type = _hitType;
-	BTBMode mode = (BTBMode)_modeControl.selectedSegmentIndex;
+	BTBMode mode = _mode;
 	uint64_t target = 0;
-	if (mode == BTBModeExact && !BTBParse(_field.text, type, &target)) { [self setStatus:@"Type the new value first."]; return; }
+	if (mode == BTBModeExact && !BTBParse(_field.text, type, &target)) { [self setStatus:L(@"Type the new number from the game first.", @"Сначала введи новое число из игры.")]; return; }
 	[self.view endEditing:YES];
 	_busy = YES;
-	[self setStatus:@"Filtering…"];
+	[self setStatus:L(@"Filtering…", @"Фильтрую…")];
 	size_t total = _count;
 	_count = 0;
 	[_table reloadData];
@@ -370,8 +491,14 @@ static BTBGGWindow *gOverlay;
 		dispatch_async(dispatch_get_main_queue(), ^{
 			self->_count = kept;
 			self->_busy = NO;
-			NSUInteger n = [self hitCount];
-			[self setStatus:n == 0 ? @"No results left. Start over with New scan." : [NSString stringWithFormat:@"%lu results%@", (unsigned long)n, n <= 200 ? @". Tap one to edit it." : @". Scan again to narrow it down."]];
+			self->_mode = BTBModeExact;
+			self->_field.text = @"";
+			if (kept == 0) {
+				[self setStatus:L(@"Nothing left. Tap Start over and try again.", @"Ничего не осталось. Нажми «Сначала» и попробуй ещё раз.")];
+			} else {
+				[self setStatus:[NSString stringWithFormat:L(@"Left: %lu places.", @"Осталось мест: %lu."), (unsigned long)kept]];
+			}
+			[self refreshUI];
 			[self->_table reloadData];
 		});
 	});
@@ -380,17 +507,27 @@ static BTBGGWindow *gOverlay;
 #pragma mark - Results
 
 - (NSInteger)tableView:(UITableView *)tv numberOfRowsInSection:(NSInteger)s {
-	return (NSInteger)MIN([self hitCount], (NSUInteger)200);
+	return (NSInteger)MIN([self hitCount], (NSUInteger)(_refining && [self hitCount] <= 200 ? 200 : 20));
+}
+
+- (NSString *)tableView:(UITableView *)tv titleForHeaderInSection:(NSInteger)s {
+	NSUInteger n = [self hitCount];
+	if (n == 0) return nil;
+	return n > 200 ? [NSString stringWithFormat:L(@"%lu places — narrow it down first", @"Мест: %lu — сначала сузь поиск"), (unsigned long)n]
+		: [NSString stringWithFormat:L(@"%lu places — tap to change", @"Мест: %lu — нажми, чтобы изменить"), (unsigned long)n];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tv cellForRowAtIndexPath:(NSIndexPath *)ip {
-	UITableViewCell *cell = [tv dequeueReusableCellWithIdentifier:@"c"] ?: [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"c"];
+	UITableViewCell *cell = [tv dequeueReusableCellWithIdentifier:@"c"] ?: [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"c"];
 	BTBHit h = [self hits][ip.row];
 	uint64_t now = 0;
 	BOOL ok = BTBReadMemory(h.address, &now, BTBSize(_hitType));
-	cell.textLabel.font = [UIFont monospacedSystemFontOfSize:13 weight:UIFontWeightRegular];
-	cell.textLabel.text = [NSString stringWithFormat:@"0x%llx%@", h.address, _frozen[@(h.address)] ? @"  ❄︎" : @""];
-	cell.detailTextLabel.text = ok ? BTBFormat(now, _hitType) : @"?";
+	cell.textLabel.font = [UIFont monospacedSystemFontOfSize:20 weight:UIFontWeightSemibold];
+	cell.textLabel.text = [NSString stringWithFormat:@"%@%@", ok ? BTBFormat(now, _hitType) : @"?", _frozen[@(h.address)] ? @"  ❄︎" : @""];
+	cell.detailTextLabel.font = [UIFont monospacedSystemFontOfSize:12 weight:UIFontWeightRegular];
+	cell.detailTextLabel.textColor = UIColor.secondaryLabelColor;
+	cell.detailTextLabel.text = [NSString stringWithFormat:@"0x%llx", h.address];
+	cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 	return cell;
 }
 
@@ -398,8 +535,9 @@ static BTBGGWindow *gOverlay;
 	[tv deselectRowAtIndexPath:ip animated:YES];
 	BTBHit h = [self hits][ip.row];
 	BTBType type = _hitType;
-	UIAlertController *a = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:@"0x%llx", h.address]
-		message:@"New value" preferredStyle:UIAlertControllerStyleAlert];
+	UIAlertController *a = [UIAlertController alertControllerWithTitle:L(@"Change the number", @"Изменить число")
+		message:L(@"Type the value you want.\n“Freeze” keeps it from changing back.", @"Введи нужное значение.\n«Заморозить» не даёт игре вернуть его назад.")
+		preferredStyle:UIAlertControllerStyleAlert];
 	[a addTextFieldWithConfigurationHandler:^(UITextField *f) {
 		f.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
 		uint64_t now = 0;
@@ -413,16 +551,16 @@ static BTBGGWindow *gOverlay;
 		[self updateFreezeTimer];
 		[tv reloadData];
 	};
-	[a addAction:[UIAlertAction actionWithTitle:@"Set" style:UIAlertActionStyleDefault handler:^(UIAlertAction *x) { apply(NO); }]];
-	[a addAction:[UIAlertAction actionWithTitle:@"Set and freeze" style:UIAlertActionStyleDefault handler:^(UIAlertAction *x) { apply(YES); }]];
+	[a addAction:[UIAlertAction actionWithTitle:L(@"Change", @"Изменить") style:UIAlertActionStyleDefault handler:^(UIAlertAction *x) { apply(NO); }]];
+	[a addAction:[UIAlertAction actionWithTitle:L(@"Change and freeze", @"Изменить и заморозить") style:UIAlertActionStyleDefault handler:^(UIAlertAction *x) { apply(YES); }]];
 	if (_frozen[@(h.address)]) {
-		[a addAction:[UIAlertAction actionWithTitle:@"Unfreeze" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *x) {
+		[a addAction:[UIAlertAction actionWithTitle:L(@"Unfreeze", @"Разморозить") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *x) {
 			[self->_frozen removeObjectForKey:@(h.address)];
 			[self updateFreezeTimer];
 			[tv reloadData];
 		}]];
 	}
-	[a addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+	[a addAction:[UIAlertAction actionWithTitle:L(@"Cancel", @"Отмена") style:UIAlertActionStyleCancel handler:nil]];
 	[self presentViewController:a animated:YES completion:nil];
 }
 
