@@ -17,7 +17,7 @@ import CoreData
 import OSLog
 
 enum BTBBackgroundRefresh {
-	static let taskID = (Bundle.main.bundleIdentifier ?? "com.betterthanbox.app") + ".refresh"
+	static let taskID = (Bundle.main.bundleIdentifier ?? "com.veather.app") + ".refresh"
 	static let enabledKey = "BTB.background.enabled"
 	static let wifiOnlyKey = "BTB.background.wifiOnly"
 	private static let _notifiedKey = "BTB.background.notified"

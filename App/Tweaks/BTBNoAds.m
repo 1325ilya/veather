@@ -70,7 +70,7 @@ BOOL BTBIsAdHost(const char *cHost) {
 }
 
 static NSError *BTBAdBlockedError(void) {
-	return [NSError errorWithDomain:@"BetterThanBox.NoAds" code:-1
+	return [NSError errorWithDomain:@"Veather.NoAds" code:-1
 		userInfo:@{NSLocalizedDescriptionKey: @"No ad available (blocked by Veather)."}];
 }
 

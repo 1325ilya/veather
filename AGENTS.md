@@ -8,7 +8,7 @@
 **Реализация идёт.** Пользователь: «реализуй, за основу бери Feather, билдь через GitHub Actions», затем «делай всё, у меня iOS 27, чтобы было готово». Пункты ⚠️ по-прежнему не включать без явного решения.
 
 ## Реализация (статус)
-- Код приложения: `App/` — копия Feather (GPL-3.0, claration/feather @7078b05), Zsign и IDeviceKitten встроены как обычные папки. Display name Veather, bundle id `com.betterthanbox.app`, URL-схемы `betterthanbox://` и `feather://`.
+- Код приложения: `App/` — копия Feather (GPL-3.0, claration/feather @7078b05), Zsign и IDeviceKitten встроены как обычные папки. Display name Veather, bundle id `com.veather.app`, URL-схемы `veather://` и `feather://`.
 - Xcode-проект использует file-system synchronized groups: **новые .swift-файлы в `App/Feather/` подхватываются автоматически**, pbxproj править не нужно.
 - Свой код — в `App/Feather/Veather/` (префикс `BTB`):
   - `Resolver/` — поиск по всем источникам пользователя, выбор самой новой версии, закрепление источника (Sources → «Search All Sources»).

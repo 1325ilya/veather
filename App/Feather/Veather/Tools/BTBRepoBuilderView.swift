@@ -27,7 +27,7 @@ struct BTBRepoEntry: Identifiable, Hashable {
 
 struct BTBRepoBuilderView: View {
 	@State private var _repoName = "My Repo"
-	@State private var _repoIdentifier = "com.betterthanbox.myrepo"
+	@State private var _repoIdentifier = "com.veather.myrepo"
 	@State private var _repoIconURL = ""
 	@State private var _entries: [BTBRepoEntry] = []
 	@State private var _didLoad = false

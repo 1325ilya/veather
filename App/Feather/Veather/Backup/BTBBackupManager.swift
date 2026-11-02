@@ -40,7 +40,7 @@ enum BTBBackupManager {
 	static func export(password: String) throws -> URL {
 		let fm = FileManager.default
 		let work = fm.temporaryDirectory.appendingPathComponent("BTBBackup_\(UUID().uuidString)")
-		let content = work.appendingPathComponent("BetterThanBoxBackup")
+		let content = work.appendingPathComponent("VeatherBackup")
 		try fm.createDirectory(at: content, withIntermediateDirectories: true)
 
 		var manifest = Manifest()
@@ -111,7 +111,10 @@ enum BTBBackupManager {
 			throw BackupError.invalid
 		}
 
-		let content = work.appendingPathComponent("BetterThanBoxBackup")
+		// the folder inside the archive is named after the app; older backups use another name
+		let content = ((try? FileManager.default.contentsOfDirectory(at: work, includingPropertiesForKeys: nil)) ?? [])
+			.first { FileManager.default.fileExists(atPath: $0.appendingPathComponent("manifest.json").path) }
+			?? work.appendingPathComponent("VeatherBackup")
 		guard
 			let data = try? Data(contentsOf: content.appendingPathComponent("manifest.json")),
 			let manifest = try? JSONDecoder().decode(Manifest.self, from: data)

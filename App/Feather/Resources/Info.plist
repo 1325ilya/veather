@@ -21,7 +21,7 @@
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>com.apple.itunes.ipa</string>
-				<string>com.betterthanbox.app.ipa</string>
+				<string>com.veather.app.ipa</string>
 			</array>
 		</dict>
 		<dict>
@@ -35,7 +35,7 @@
 			<string>Alternate</string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>com.betterthanbox.app.tipa</string>
+				<string>com.veather.app.tipa</string>
 			</array>
 		</dict>
 	</array>
@@ -116,11 +116,11 @@
 			<key>CFBundleURLIconFile</key>
 			<string>feather_extension</string>
 			<key>CFBundleURLName</key>
-			<string>com.betterthanbox.app</string>
+			<string>com.veather.app</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>feather</string>
-				<string>betterthanbox</string>
+				<string>veather</string>
 			</array>
 		</dict>
 	</array>
@@ -173,7 +173,7 @@
 				<string>IPA</string>
 			</dict>
 			<key>UTTypeIdentifier</key>
-			<string>com.betterthanbox.app.ipa</string>
+			<string>com.veather.app.ipa</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>
@@ -205,7 +205,7 @@
 				<string>TIPA</string>
 			</dict>
 			<key>UTTypeIdentifier</key>
-			<string>com.betterthanbox.app.tipa</string>
+			<string>com.veather.app.tipa</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>
