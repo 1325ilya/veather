@@ -9,6 +9,7 @@ import SwiftUI
 
 struct TabbarView: View {
 	@State private var selectedTab: TabEnum = .library
+	@ObservedObject private var _updateManager = UpdateManager.shared
 
 	var body: some View {
 		TabView(selection: $selectedTab) {
@@ -18,6 +19,7 @@ struct TabbarView: View {
 						Label(tab.title, systemImage: tab.icon)
 					}
 					.tag(tab)
+					.badge(tab == .library ? _updateManager.updates.count : 0)
 			}
 		}
 	}
