@@ -68,10 +68,26 @@ static UIViewController *BTBTop(void) {
 	return vc;
 }
 
+// Overlay window that only reacts to touches on its own button; everything else goes to the game.
+@interface BTBGGWindow : UIWindow
+@property (nonatomic, weak) UIView *button;
+@end
+
+@implementation BTBGGWindow
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
+	if (self.button && !self.button.hidden && CGRectContainsPoint(CGRectInset(self.button.frame, -8, -8), point)) {
+		return [self.button hitTest:[self.button convertPoint:point fromView:self] withEvent:event];
+	}
+	return nil;
+}
+@end
+
 @interface BTBGameGuard : UIViewController <UITableViewDataSource, UITableViewDelegate>
 + (instancetype)shared;
 - (void)attachToWindow:(UIWindow *)window;
 - (void)attachToAllWindows;
+- (void)showFloatingButton;
+- (void)openPanel;
 @end
 
 @implementation BTBGameGuard {
@@ -119,7 +135,53 @@ static UIViewController *BTBTop(void) {
 
 - (void)handle:(UILongPressGestureRecognizer *)g {
 	if (g.state != UIGestureRecognizerStateBegan) return;
-	if (self.presentingViewController || self.view.window) return;
+	[self openPanel];
+}
+
+static BTBGGWindow *gOverlay;
+
+/// A small draggable "GG" button: works even where a multi-finger gesture can't be recognised.
+- (void)showFloatingButton {
+	if (gOverlay) return;
+	UIWindowScene *scene = nil;
+	for (UIScene *s in UIApplication.sharedApplication.connectedScenes) {
+		if ([s isKindOfClass:[UIWindowScene class]] && s.activationState == UISceneActivationStateForegroundActive) { scene = (UIWindowScene *)s; break; }
+	}
+	if (!scene) return;
+	BTBGGWindow *window = [[BTBGGWindow alloc] initWithWindowScene:scene];
+	window.frame = scene.coordinateSpace.bounds;
+	window.windowLevel = UIWindowLevelAlert + 100;
+	window.backgroundColor = UIColor.clearColor;
+	window.rootViewController = [UIViewController new];
+	window.rootViewController.view.backgroundColor = UIColor.clearColor;
+	UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
+	button.frame = CGRectMake(12, 140, 46, 46);
+	button.backgroundColor = [UIColor colorWithRed:0.49 green:0.36 blue:1 alpha:0.9];
+	button.layer.cornerRadius = 23;
+	button.layer.shadowOpacity = 0.35;
+	button.layer.shadowRadius = 6;
+	button.layer.shadowOffset = CGSizeMake(0, 2);
+	[button setTitle:@"GG" forState:UIControlStateNormal];
+	[button setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
+	button.titleLabel.font = [UIFont boldSystemFontOfSize:15];
+	[button addTarget:self action:@selector(openPanel) forControlEvents:UIControlEventTouchUpInside];
+	UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(dragButton:)];
+	[button addGestureRecognizer:pan];
+	[window.rootViewController.view addSubview:button];
+	window.button = button;
+	window.hidden = NO;
+	gOverlay = window;
+}
+
+- (void)dragButton:(UIPanGestureRecognizer *)pan {
+	UIView *button = pan.view;
+	CGPoint t = [pan translationInView:button.superview];
+	button.center = CGPointMake(button.center.x + t.x, button.center.y + t.y);
+	[pan setTranslation:CGPointZero inView:button.superview];
+}
+
+- (void)openPanel {
+	if (self.presentingViewController) return;
 	UIViewController *top = BTBTop();
 	if (!top) return;
 	self.modalPresentationStyle = UIModalPresentationPageSheet;
@@ -386,5 +448,6 @@ void BTBFeatureGameGuard(void) {
 	[center addObserverForName:UIWindowDidBecomeVisibleNotification object:nil queue:NSOperationQueue.mainQueue usingBlock:attach];
 	[center addObserverForName:UIApplicationDidBecomeActiveNotification object:nil queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification *note) {
 		[[BTBGameGuard shared] attachToAllWindows];
+		dispatch_async(dispatch_get_main_queue(), ^{ [[BTBGameGuard shared] showFloatingButton]; });
 	}];
 }
