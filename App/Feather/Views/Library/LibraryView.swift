@@ -126,8 +126,8 @@ struct LibraryView: View {
 									systemImage: "clock.badge.exclamationmark.fill",
 									color: .orange,
 									subtitle: days <= 0
-										? .localized("Your certificate expires today. Apps signed with it will stop opening.")
-										: .localized("%lld days left. Get a new certificate and re-sign your apps before then.", arguments: days)
+										? String.localized("Your certificate expires today. Apps signed with it will stop opening.")
+										: String.localized("%lld days left. Get a new certificate and re-sign your apps before then.", arguments: days)
 								)
 							}
 						}
