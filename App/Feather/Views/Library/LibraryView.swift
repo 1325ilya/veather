@@ -41,7 +41,8 @@ struct LibraryView: View {
 	private func filteredAndSortedApps<T>(from apps: FetchedResults<T>) -> [T] where T: NSManagedObject {
 		let filtered = apps.filter {
 			_searchText.isEmpty ||
-				(($0.value(forKey: "name") as? String)?.localizedCaseInsensitiveContains(_searchText) ?? false)
+				(($0.value(forKey: "name") as? String)?.localizedCaseInsensitiveContains(_searchText) ?? false) ||
+				(($0.value(forKey: "identifier") as? String)?.localizedCaseInsensitiveContains(_searchText) ?? false)
 		}
 		switch _sort {
 		case .date:
