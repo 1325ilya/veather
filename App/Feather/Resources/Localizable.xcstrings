@@ -24219,6 +24219,26 @@
           }
         }
       }
+    },
+    "In Library" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В библиотеке"
+          }
+        }
+      }
+    },
+    "Already in your Library. Tap to download again." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Уже в библиотеке. Нажмите, чтобы скачать снова."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

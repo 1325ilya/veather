@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Combine
+import CoreData
 import AltSourceKit
 import NimbleViews
 
@@ -18,6 +19,7 @@ struct DownloadButtonView: View {
 
 	@State private var downloadProgress: Double = 0
 	@State private var cancellable: AnyCancellable?
+	@State private var _inLibrary = false
 
 	var body: some View {
 		ZStack {
@@ -50,10 +52,19 @@ struct DownloadButtonView: View {
 						)
 					}
 				} label: {
-					Text(.localized("Get"))
-						.lineLimit(0)
-						.font(.headline.bold())
-						.foregroundStyle(Color.accentColor)
+					Group {
+						if _inLibrary {
+							Label(.localized("In Library"), systemImage: "checkmark")
+								.labelStyle(.titleAndIcon)
+								.font(.subheadline.bold())
+								.foregroundStyle(.green)
+						} else {
+							Text(.localized("Get"))
+								.font(.headline.bold())
+								.foregroundStyle(Color.accentColor)
+						}
+					}
+						.lineLimit(1)
 						.padding(.horizontal, 24)
 						.padding(.vertical, 6)
 						.background(Color(uiColor: .quaternarySystemFill))
@@ -61,12 +72,17 @@ struct DownloadButtonView: View {
 				}
 				.buttonStyle(.borderless)
 				.compatTransition()
+				.accessibilityHint(_inLibrary ? String.localized("Already in your Library. Tap to download again.") : "")
 			}
 		}
-		.onAppear(perform: setupObserver)
+		.onAppear {
+			setupObserver()
+			_inLibrary = _checkInLibrary()
+		}
 		.onDisappear { cancellable?.cancel() }
 		.onChange(of: downloadManager.downloads.description) { _ in
 			setupObserver()
+			_inLibrary = _checkInLibrary()
 		}
 		.animation(.easeInOut(duration: 0.3), value: downloadManager.getDownload(by: app.currentUniqueId) != nil)
 	}
@@ -87,6 +103,25 @@ struct DownloadButtonView: View {
 		cancellable = publisher.sink { _, _ in
 			downloadProgress = download.overallProgress
 		}
+	}
+	
+	/// True when this exact version is already imported or signed.
+	private func _checkInLibrary() -> Bool {
+		guard let id = app.id, !id.isEmpty else { return false }
+		let context = Storage.shared.context
+		var format = "identifier == %@"
+		var args: [Any] = [id]
+		if let version = app.currentVersion, !version.isEmpty {
+			format += " AND version == %@"
+			args.append(version)
+		}
+		for entity in ["Imported", "Signed"] {
+			let request = NSFetchRequest<NSManagedObject>(entityName: entity)
+			request.predicate = NSPredicate(format: format, argumentArray: args)
+			request.fetchLimit = 1
+			if let count = try? context.count(for: request), count > 0 { return true }
+		}
+		return false
 	}
 	
 	private func _sourceProvenance() -> SourceAppProvenance? {
