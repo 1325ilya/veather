@@ -233,7 +233,7 @@ static UIViewController *BTBTop(void) {
 			mach_port_t object;
 			if (vm_region_64(mach_task_self(), &address, &regionSize, VM_REGION_BASIC_INFO_64, (vm_region_info_t)&info, &count, &object) != KERN_SUCCESS) break;
 			BOOL rw = (info.protection & VM_PROT_READ) && (info.protection & VM_PROT_WRITE);
-			if (rw && info.share_mode != SM_EMPTY && regionSize < (1ULL << 32)) {
+			if (rw && regionSize < (1ULL << 32)) {
 				for (vm_size_t off = 0; off < regionSize && !full; off += chunk) {
 					size_t n = (size_t)MIN((vm_size_t)chunk, regionSize - off);
 					if (!BTBReadMemory(address + off, buffer, n)) continue;
