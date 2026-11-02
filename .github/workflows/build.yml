@@ -43,9 +43,21 @@ jobs:
           defaults write com.apple.dt.Xcode IDESourceControlEnableSourceControl_10_0 -bool NO
           rm -f ../.gitmodules
 
+      # Swift packages (Vapor, NIO, …) and their compiled objects live in DerivedData and
+      # do not change between pushes: restore them so only the app itself is compiled.
+      - name: Cache DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/BetterThanBox/iphoneos
+          key: deriveddata-v1-${{ hashFiles('App/Feather.xcodeproj/project.pbxproj') }}
+          restore-keys: |
+            deriveddata-v1-
+
       - name: Build unsigned IPA
         env:
           TMPDIR: ${{ runner.temp }}/
+          # no symbol index and no dSYM bundles: not needed for an unsigned IPA, saves minutes
+          XCODEBUILD_EXTRA: COMPILER_INDEX_STORE_ENABLE=NO DEBUG_INFORMATION_FORMAT=dwarf
         run: |
           agvtool new-version -all ${{ github.run_number }} || true
           make 2>&1 | tee build.log | grep -E 'error:|BUILD (SUCCEEDED|FAILED)|\*\*' || true
