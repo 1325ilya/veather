@@ -77,6 +77,7 @@ struct InstallPreviewView: View {
 			switch newStatus {
 			case .completed(.success):
 				BTBActivityLog.shared.add(.installed, name: app.name, version: app.version, bundleID: app.identifier)
+				_showFirstInstallTipIfNeeded()
 			case .broken(let error):
 				BTBActivityLog.shared.add(.failed, name: app.name, version: app.version, bundleID: app.identifier, detail: error.localizedDescription)
 			default:
@@ -138,6 +139,20 @@ struct InstallPreviewView: View {
 			#if !targetEnvironment(macCatalyst)
 			BackgroundAudioManager.shared.stop()
 			#endif
+		}
+	}
+	
+	/// One-time tip after the first successful install: iOS needs the developer
+	/// to be trusted (and Developer Mode on) before a sideloaded app opens.
+	private func _showFirstInstallTipIfNeeded() {
+		let key = "BTB.firstInstallTipShown"
+		guard !UserDefaults.standard.bool(forKey: key) else { return }
+		UserDefaults.standard.set(true, forKey: key)
+		DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+			UIAlertController.showAlertWithOk(
+				title: .localized("Installed"),
+				message: .localized("If the app does not open:\n\n1. Settings → General → VPN & Device Management → tap your developer → Trust.\n2. Settings → Privacy & Security → Developer Mode → On (the iPhone restarts once).")
+			)
 		}
 	}
 	

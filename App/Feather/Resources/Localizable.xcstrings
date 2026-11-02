@@ -24089,6 +24089,16 @@
           }
         }
       }
+    },
+    "If the app does not open:\n\n1. Settings → General → VPN & Device Management → tap your developer → Trust.\n2. Settings → Privacy & Security → Developer Mode → On (the iPhone restarts once)." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Если приложение не открывается:\n\n1. Настройки → Основные → VPN и управление устройством → выберите разработчика → Доверять.\n2. Настройки → Конфиденциальность и безопасность → Режим разработчика → Вкл. (iPhone один раз перезагрузится)."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
