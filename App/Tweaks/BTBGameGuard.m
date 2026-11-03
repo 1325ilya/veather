@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 #import <mach/mach.h>
 #import <os/proc.h>
+#import <sys/mman.h>
 
 typedef NS_ENUM(NSInteger, BTBType) { BTBTypeInt32, BTBTypeFloat, BTBTypeDouble };
 typedef NS_ENUM(NSInteger, BTBMode) { BTBModeExact, BTBModeChanged, BTBModeSame, BTBModeBigger, BTBModeSmaller, BTBModeUnknown };
@@ -16,7 +17,7 @@ typedef struct { uint64_t address; uint64_t raw; } BTBHit;
 // No fixed result limit: the store is a big lazily-committed virtual range (memory is only used as
 // results are written). The scan stops by itself when the app is about to run out of memory.
 static size_t gMaxHits = 0;
-static const size_t kMemoryFloor = 200u << 20; // stop when less than ~200 MB is left
+static const size_t kMemoryFloor = 400u << 20; // stop when less than ~400 MB is left for the game
 static const size_t kChunk = 1 << 20;
 
 static size_t BTBSize(BTBType t) { return t == BTBTypeDouble ? 8 : 4; }
@@ -234,11 +235,7 @@ static UILabel *BTBLabel(UIFont *font, UIColor *color) {
 	[super viewDidLoad];
 	self.view.backgroundColor = UIColor.systemBackgroundColor;
 	vm_address_t a = 0;
-	for (size_t entries = (size_t)1 << 29; entries >= (1u << 22) && !_store; entries >>= 1) {
-		a = 0;
-		if (vm_allocate(mach_task_self(), &a, entries * sizeof(BTBHit), VM_FLAGS_ANYWHERE) == KERN_SUCCESS) { _store = (BTBHit *)a; gMaxHits = entries; }
-	}
-	a = 0;
+	[self allocateStore];
 	if (vm_allocate(mach_task_self(), &a, kChunk, VM_FLAGS_ANYWHERE) == KERN_SUCCESS) _readBuffer = (uint8_t *)a;
 	_frozen = [NSMutableDictionary dictionary];
 	_mode = BTBModeExact;
@@ -402,6 +399,23 @@ static UILabel *BTBLabel(UIFont *font, UIColor *color) {
 }
 
 - (BTBHit *)hits { return _store; }
+
+/// Reserve the result store (lazily committed). It is given back when the search is reset,
+/// so the game gets its memory back.
+- (void)allocateStore {
+	if (_store) return;
+	for (size_t entries = (size_t)1 << 27; entries >= (1u << 22) && !_store; entries >>= 1) {
+		vm_address_t a = 0;
+		if (vm_allocate(mach_task_self(), &a, entries * sizeof(BTBHit), VM_FLAGS_ANYWHERE) == KERN_SUCCESS) { _store = (BTBHit *)a; gMaxHits = entries; }
+	}
+}
+
+- (void)freeStore {
+	if (!_store) return;
+	vm_deallocate(mach_task_self(), (vm_address_t)_store, gMaxHits * sizeof(BTBHit));
+	_store = NULL;
+	gMaxHits = 0;
+}
 - (NSUInteger)hitCount { return _count; }
 
 - (BOOL)overlapsOwnMemory:(vm_address_t)start size:(vm_size_t)size {
@@ -433,6 +447,7 @@ static UILabel *BTBLabel(UIFont *font, UIColor *color) {
 	_refining = NO;
 	_unknownFlow = NO;
 	_count = 0;
+	[self freeStore];
 	_mode = BTBModeExact;
 	_field.text = @"";
 	[_frozen removeAllObjects];
@@ -451,6 +466,7 @@ static UILabel *BTBLabel(UIFont *font, UIColor *color) {
 	BOOL unknownValue = (_mode == BTBModeUnknown);
 	if (!unknownValue && !BTBParse(_field.text, type, &target)) { [self setStatus:L(@"Type the number from the game first.", @"Сначала введи число из игры.")]; return; }
 	[self.view endEditing:YES];
+	[self allocateStore];
 	if (!_store || !_readBuffer) { [self setStatus:L(@"Out of memory.", @"Не хватает памяти.")]; return; }
 	_busy = YES;
 	_count = 0;
@@ -547,9 +563,16 @@ static UILabel *BTBLabel(UIFont *font, UIColor *color) {
 		dispatch_async(dispatch_get_main_queue(), ^{
 			self->_count = kept;
 			self->_busy = NO;
+			if (kept > 0 && self->_store) {
+				// give the memory of the dropped results back to the game
+				uintptr_t keepEnd = ((uintptr_t)self->_store + kept * sizeof(BTBHit) + vm_page_size - 1) & ~((uintptr_t)vm_page_size - 1);
+				uintptr_t storeEnd = (uintptr_t)self->_store + gMaxHits * sizeof(BTBHit);
+				if (keepEnd < storeEnd) madvise((void *)keepEnd, storeEnd - keepEnd, MADV_FREE);
+			}
 			if (!self->_unknownFlow) self->_mode = BTBModeExact;
 			self->_field.text = @"";
 			if (kept == 0) {
+				[self freeStore];
 				[self setStatus:L(@"Nothing left. Tap Start over and try again.", @"Ничего не осталось. Нажми «Сначала» и попробуй ещё раз.")];
 			} else {
 				[self setStatus:[NSString stringWithFormat:L(@"Left: %lu places.", @"Осталось мест: %lu."), (unsigned long)kept]];
@@ -599,9 +622,10 @@ static UILabel *BTBLabel(UIFont *font, UIColor *color) {
 		uint64_t now = 0;
 		if (BTBReadMemory(h.address, &now, BTBSize(type))) f.text = BTBFormat(now, type);
 	}];
+	__weak UIAlertController *wa = a;
 	void (^apply)(BOOL) = ^(BOOL freeze) {
 		uint64_t raw;
-		if (!BTBParse(a.textFields.firstObject.text, type, &raw)) return;
+		if (!BTBParse(wa.textFields.firstObject.text, type, &raw)) return;
 		BTBWriteMemory(h.address, raw, BTBSize(type));
 		if (freeze) self->_frozen[@(h.address)] = @(raw); else [self->_frozen removeObjectForKey:@(h.address)];
 		[self updateFreezeTimer];
@@ -624,11 +648,13 @@ static UILabel *BTBLabel(UIFont *font, UIColor *color) {
 	if (_frozen.count == 0) { [_freezeTimer invalidate]; _freezeTimer = nil; return; }
 	if (_freezeTimer) return;
 	BTBType type = _hitType;
-	_freezeTimer = [NSTimer scheduledTimerWithTimeInterval:0.05 repeats:YES block:^(NSTimer *t) {
+	_freezeTimer = [NSTimer timerWithTimeInterval:0.05 repeats:YES block:^(NSTimer *t) {
 		[self->_frozen enumerateKeysAndObjectsUsingBlock:^(NSNumber *addr, NSNumber *raw, BOOL *stop) {
 			BTBWriteMemory(addr.unsignedLongLongValue, raw.unsignedLongLongValue, BTBSize(type));
 		}];
 	}];
+	// common modes: keeps freezing while the results list is being scrolled
+	[NSRunLoop.mainRunLoop addTimer:_freezeTimer forMode:NSRunLoopCommonModes];
 }
 
 @end
