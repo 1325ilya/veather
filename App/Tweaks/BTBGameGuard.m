@@ -8,11 +8,11 @@
 #import <mach/mach.h>
 
 typedef NS_ENUM(NSInteger, BTBType) { BTBTypeInt32, BTBTypeFloat, BTBTypeDouble };
-typedef NS_ENUM(NSInteger, BTBMode) { BTBModeExact, BTBModeChanged, BTBModeSame, BTBModeBigger, BTBModeSmaller };
+typedef NS_ENUM(NSInteger, BTBMode) { BTBModeExact, BTBModeChanged, BTBModeSame, BTBModeBigger, BTBModeSmaller, BTBModeUnknown };
 
 typedef struct { uint64_t address; uint64_t raw; } BTBHit;
 
-static const size_t kMaxHits = 2000000;
+static const size_t kMaxHits = 6000000;
 static const size_t kChunk = 1 << 20;
 
 static size_t BTBSize(BTBType t) { return t == BTBTypeDouble ? 8 : 4; }
@@ -83,7 +83,7 @@ static BOOL BTBWriteMemory(uint64_t address, uint64_t raw, size_t size) {
 	UISegmentedControl *_typeControl;
 	UITextField *_field;
 	UILabel *_step, *_hint, *_status;
-	UIButton *_primary, *_reset, *_more;
+	UIButton *_primary, *_reset, *_more, *_unknown;
 	UIStackView *_secondaryRow;
 	UITableView *_table;
 	BTBHit *_store;              // vm_allocate'd, so scans can skip it (it would find itself)
@@ -93,6 +93,7 @@ static BOOL BTBWriteMemory(uint64_t address, uint64_t raw, size_t size) {
 	BTBMode _mode;
 	BOOL _refining;
 	BOOL _busy;
+	BOOL _unknownFlow;           // the value is hidden: keep narrowing by changed/bigger/smaller
 	NSMutableDictionary<NSNumber *, NSNumber *> *_frozen; // address -> raw
 	NSTimer *_freezeTimer;
 }
@@ -261,6 +262,12 @@ static UILabel *BTBLabel(UIFont *font, UIColor *color) {
 	_field.textAlignment = NSTextAlignmentCenter;
 	[_field.heightAnchor constraintEqualToConstant:50].active = YES;
 
+	_unknown = [UIButton buttonWithType:UIButtonTypeSystem];
+	_unknown.titleLabel.font = [UIFont systemFontOfSize:15];
+	_unknown.titleLabel.numberOfLines = 0;
+	_unknown.titleLabel.textAlignment = NSTextAlignmentCenter;
+	[_unknown addTarget:self action:@selector(toggleUnknown) forControlEvents:UIControlEventTouchUpInside];
+
 	_primary = BTBBigButton(@"", YES, self, @selector(primaryTapped));
 	_reset = BTBBigButton(L(@"Start over", @"Сначала"), NO, self, @selector(startOver));
 	_more = BTBBigButton(L(@"Other options", @"Другие варианты"), NO, nil, nil);
@@ -272,7 +279,7 @@ static UILabel *BTBLabel(UIFont *font, UIColor *color) {
 
 	_status = BTBLabel([UIFont systemFontOfSize:13], UIColor.secondaryLabelColor);
 
-	UIStackView *top = [[UIStackView alloc] initWithArrangedSubviews:@[header, warn, _step, _hint, _typeControl, _field, _primary, secondary, _status]];
+	UIStackView *top = [[UIStackView alloc] initWithArrangedSubviews:@[header, warn, _step, _hint, _typeControl, _field, _unknown, _primary, secondary, _status]];
 	top.axis = UILayoutConstraintAxisVertical;
 	top.spacing = 10;
 	[top setCustomSpacing:14 afterView:warn];
@@ -324,13 +331,18 @@ static UILabel *BTBLabel(UIFont *font, UIColor *color) {
 	BOOL exact = (_mode == BTBModeExact);
 	_typeControl.hidden = refining;
 	_secondaryRow.hidden = !refining;
-	_field.hidden = refining && !exact;
+	BOOL unknown = !refining && _mode == BTBModeUnknown;
+	_field.hidden = (refining && !exact) || unknown;
+	_unknown.hidden = refining;
+	[_unknown setTitle:unknown ? L(@"✓ The number is hidden or encrypted (tap to type it instead)", @"✓ Число скрыто или зашифровано (нажми, чтобы ввести число)") : L(@"I can't find it: the number is hidden or encrypted", @"Не находит? Число скрыто или зашифровано") forState:UIControlStateNormal];
 	NSUInteger n = [self hitCount];
 	if (!refining) {
 		_step.text = L(@"1. What are you looking for?", @"1. Что ищем?");
-		_hint.text = L(@"Type the number you see in the game right now (coins, lives, score) and tap Find.", @"Введи число, которое сейчас видишь в игре (монеты, жизни, очки), и нажми «Найти».");
+		_hint.text = unknown
+			? L(@"Some games hide numbers on purpose. Without typing anything, tap Find all: Veather remembers every value, then you change the number in the game and narrow it down. Works best in a quiet screen (menu) and may take longer.", @"Некоторые игры прячут числа. Ничего не вводи и нажми «Найти всё»: запомню все значения, потом ты меняешь число в игре и сужаешь поиск. Лучше делать на тихом экране (меню), может занять больше времени.")
+			: L(@"Type the number you see in the game right now (coins, lives, score) and tap Find.", @"Введи число, которое сейчас видишь в игре (монеты, жизни, очки), и нажми «Найти».");
 		_field.placeholder = L(@"e.g. 250", @"например, 250");
-		[_primary setTitle:L(@"Find", @"Найти") forState:UIControlStateNormal];
+		[_primary setTitle:unknown ? L(@"Find all", @"Найти всё") : L(@"Find", @"Найти") forState:UIControlStateNormal];
 	} else if (n > 0 && n <= 20) {
 		_step.text = L(@"3. Pick the address", @"3. Выбери адрес");
 		_hint.text = L(@"Tap a line below to change the number. If it does not work, tap Refine again after changing the number in the game.", @"Нажми на строку ниже, чтобы изменить число. Если не получилось, поменяй число в игре и нажми «Уточнить» ещё раз.");
@@ -345,6 +357,7 @@ static UILabel *BTBLabel(UIFont *font, UIColor *color) {
 			case BTBModeSame: modeText = L(@"Do nothing in the game, tap Refine: only places whose value did not change stay.", @"Ничего не меняй в игре и нажми «Уточнить»: останутся места, где значение не менялось."); break;
 			case BTBModeBigger: modeText = L(@"Make the number bigger in the game, then tap Refine.", @"Сделай число в игре больше и нажми «Уточнить»."); break;
 			case BTBModeSmaller: modeText = L(@"Make the number smaller in the game, then tap Refine.", @"Сделай число в игре меньше и нажми «Уточнить»."); break;
+			case BTBModeUnknown: break;
 		}
 		_hint.text = modeText;
 		_field.placeholder = L(@"the new number from the game", @"новое число из игры");
@@ -357,6 +370,7 @@ static UILabel *BTBLabel(UIFont *font, UIColor *color) {
 		case BTBModeSame: modeTitle = L(@"Same ▾", @"Не менялось ▾"); break;
 		case BTBModeBigger: modeTitle = L(@"Increased ▾", @"Выросло ▾"); break;
 		case BTBModeSmaller: modeTitle = L(@"Decreased ▾", @"Уменьшилось ▾"); break;
+		case BTBModeUnknown: modeTitle = L(@"Other options", @"Другие варианты"); break;
 	}
 	[_more setTitle:modeTitle forState:UIControlStateNormal];
 }
@@ -384,6 +398,12 @@ static UILabel *BTBLabel(UIFont *font, UIColor *color) {
 	return (start < e1 && end > s1) || (start < e2 && end > s2);
 }
 
+- (void)toggleUnknown {
+	if (_busy || _refining) return;
+	_mode = (_mode == BTBModeUnknown) ? BTBModeExact : BTBModeUnknown;
+	[self refreshUI];
+}
+
 - (void)primaryTapped {
 	if (_refining) [self nextScan]; else [self newScan];
 }
@@ -391,6 +411,7 @@ static UILabel *BTBLabel(UIFont *font, UIColor *color) {
 - (void)startOver {
 	if (_busy) return;
 	_refining = NO;
+	_unknownFlow = NO;
 	_count = 0;
 	_mode = BTBModeExact;
 	_field.text = @"";
@@ -406,8 +427,9 @@ static UILabel *BTBLabel(UIFont *font, UIColor *color) {
 - (void)newScan {
 	if (_busy) return;
 	BTBType type = (BTBType)_typeControl.selectedSegmentIndex;
-	uint64_t target;
-	if (!BTBParse(_field.text, type, &target)) { [self setStatus:L(@"Type the number from the game first.", @"Сначала введи число из игры.")]; return; }
+	uint64_t target = 0;
+	BOOL unknownValue = (_mode == BTBModeUnknown);
+	if (!unknownValue && !BTBParse(_field.text, type, &target)) { [self setStatus:L(@"Type the number from the game first.", @"Сначала введи число из игры.")]; return; }
 	[self.view endEditing:YES];
 	if (!_store || !_readBuffer) { [self setStatus:L(@"Out of memory.", @"Не хватает памяти.")]; return; }
 	_busy = YES;
@@ -434,7 +456,15 @@ static UILabel *BTBLabel(UIFont *font, UIColor *color) {
 					size_t n = (size_t)MIN((vm_size_t)chunk, regionSize - off);
 					if (!BTBReadMemory(address + off, buffer, n)) continue;
 					for (size_t i = 0; i + size <= n; i += size) {
-						if (memcmp(buffer + i, &target, size) == 0) {
+						if (unknownValue) {
+							// hidden/encrypted value: remember every non-zero aligned word, narrow it down later
+							uint64_t word = 0;
+							memcpy(&word, buffer + i, size);
+							if (word == 0 || (address + off + i) % size != 0) continue;
+							store[found].address = address + off + i;
+							store[found].raw = word;
+							if (++found >= kMaxHits) { full = YES; break; }
+						} else if (memcmp(buffer + i, &target, size) == 0) {
 							store[found].address = address + off + i;
 							store[found].raw = target;
 							if (++found >= kMaxHits) { full = YES; break; }
@@ -449,11 +479,13 @@ static UILabel *BTBLabel(UIFont *font, UIColor *color) {
 			self->_hitType = type;
 			self->_busy = NO;
 			self->_refining = found > 0;
+			self->_unknownFlow = unknownValue && found > 0;
+			if (self->_unknownFlow) self->_mode = BTBModeChanged;
 			if (found == 0) {
 				[self setStatus:L(@"Nothing found. Check the number and the type (try Decimal for numbers with a dot).", @"Ничего не найдено. Проверь число и тип (для чисел с точкой попробуй «Дробное»).")];
 			} else {
 				[self setStatus:[NSString stringWithFormat:L(@"Found %lu places%@.", @"Найдено мест: %lu%@."), (unsigned long)found,
-					full ? L(@" (limit reached)", @" (достигнут предел)") : @""]];
+					full ? L(@" (limit reached: try again on a quieter screen)", @" (достигнут предел: попробуй на более тихом экране)") : @""]];
 				self->_field.text = @"";
 			}
 			[self refreshUI];
@@ -495,7 +527,7 @@ static UILabel *BTBLabel(UIFont *font, UIColor *color) {
 		dispatch_async(dispatch_get_main_queue(), ^{
 			self->_count = kept;
 			self->_busy = NO;
-			self->_mode = BTBModeExact;
+			if (!self->_unknownFlow) self->_mode = BTBModeExact;
 			self->_field.text = @"";
 			if (kept == 0) {
 				[self setStatus:L(@"Nothing left. Tap Start over and try again.", @"Ничего не осталось. Нажми «Сначала» и попробуй ещё раз.")];
