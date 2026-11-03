@@ -138,7 +138,7 @@ enum BTBBackupManager {
 		var result = RestoreResult()
 
 		// certificates already in the app are skipped (same .p12 file), so restoring twice does not duplicate them
-		let existingHashes = Self._onMain {
+		var existingHashes = Self._onMain {
 			Set(Storage.shared.getAllCertificates().compactMap { Storage.shared.getFile(.certificate, from: $0) }
 				.compactMap { try? Data(contentsOf: $0) }
 				.map { SHA256.hash(data: $0).description })
@@ -155,7 +155,10 @@ enum BTBBackupManager {
 					certificateName: cert.nickname ?? ""
 				) { continuation.resume(returning: $0) }
 			}
-			if error == nil { result.certificates += 1 }
+			if error == nil {
+				result.certificates += 1
+				if let p12 = try? Data(contentsOf: dir.appendingPathComponent("cert.p12")) { existingHashes.insert(SHA256.hash(data: p12).description) }
+			}
 		}
 
 		let existing = Self._onMain { Set(Storage.shared.getSources().compactMap { $0.sourceURL?.absoluteString }) }

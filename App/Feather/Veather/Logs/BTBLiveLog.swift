@@ -137,6 +137,10 @@ final class BTBLiveLog: ObservableObject {
 		pipe.fileHandleForReading.readabilityHandler = nil
 		try? pipe.fileHandleForWriting.close()
 		_pipe = nil
+		// the write end is closed and stdout/stderr are restored, so this ends right away:
+		// the last lines written just before the end must not be lost
+		let rest = pipe.fileHandleForReading.readDataToEndOfFile()
+		if !rest.isEmpty { _ingest(String(decoding: rest, as: UTF8.self)) }
 
 		if !_partial.isEmpty {
 			_ingestLine(_partial)

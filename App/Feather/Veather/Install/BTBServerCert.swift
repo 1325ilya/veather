@@ -77,6 +77,12 @@ enum BTBServerCert {
 	/// Called from `ServerInstaller.getUrl`: the cached file wins while its certificate is valid.
 	static func cachedURL(name: String, ext: String) -> URL? {
 		guard isUsable(_crtURL) else { return nil }
+		// a certificate and key from two different downloads (interrupted save) would stop the TLS server
+		guard
+			let crt = try? String(contentsOf: _crtURL, encoding: .utf8),
+			let key = try? String(contentsOf: _keyURL, encoding: .utf8),
+			_keyMatches(crt: crt, key: key)
+		else { return nil }
 		let url = directory.appendingPathComponent("\(name).\(ext)")
 		return FileManager.default.fileExists(atPath: url.path) ? url : nil
 	}
@@ -84,7 +90,7 @@ enum BTBServerCert {
 	// MARK: Refresh
 
 	private static let _lock = NSLock()
-	nonisolated(unsafe) private static var _isRefreshing = false
+	nonisolated(unsafe) private static var _running: Task<Bool, Never>?
 
 	/// Downloads a fresh certificate when the current one expires within two days.
 	/// Returns true when a new certificate was installed.
@@ -94,14 +100,19 @@ enum BTBServerCert {
 			return false
 		}
 
+		// a refresh already running (started at launch): wait for it instead of answering "nothing new",
+		// so the caller reloads the TLS server with the certificate that arrives
 		_lock.lock()
-		if _isRefreshing { _lock.unlock(); return false }
-		_isRefreshing = true
+		if let running = _running { _lock.unlock(); return await running.value }
+		let task = Task { await _refresh(force: force) }
+		_running = task
 		_lock.unlock()
-		defer {
-			_lock.lock(); _isRefreshing = false; _lock.unlock()
-		}
+		let result = await task.value
+		_lock.lock(); _running = nil; _lock.unlock()
+		return result
+	}
 
+	private static func _refresh(force: Bool) async -> Bool {
 		var best: (crt: String, key: String, host: String, expiry: Date, name: String)?
 		for provider in _providers {
 			do {
@@ -131,9 +142,10 @@ enum BTBServerCert {
 
 		do {
 			try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-			try best.crt.write(to: _crtURL, atomically: true, encoding: .utf8)
+			// the certificate goes last: it is what marks the cache as usable
 			try best.key.write(to: _keyURL, atomically: true, encoding: .utf8)
 			try best.host.write(to: _hostURL, atomically: true, encoding: .utf8)
+			try best.crt.write(to: _crtURL, atomically: true, encoding: .utf8)
 			BTBLiveLog.log("Install certificate updated (\(best.name), valid until \(best.expiry.formatted(date: .abbreviated, time: .omitted)))", .success)
 			return true
 		} catch {
