@@ -24399,6 +24399,36 @@
           }
         }
       }
+    },
+    "Could not save the certificate" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось сохранить сертификат"
+          }
+        }
+      }
+    },
+    "Could not load this source" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось загрузить источник"
+          }
+        }
+      }
+    },
+    "Check your internet connection and the source link, then try again." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Проверь интернет и ссылку на источник и попробуй ещё раз."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

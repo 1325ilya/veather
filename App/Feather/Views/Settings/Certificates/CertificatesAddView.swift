@@ -19,6 +19,7 @@ struct CertificatesAddView: View {
 	@State private var _certificateName: String = ""
 	
 	@State private var _isImportingP12Presenting = false
+	@State private var _isSaving = false
 	@State private var _isImportingMobileProvisionPresenting = false
 	
 	var saveButtonDisabled: Bool {
@@ -56,7 +57,7 @@ struct CertificatesAddView: View {
 					.localized("Save"),
 					style: .text,
 					placement: .confirmationAction,
-					isDisabled: saveButtonDisabled
+					isDisabled: saveButtonDisabled || _isSaving
 				) {
 					_saveCertificate()
 				}
@@ -135,6 +136,7 @@ extension CertificatesAddView {
 // MARK: - Extension: View (import)
 extension CertificatesAddView {
 	private func _saveCertificate() {
+		guard !_isSaving else { return }
 		guard
 			let p12URL = _p12URL,
 			let provisionURL = _provisionURL,
@@ -147,13 +149,25 @@ extension CertificatesAddView {
 			return
 		}
 		
+		_isSaving = true
 		FR.handleCertificateFiles(
 			p12URL: p12URL,
 			provisionURL: provisionURL,
 			p12Password: _p12Password,
 			certificateName: _certificateName
-		) { _ in
-			dismiss()
+		) { error in
+			DispatchQueue.main.async {
+				_isSaving = false
+				if let error {
+					// keep the screen open so nothing looks saved when it was not
+					UIAlertController.showAlertWithOk(
+						title: .localized("Could not save the certificate"),
+						message: error.localizedDescription
+					)
+				} else {
+					dismiss()
+				}
+			}
 		}
 	}
 }

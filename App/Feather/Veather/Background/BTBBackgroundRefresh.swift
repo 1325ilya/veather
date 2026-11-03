@@ -92,12 +92,23 @@ enum BTBBackgroundRefresh {
 			let status: BTBCertStatus = await withCheckedContinuation { continuation in
 				BTBCertHealth.check(cert) { continuation.resume(returning: $0) }
 			}
+			// each certificate problem is announced once, not at every background run
+			let id = cert.uuid ?? name
 			if status == .revoked {
-				lines.append(String.localized("Certificate revoked: %@", arguments: name))
+				let key = "revoked@\(id)"
+				if !notified.contains(key) {
+					lines.append(String.localized("Certificate revoked: %@", arguments: name))
+					notified.insert(key)
+				}
 			} else if let exp = cert.expiration, exp > Date(), exp.timeIntervalSinceNow < 2 * 86400 {
-				lines.append(String.localized("Certificate expires soon: %@", arguments: name))
+				let key = "expiring@\(id)@\(Int(exp.timeIntervalSince1970))"
+				if !notified.contains(key) {
+					lines.append(String.localized("Certificate expires soon: %@", arguments: name))
+					notified.insert(key)
+				}
 			}
 		}
+		UserDefaults.standard.set(Array(notified), forKey: _notifiedKey)
 		
 		guard !lines.isEmpty else { return }
 		let content = UNMutableNotificationContent()

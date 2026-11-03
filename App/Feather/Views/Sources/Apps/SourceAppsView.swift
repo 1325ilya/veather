@@ -66,6 +66,22 @@ struct SourceAppsView: View {
 					onSelect: {self._selectedRoute = $0}
 				)
 				.ignoresSafeArea()
+			} else if _sourceContexts != nil, !isLoading {
+				// finished loading but nothing came back: say so instead of spinning forever
+				VStack(spacing: 12) {
+					Image(systemName: "wifi.exclamationmark")
+						.font(.largeTitle)
+						.foregroundStyle(.secondary)
+					Text(.localized("Could not load this source"))
+						.font(.headline)
+					Text(.localized("Check your internet connection and the source link, then try again."))
+						.font(.subheadline)
+						.foregroundStyle(.secondary)
+						.multilineTextAlignment(.center)
+					Button(.localized("Try Again")) { _load() }
+						.buttonStyle(.borderedProminent)
+				}
+				.padding()
 			} else {
 				ProgressView()
 			}
