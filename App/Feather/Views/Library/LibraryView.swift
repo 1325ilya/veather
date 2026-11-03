@@ -393,6 +393,12 @@ struct LibraryView: View {
 					_ = downloadManager.startDownload(from: url, id: "FeatherManualDownload_\(UUID().uuidString)")
 				}
 			}
+			.onReceive(NotificationCenter.default.publisher(for: Notification.Name("Veather.shareApp"))) { _ in
+				// export the newest result as an IPA (share sheet / Files)
+				if let latest = _signedApps.first {
+					_selectedInstallAppPresenting = AnyApp(base: latest, archive: true)
+				}
+			}
 			.onReceive(NotificationCenter.default.publisher(for: Notification.Name("Feather.installApp"))) { _ in
 				if let latest = _signedApps.first {
 					_selectedInstallAppPresenting = AnyApp(base: latest)

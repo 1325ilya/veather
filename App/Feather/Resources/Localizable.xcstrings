@@ -24429,6 +24429,66 @@
           }
         }
       }
+    },
+    "Unsigned IPA" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IPA без подписи"
+          }
+        }
+      }
+    },
+    "Add tweaks without signing" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Твики без подписи"
+          }
+        }
+      }
+    },
+    "Get an unsigned IPA with your tweaks. No certificate needed." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Получить IPA с твиками без подписи. Сертификат не нужен."
+          }
+        }
+      }
+    },
+    "When finished, tap Save IPA to put the file in Files or send it to another installer. It will not install by itself until it is signed." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Когда закончится, нажми «Сохранить IPA»: файл попадёт в «Файлы» или уйдёт в другой установщик. Сам он не установится, пока его не подписать."
+          }
+        }
+      }
+    },
+    "Ready (unsigned)" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Готово (без подписи)"
+          }
+        }
+      }
+    },
+    "Save IPA" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сохранить IPA"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

@@ -56,3 +56,27 @@ struct BTBBuiltinTweaksSection: View {
 		)
 	}
 }
+
+/// "No signing": apply tweaks and options only and keep the result as an unsigned IPA
+/// (signed later by another tool, or shared as it is).
+struct BTBUnsignedExportSection: View {
+	@Binding var options: Options
+
+	var body: some View {
+		NBSection(.localized("Unsigned IPA")) {
+			Toggle(isOn: Binding(
+				get: { options.signingOption == .onlyModify },
+				set: { options.signingOption = $0 ? .onlyModify : .default }
+			)) {
+				BTBRowLabel(
+					.localized("Add tweaks without signing"),
+					systemImage: "shippingbox",
+					color: .orange,
+					subtitle: .localized("Get an unsigned IPA with your tweaks. No certificate needed.")
+				)
+			}
+		} footer: {
+			Text(.localized("When finished, tap Save IPA to put the file in Files or send it to another installer. It will not install by itself until it is signed."))
+		}
+	}
+}

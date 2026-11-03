@@ -244,6 +244,8 @@ struct BTBSigningOverlay: View {
 	var title: String
 	var finished: Bool
 	var showLogs: Bool
+	/// Modified but not signed: the main button saves the IPA instead of installing it.
+	var unsigned: Bool = false
 	/// When set, the finished state shows Install / Done buttons right here.
 	var onInstall: (() -> Void)? = nil
 	var onDone: (() -> Void)? = nil
@@ -275,13 +277,13 @@ struct BTBSigningOverlay: View {
 					}
 				}
 				.frame(height: 70)
-				Text(verbatim: finished ? String.localized("Signed") : title)
+				Text(verbatim: finished ? String.localized(unsigned ? "Ready (unsigned)" : "Signed") : title)
 					.font(.headline)
 					.foregroundStyle(.white)
 				if finished, let onInstall {
 					VStack(spacing: 10) {
 						Button(action: onInstall) {
-							Label(.localized("Install"), systemImage: "square.and.arrow.down")
+							Label(.localized(unsigned ? "Save IPA" : "Install"), systemImage: unsigned ? "square.and.arrow.up" : "square.and.arrow.down")
 								.font(.headline)
 								.foregroundStyle(.white)
 								.frame(maxWidth: .infinity, minHeight: 50)

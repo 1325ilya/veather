@@ -57,6 +57,7 @@ struct SigningView: View {
 				BTBPreflightSection(app: app, options: _temporaryOptions, certificate: _selectedCert())
 				BTBSigningPresetsSection(options: $_temporaryOptions)
 				BTBBuiltinTweaksSection(options: $_temporaryOptions)
+				BTBUnsignedExportSection(options: $_temporaryOptions)
 				_customizationProperties(for: app)
 				
 				Section {
@@ -162,10 +163,13 @@ struct SigningView: View {
 							: String.localized("Signing…"),
 						finished: _signFinished,
 						showLogs: _liveLogs,
+						unsigned: _temporaryOptions.signingOption == .onlyModify,
 						onInstall: _showInstallButton ? {
+							let unsigned = _temporaryOptions.signingOption == .onlyModify
 							dismiss()
 							DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-								NotificationCenter.default.post(name: Notification.Name("Feather.installApp"), object: nil)
+								// an unsigned file cannot be installed: it is exported instead
+								NotificationCenter.default.post(name: Notification.Name(unsigned ? "Veather.shareApp" : "Feather.installApp"), object: nil)
 							}
 						} : nil,
 						onDone: { dismiss() }
@@ -365,7 +369,7 @@ extension SigningView {
 					Storage.shared.deleteApp(for: app)
 				}
 				
-				let shouldInstall = _temporaryOptions.post_installAppAfterSigned
+				let shouldInstall = _temporaryOptions.post_installAppAfterSigned && _temporaryOptions.signingOption != .onlyModify
 				UINotificationFeedbackGenerator().notificationOccurred(.success)
 				_signFinished = true
 				
