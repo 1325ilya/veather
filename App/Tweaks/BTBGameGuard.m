@@ -6,13 +6,17 @@
 #import "BTBCommon.h"
 #import <UIKit/UIKit.h>
 #import <mach/mach.h>
+#import <os/proc.h>
 
 typedef NS_ENUM(NSInteger, BTBType) { BTBTypeInt32, BTBTypeFloat, BTBTypeDouble };
 typedef NS_ENUM(NSInteger, BTBMode) { BTBModeExact, BTBModeChanged, BTBModeSame, BTBModeBigger, BTBModeSmaller, BTBModeUnknown };
 
 typedef struct { uint64_t address; uint64_t raw; } BTBHit;
 
-static const size_t kMaxHits = 6000000;
+// No fixed result limit: the store is a big lazily-committed virtual range (memory is only used as
+// results are written). The scan stops by itself when the app is about to run out of memory.
+static size_t gMaxHits = 0;
+static const size_t kMemoryFloor = 200u << 20; // stop when less than ~200 MB is left
 static const size_t kChunk = 1 << 20;
 
 static size_t BTBSize(BTBType t) { return t == BTBTypeDouble ? 8 : 4; }
@@ -230,7 +234,10 @@ static UILabel *BTBLabel(UIFont *font, UIColor *color) {
 	[super viewDidLoad];
 	self.view.backgroundColor = UIColor.systemBackgroundColor;
 	vm_address_t a = 0;
-	if (vm_allocate(mach_task_self(), &a, kMaxHits * sizeof(BTBHit), VM_FLAGS_ANYWHERE) == KERN_SUCCESS) _store = (BTBHit *)a;
+	for (size_t entries = (size_t)1 << 29; entries >= (1u << 22) && !_store; entries >>= 1) {
+		a = 0;
+		if (vm_allocate(mach_task_self(), &a, entries * sizeof(BTBHit), VM_FLAGS_ANYWHERE) == KERN_SUCCESS) { _store = (BTBHit *)a; gMaxHits = entries; }
+	}
 	a = 0;
 	if (vm_allocate(mach_task_self(), &a, kChunk, VM_FLAGS_ANYWHERE) == KERN_SUCCESS) _readBuffer = (uint8_t *)a;
 	_frozen = [NSMutableDictionary dictionary];
@@ -393,7 +400,7 @@ static UILabel *BTBLabel(UIFont *font, UIColor *color) {
 
 - (BOOL)overlapsOwnMemory:(vm_address_t)start size:(vm_size_t)size {
 	vm_address_t end = start + size;
-	vm_address_t s1 = (vm_address_t)_store, e1 = s1 + kMaxHits * sizeof(BTBHit);
+	vm_address_t s1 = (vm_address_t)_store, e1 = s1 + gMaxHits * sizeof(BTBHit);
 	vm_address_t s2 = (vm_address_t)_readBuffer, e2 = s2 + kChunk;
 	return (start < e1 && end > s1) || (start < e2 && end > s2);
 }
@@ -463,11 +470,11 @@ static UILabel *BTBLabel(UIFont *font, UIColor *color) {
 							if (word == 0 || (address + off + i) % size != 0) continue;
 							store[found].address = address + off + i;
 							store[found].raw = word;
-							if (++found >= kMaxHits) { full = YES; break; }
+							if (++found >= gMaxHits || ((found & 0xFFFF) == 0 && os_proc_available_memory() < kMemoryFloor)) { full = YES; break; }
 						} else if (memcmp(buffer + i, &target, size) == 0) {
 							store[found].address = address + off + i;
 							store[found].raw = target;
-							if (++found >= kMaxHits) { full = YES; break; }
+							if (++found >= gMaxHits || ((found & 0xFFFF) == 0 && os_proc_available_memory() < kMemoryFloor)) { full = YES; break; }
 						}
 					}
 				}
@@ -485,7 +492,7 @@ static UILabel *BTBLabel(UIFont *font, UIColor *color) {
 				[self setStatus:L(@"Nothing found. Check the number and the type (try Decimal for numbers with a dot).", @"Ничего не найдено. Проверь число и тип (для чисел с точкой попробуй «Дробное»).")];
 			} else {
 				[self setStatus:[NSString stringWithFormat:L(@"Found %lu places%@.", @"Найдено мест: %lu%@."), (unsigned long)found,
-					full ? L(@" (limit reached: try again on a quieter screen)", @" (достигнут предел: попробуй на более тихом экране)") : @""]];
+					full ? L(@" (stopped: the phone is out of memory, try again on a quieter screen)", @" (остановился: не хватает памяти телефона, попробуй на более тихом экране)") : @""]];
 				self->_field.text = @"";
 			}
 			[self refreshUI];
