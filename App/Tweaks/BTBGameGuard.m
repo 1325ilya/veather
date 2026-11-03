@@ -57,17 +57,6 @@ static BOOL BTBWriteMemory(uint64_t address, uint64_t raw, size_t size) {
 	return vm_write(mach_task_self(), (vm_address_t)address, (vm_offset_t)&raw, (mach_msg_type_number_t)size) == KERN_SUCCESS;
 }
 
-static UIViewController *BTBTop(void) {
-	UIWindow *key = nil;
-	for (UIScene *scene in UIApplication.sharedApplication.connectedScenes) {
-		if (![scene isKindOfClass:[UIWindowScene class]]) continue;
-		for (UIWindow *w in ((UIWindowScene *)scene).windows) if (w.isKeyWindow) { key = w; break; }
-	}
-	UIViewController *vc = key.rootViewController;
-	while (vc.presentedViewController) vc = vc.presentedViewController;
-	return vc;
-}
-
 // Overlay window that only reacts to touches on its own button; everything else goes to the game.
 @interface BTBGGWindow : UIWindow
 @property (nonatomic, weak) UIView *button;
@@ -183,16 +172,26 @@ static BTBGGWindow *gOverlay;
 	[pan setTranslation:CGPointZero inView:button.superview];
 }
 
+static UIWindow *gPanelWindow;
+static __weak UIWindow *gGameWindow;
+
+/// The panel lives in its own window instead of being presented on the game's view controller:
+/// game engines (Unity, Unreal) often manage their own controllers and swallow presentations or touches.
 - (void)openPanel {
-	if (self.presentingViewController) return;
-	UIViewController *top = BTBTop();
-	if (!top) return;
-	self.modalPresentationStyle = UIModalPresentationPageSheet;
-	if (@available(iOS 15.0, *)) {
-		UISheetPresentationController *sheet = self.sheetPresentationController;
-		sheet.detents = @[UISheetPresentationControllerDetent.largeDetent];
+	if (gPanelWindow) return;
+	UIWindowScene *scene = nil;
+	for (UIScene *s in UIApplication.sharedApplication.connectedScenes) {
+		if ([s isKindOfClass:[UIWindowScene class]] && s.activationState == UISceneActivationStateForegroundActive) { scene = (UIWindowScene *)s; break; }
 	}
-	[top presentViewController:self animated:YES completion:nil];
+	if (!scene) return;
+	for (UIWindow *w in scene.windows) if (w.isKeyWindow) { gGameWindow = w; break; }
+	UIWindow *window = [[UIWindow alloc] initWithWindowScene:scene];
+	window.frame = scene.coordinateSpace.bounds;
+	window.windowLevel = UIWindowLevelAlert + 200;
+	window.backgroundColor = UIColor.systemBackgroundColor;
+	window.rootViewController = self;
+	gPanelWindow = window;
+	[window makeKeyAndVisible];
 }
 
 #pragma mark - UI
@@ -363,7 +362,11 @@ static UILabel *BTBLabel(UIFont *font, UIColor *color) {
 
 - (void)closePanel {
 	[self.view endEditing:YES];
-	[self dismissViewControllerAnimated:YES completion:nil];
+	UIWindow *panel = gPanelWindow;
+	gPanelWindow = nil;
+	panel.hidden = YES;
+	panel.rootViewController = nil;
+	[gGameWindow makeKeyWindow];
 }
 
 - (void)setStatus:(NSString *)text {
