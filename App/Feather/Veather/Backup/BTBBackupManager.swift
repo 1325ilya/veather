@@ -8,6 +8,7 @@
 //
 
 import Foundation
+import CryptoKit
 import Zip
 import CoreData
 import OSLog
@@ -35,6 +36,11 @@ enum BTBBackupManager {
 
 	private static let _defaultsPrefixes = ["signing_options", "Feather.", "feather.", "BTB."]
 
+	/// Runs a block on the main thread and returns its result (directly if already there).
+	private static func _onMain<T>(_ work: () -> T) -> T {
+		Thread.isMainThread ? work() : DispatchQueue.main.sync(execute: work)
+	}
+
 	// MARK: Export
 
 	static func export(password: String) throws -> URL {
@@ -47,20 +53,27 @@ enum BTBBackupManager {
 
 		let certsDir = content.appendingPathComponent("Certificates")
 		try fm.createDirectory(at: certsDir, withIntermediateDirectories: true)
-		for (index, cert) in Storage.shared.getAllCertificates().enumerated() {
-			guard
-				let p12 = Storage.shared.getFile(.certificate, from: cert),
-				let provision = Storage.shared.getFile(.provision, from: cert)
-			else { continue }
+		// Core Data's view context belongs to the main thread: read everything there, work with files here
+		let snapshot = Self._onMain { () -> (certs: [(p12: URL, provision: URL, nickname: String?, password: String?)], sources: [String]) in
+			let certs = Storage.shared.getAllCertificates().compactMap { cert -> (p12: URL, provision: URL, nickname: String?, password: String?)? in
+				guard
+					let p12 = Storage.shared.getFile(.certificate, from: cert),
+					let provision = Storage.shared.getFile(.provision, from: cert)
+				else { return nil }
+				return (p12: p12, provision: provision, nickname: cert.nickname, password: cert.password)
+			}
+			return (certs: certs, sources: Storage.shared.getSources().compactMap { $0.sourceURL?.absoluteString })
+		}
+		for (index, cert) in snapshot.certs.enumerated() {
 			let folder = "cert\(index)"
 			let dest = certsDir.appendingPathComponent(folder)
 			try fm.createDirectory(at: dest, withIntermediateDirectories: true)
-			try fm.copyItem(at: p12, to: dest.appendingPathComponent("cert.p12"))
-			try fm.copyItem(at: provision, to: dest.appendingPathComponent("cert.mobileprovision"))
+			try fm.copyItem(at: cert.p12, to: dest.appendingPathComponent("cert.p12"))
+			try fm.copyItem(at: cert.provision, to: dest.appendingPathComponent("cert.mobileprovision"))
 			manifest.certificates.append(.init(folder: folder, nickname: cert.nickname, password: cert.password))
 		}
 
-		manifest.sources = Storage.shared.getSources().compactMap { $0.sourceURL?.absoluteString }
+		manifest.sources = snapshot.sources
 
 		let all = UserDefaults.standard.dictionaryRepresentation()
 		let ours = all.filter { key, _ in _defaultsPrefixes.contains { key.hasPrefix($0) } }
@@ -124,8 +137,16 @@ enum BTBBackupManager {
 
 		var result = RestoreResult()
 
+		// certificates already in the app are skipped (same .p12 file), so restoring twice does not duplicate them
+		let existingHashes = Self._onMain {
+			Set(Storage.shared.getAllCertificates().compactMap { Storage.shared.getFile(.certificate, from: $0) }
+				.compactMap { try? Data(contentsOf: $0) }
+				.map { SHA256.hash(data: $0).description })
+		}
 		for cert in manifest.certificates {
 			let dir = content.appendingPathComponent("Certificates").appendingPathComponent(cert.folder)
+			if let p12 = try? Data(contentsOf: dir.appendingPathComponent("cert.p12")),
+			   existingHashes.contains(SHA256.hash(data: p12).description) { continue }
 			let error: Error? = await withCheckedContinuation { continuation in
 				FR.handleCertificateFiles(
 					p12URL: dir.appendingPathComponent("cert.p12"),
@@ -137,7 +158,7 @@ enum BTBBackupManager {
 			if error == nil { result.certificates += 1 }
 		}
 
-		let existing = Set(Storage.shared.getSources().compactMap { $0.sourceURL?.absoluteString })
+		let existing = Self._onMain { Set(Storage.shared.getSources().compactMap { $0.sourceURL?.absoluteString }) }
 		for source in manifest.sources where !existing.contains(source) {
 			guard let sourceURL = URL(string: source) else { continue }
 			await MainActor.run {

@@ -567,7 +567,7 @@ static UILabel *BTBLabel(UIFont *font, UIColor *color) {
 				// give the memory of the dropped results back to the game
 				uintptr_t keepEnd = ((uintptr_t)self->_store + kept * sizeof(BTBHit) + vm_page_size - 1) & ~((uintptr_t)vm_page_size - 1);
 				uintptr_t storeEnd = (uintptr_t)self->_store + gMaxHits * sizeof(BTBHit);
-				if (keepEnd < storeEnd) madvise((void *)keepEnd, storeEnd - keepEnd, MADV_FREE);
+				if (keepEnd < storeEnd) madvise((void *)keepEnd, storeEnd - keepEnd, MADV_FREE_REUSABLE);
 			}
 			if (!self->_unknownFlow) self->_mode = BTBModeExact;
 			self->_field.text = @"";
