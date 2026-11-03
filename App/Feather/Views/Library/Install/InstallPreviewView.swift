@@ -22,6 +22,7 @@ struct InstallPreviewView: View {
 	@AppStorage(BTBLiveLog.enabledKey) private var _liveLogs = true
 	@State private var _readySince: Date?
 	@State private var _showStuckHint = false
+	@State private var _allowSelfInstall = false
 	@State private var _stuckTimer: Timer?
 	
 	var app: AppInfoPresentable
@@ -183,10 +184,17 @@ struct InstallPreviewView: View {
 	}
 	
 	private func _install() {
-		guard isSharing || app.identifier != Bundle.main.bundleIdentifier! || _installationMethod == 1 else {
-			UIAlertController.showAlertWithOk(
-				title: .localized("Install"),
-				message: .localized("You cannot update ‘%@‘ with itself, please use an alternative tool to update it.", arguments: Bundle.main.name)
+		guard isSharing || app.identifier != Bundle.main.bundleIdentifier! || _installationMethod == 1 || _allowSelfInstall else {
+			// iOS may stop the app while it replaces itself; trying is harmless, so let the user decide
+			UIAlertController.showAlertWithCancel(
+				title: .localized("Update Veather with itself?"),
+				message: .localized("iOS may close the app while it replaces itself, and the update can fail. Your data stays either way. If it fails, share the signed file to another installer instead."),
+				actions: [
+					UIAlertAction(title: .localized("Try Anyway"), style: .default) { _ in
+						_allowSelfInstall = true
+						_install()
+					}
+				]
 			)
 			return
 		}

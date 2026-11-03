@@ -24359,6 +24359,36 @@
           }
         }
       }
+    },
+    "Update Veather with itself?" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Обновить Veather им самим?"
+          }
+        }
+      }
+    },
+    "iOS may close the app while it replaces itself, and the update can fail. Your data stays either way. If it fails, share the signed file to another installer instead." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iOS может закрыть приложение в момент замены себя, и обновление может не получиться. Данные в любом случае остаются. Если не получится, отправь подписанный файл в другой установщик."
+          }
+        }
+      }
+    },
+    "Try Anyway" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Всё равно попробовать"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
