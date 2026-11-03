@@ -87,7 +87,7 @@ static BOOL BTBWriteMemory(uint64_t address, uint64_t raw, size_t size) {
 	UISegmentedControl *_typeControl;
 	UITextField *_field;
 	UILabel *_step, *_hint, *_status;
-	UIButton *_primary, *_reset, *_more, *_unknown;
+	UIButton *_primary, *_reset, *_more, *_unknown, *_refresh;
 	UIStackView *_secondaryRow;
 	UITableView *_table;
 	BTBHit *_store;              // vm_allocate'd, so scans can skip it (it would find itself)
@@ -275,6 +275,11 @@ static UILabel *BTBLabel(UIFont *font, UIColor *color) {
 	_unknown.titleLabel.textAlignment = NSTextAlignmentCenter;
 	[_unknown addTarget:self action:@selector(toggleUnknown) forControlEvents:UIControlEventTouchUpInside];
 
+	_refresh = [UIButton buttonWithType:UIButtonTypeSystem];
+	_refresh.titleLabel.font = [UIFont boldSystemFontOfSize:16];
+	[_refresh setTitle:L(@"↻ Refresh values", @"↻ Обновить значения") forState:UIControlStateNormal];
+	[_refresh addTarget:self action:@selector(refreshValues) forControlEvents:UIControlEventTouchUpInside];
+
 	_primary = BTBBigButton(@"", YES, self, @selector(primaryTapped));
 	_reset = BTBBigButton(L(@"Start over", @"Сначала"), NO, self, @selector(startOver));
 	_more = BTBBigButton(L(@"Other options", @"Другие варианты"), NO, nil, nil);
@@ -286,7 +291,7 @@ static UILabel *BTBLabel(UIFont *font, UIColor *color) {
 
 	_status = BTBLabel([UIFont systemFontOfSize:13], UIColor.secondaryLabelColor);
 
-	UIStackView *top = [[UIStackView alloc] initWithArrangedSubviews:@[header, warn, _step, _hint, _typeControl, _field, _unknown, _primary, secondary, _status]];
+	UIStackView *top = [[UIStackView alloc] initWithArrangedSubviews:@[header, warn, _step, _hint, _typeControl, _field, _unknown, _primary, secondary, _refresh, _status]];
 	top.axis = UILayoutConstraintAxisVertical;
 	top.spacing = 10;
 	[top setCustomSpacing:14 afterView:warn];
@@ -341,6 +346,7 @@ static UILabel *BTBLabel(UIFont *font, UIColor *color) {
 	BOOL unknown = !refining && _mode == BTBModeUnknown;
 	_field.hidden = (refining && !exact) || unknown;
 	_unknown.hidden = refining;
+	_refresh.hidden = [self hitCount] == 0;
 	[_unknown setTitle:unknown ? L(@"✓ The number is hidden or encrypted (tap to type it instead)", @"✓ Число скрыто или зашифровано (нажми, чтобы ввести число)") : L(@"I can't find it: the number is hidden or encrypted", @"Не находит? Число скрыто или зашифровано") forState:UIControlStateNormal];
 	NSUInteger n = [self hitCount];
 	if (!refining) {
@@ -403,6 +409,13 @@ static UILabel *BTBLabel(UIFont *font, UIColor *color) {
 	vm_address_t s1 = (vm_address_t)_store, e1 = s1 + gMaxHits * sizeof(BTBHit);
 	vm_address_t s2 = (vm_address_t)_readBuffer, e2 = s2 + kChunk;
 	return (start < e1 && end > s1) || (start < e2 && end > s2);
+}
+
+/// Re-read the current value of every listed address (the game keeps changing them).
+- (void)refreshValues {
+	if (_busy) return;
+	[_table reloadData];
+	[self setStatus:L(@"Values refreshed.", @"Значения обновлены.")];
 }
 
 - (void)toggleUnknown {
