@@ -184,7 +184,8 @@ static __weak UIWindow *gGameWindow;
 		if ([s isKindOfClass:[UIWindowScene class]] && s.activationState == UISceneActivationStateForegroundActive) { scene = (UIWindowScene *)s; break; }
 	}
 	if (!scene) return;
-	for (UIWindow *w in scene.windows) if (w.isKeyWindow) { gGameWindow = w; break; }
+	// the game's window, never our own overlay (a tap on the GG button can make the overlay key)
+	for (UIWindow *w in scene.windows) if (![w isKindOfClass:[BTBGGWindow class]] && w.windowLevel <= UIWindowLevelNormal && !w.hidden) { gGameWindow = w; if (w.isKeyWindow) break; }
 	UIWindow *window = [[UIWindow alloc] initWithWindowScene:scene];
 	window.frame = scene.coordinateSpace.bounds;
 	window.windowLevel = UIWindowLevelAlert + 200;
