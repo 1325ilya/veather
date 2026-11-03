@@ -24389,6 +24389,16 @@
           }
         }
       }
+    },
+    "Delete %lld apps?" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить приложений: %lld?"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

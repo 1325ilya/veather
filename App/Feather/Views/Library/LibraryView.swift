@@ -15,6 +15,7 @@ struct LibraryView: View {
 	@StateObject var downloadManager = DownloadManager.shared
 	@StateObject var updateManager = UpdateManager.shared
 	
+	@State private var _confirmBulkDelete = false
 	@State private var _selectedInfoAppPresenting: AnyApp?
 	@State private var _selectedSigningAppPresenting: AnyApp?
 	@State private var _selectedInstallAppPresenting: AnyApp?
@@ -257,9 +258,9 @@ struct LibraryView: View {
 					NBToolbarButton(
 						.localized("Delete"),
 						systemImage: "trash",
-						isDisabled: _selectedAppUUIDs.isEmpty
+						isDisabled: _selectedAppUUIDs.isEmpty || _bulkProgress != nil
 					) {
-						_bulkDeleteSelectedApps()
+						_confirmBulkDelete = true
 					}
 				} else {
 					ToolbarItem(placement: .topBarTrailing) {
@@ -320,6 +321,18 @@ struct LibraryView: View {
 				}
 				Button(.localized("Cancel"), role: .cancel) {}
 			} message: { _ in
+				Text(.localized("The file is removed from Veather. Apps already installed on your iPhone stay."))
+			}
+			.confirmationDialog(
+				String.localized("Delete %lld apps?", arguments: _selectedAppUUIDs.count),
+				isPresented: $_confirmBulkDelete,
+				titleVisibility: .visible
+			) {
+				Button(.localized("Delete"), role: .destructive) {
+					_bulkDeleteSelectedApps()
+				}
+				Button(.localized("Cancel"), role: .cancel) {}
+			} message: {
 				Text(.localized("The file is removed from Veather. Apps already installed on your iPhone stay."))
 			}
 			.sheet(item: $_selectedInfoAppPresenting) { app in

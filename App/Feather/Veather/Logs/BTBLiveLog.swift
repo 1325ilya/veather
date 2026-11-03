@@ -139,7 +139,16 @@ final class BTBLiveLog: ObservableObject {
 		_pipe = nil
 		// the write end is closed and stdout/stderr are restored, so this ends right away:
 		// the last lines written just before the end must not be lost
-		let rest = pipe.fileHandleForReading.readDataToEndOfFile()
+		// non-blocking read: never wait for a copy of the write end that something else still holds
+		let fd = pipe.fileHandleForReading.fileDescriptor
+		_ = fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK)
+		var rest = Data()
+		var buffer = [UInt8](repeating: 0, count: 4096)
+		while true {
+			let n = read(fd, &buffer, buffer.count)
+			if n <= 0 { break }
+			rest.append(buffer, count: n)
+		}
 		if !rest.isEmpty { _ingest(String(decoding: rest, as: UTF8.self)) }
 
 		if !_partial.isEmpty {
