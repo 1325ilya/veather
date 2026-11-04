@@ -18,6 +18,13 @@ static NSString *CleanName(NSString *name) {
 	return n;
 }
 
+static NSString *FolderName(NSString *name) {
+	NSString *n = [name stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+	n = [[n componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"/\\:"]] componentsJoinedByString:@"_"];
+	while ([n hasPrefix:@"."]) n = [n substringFromIndex:1];
+	return n.length ? n : nil;
+}
+
 static NSString *UniquePath(NSString *dir, NSString *name) {
 	NSFileManager *fm = [NSFileManager defaultManager];
 	NSString *path = [dir stringByAppendingPathComponent:name];
@@ -154,6 +161,7 @@ static NSInteger gKind = 0;    // 0 GG scripts, 1 plain Lua
 	NSArray<NSString *> *_folders;
 	NSArray<NSString *> *_files;
 	UISegmentedControl *_scopeSeg, *_kindSeg;
+	NSString *_headerKey;   // what the header shows now: it is rebuilt only when this changes
 }
 
 - (instancetype)init {
@@ -229,6 +237,9 @@ static NSInteger gKind = 0;    // 0 GG scripts, 1 plain Lua
 
 - (void)updateHeader {
 	BTBGGScriptRunner *r = [BTBGGScriptRunner shared];
+	NSString *key = r.running ? [@"run:" stringByAppendingString:r.runningName ?: @""] : @"idle";
+	if (self.tableView.tableHeaderView && [key isEqualToString:_headerKey]) return; // the log changes often: do not rebuild
+	_headerKey = key;
 	NSMutableArray *rows = [NSMutableArray array];
 	if (_isRoot) {
 		_scopeSeg = [[UISegmentedControl alloc] initWithItems:@[BL(@"Shared", @"Общие"), BL(@"This game", @"Эта игра")]];
@@ -290,8 +301,7 @@ static NSInteger gKind = 0;    // 0 GG scripts, 1 plain Lua
 	[a addTextFieldWithConfigurationHandler:^(UITextField *f) { f.placeholder = BL(@"Folder name", @"Название папки"); }];
 	__weak UIAlertController *wa = a;
 	[a addAction:[UIAlertAction actionWithTitle:BL(@"Create", @"Создать") style:UIAlertActionStyleDefault handler:^(UIAlertAction *x) {
-		NSString *name = CleanName(wa.textFields.firstObject.text);
-		name = name.stringByDeletingPathExtension;
+		NSString *name = FolderName(wa.textFields.firstObject.text);
 		if (name.length == 0) return;
 		[[NSFileManager defaultManager] createDirectoryAtPath:[self pathFor:name] withIntermediateDirectories:YES attributes:nil error:nil];
 		[self reload];
@@ -487,8 +497,7 @@ static NSInteger gKind = 0;    // 0 GG scripts, 1 plain Lua
 	[a addTextFieldWithConfigurationHandler:^(UITextField *f) { f.text = item; f.clearButtonMode = UITextFieldViewModeWhileEditing; }];
 	__weak UIAlertController *wa = a;
 	[a addAction:[UIAlertAction actionWithTitle:BL(@"Save", @"Сохранить") style:UIAlertActionStyleDefault handler:^(UIAlertAction *x) {
-		NSString *name = CleanName(wa.textFields.firstObject.text);
-		if (folder) name = name.stringByDeletingPathExtension;
+		NSString *name = folder ? FolderName(wa.textFields.firstObject.text) : CleanName(wa.textFields.firstObject.text);
 		if (name.length == 0 || [name isEqualToString:item]) return;
 		[[NSFileManager defaultManager] moveItemAtPath:[self pathFor:item] toPath:UniquePath([self dir], name) error:nil];
 		[self reload];

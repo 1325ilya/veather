@@ -58,7 +58,7 @@ enum BTBGGSharedScripts {
 			try? fm.createDirectory(at: base.appendingPathComponent(name, isDirectory: true), withIntermediateDirectories: true)
 		}
 		let gg = base.appendingPathComponent("GG", isDirectory: true)
-		if root == nil || base == defaultFolder,
+		if base.standardizedFileURL.path == defaultFolder.standardizedFileURL.path,
 		   (try? fm.contentsOfDirectory(atPath: gg.path))?.isEmpty ?? true {
 			let example = """
 			-- \(String.localized("Example of a shared script: it is available in every game."))
