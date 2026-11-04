@@ -2,6 +2,7 @@
 //  panel transparency, hiding the floating button, and the settings screen that holds them.
 
 #import "BTBGGUI.h"
+#import <QuartzCore/QuartzCore.h>
 
 static NSString *const kStyleKey = @"btb.gg.style";
 static NSString *const kAlphaKey = @"btb.gg.alpha";

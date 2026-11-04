@@ -13,7 +13,7 @@ LUA_SRC := $(wildcard lua/*.c)
 CFLAGS := -isysroot $(SYSROOT) -arch arm64 -miphoneos-version-min=14.0 \
 	-fobjc-arc -O2 -Wall -Wno-unused-function -dynamiclib \
 	-framework Foundation -framework UIKit -framework Security -framework UniformTypeIdentifiers \
-	-framework CoreGraphics -weak_framework WebKit \
+	-framework CoreGraphics -framework QuartzCore -weak_framework WebKit \
 	-install_name @rpath/BTBTweaks.dylib
 
 all: $(OUT)/BTBTweaks.btbtweak
