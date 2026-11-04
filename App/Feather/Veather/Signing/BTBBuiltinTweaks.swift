@@ -130,6 +130,9 @@ enum BTBBuiltinTweak: String, CaseIterable, Codable, Identifiable {
 			}
 			info.write(to: infoURL, atomically: true)
 		}
+		if enabled.contains(.gameguard) {
+			BTBGGSharedScripts.copy(into: app)
+		}
 		Logger.signing.info("Injected built-in tweaks: \(enabled.map(\.rawValue).joined(separator: ","), privacy: .public)")
 		BTBLiveLog.log("Built-in tweaks: \(enabled.map(\.title).joined(separator: ", "))", .step)
 	}

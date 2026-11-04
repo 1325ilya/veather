@@ -259,6 +259,8 @@ static int HitCompare(const void *a, const void *b) {
 	dispatch_queue_t _freezeQueue;
 
 	NSMutableArray<BTBGGItem *> *_list;
+	NSMutableArray<NSString *> *_folders;
+	NSMutableArray<NSDictionary *> *_recipe;
 }
 
 + (instancetype)shared {
@@ -278,6 +280,8 @@ static int HitCompare(const void *a, const void *b) {
 		_addressFrom = 0;
 		_addressTo = UINT64_MAX;
 		_list = [NSMutableArray array];
+		_folders = [NSMutableArray array];
+		_recipe = [NSMutableArray array];
 		_imageNames = [NSMutableArray array];
 		_imageBases = [NSMutableArray array];
 		_imageIsApp = [NSMutableArray array];
@@ -872,13 +876,141 @@ static NSString *ListPath(void) {
 	return [dir stringByAppendingPathComponent:@"list.json"];
 }
 
+static NSString *Str(id v) { return [v isKindOfClass:[NSString class]] ? v : @""; }
+
++ (NSString *)normalizedFolder:(NSString *)path {
+	NSMutableArray *parts = [NSMutableArray array];
+	for (NSString *c in [(path ?: @"") componentsSeparatedByString:@"/"]) {
+		NSString *t = [c stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+		if (t.length) [parts addObject:t];
+	}
+	return [parts componentsJoinedByString:@"/"];
+}
+
+- (void)addFolder:(NSString *)path {
+	NSString *p = [BTBGGEngine normalizedFolder:path];
+	if (p.length == 0) return;
+	NSArray *parts = [p componentsSeparatedByString:@"/"];
+	NSString *cur = @"";
+	for (NSString *part in parts) {
+		cur = cur.length ? [cur stringByAppendingFormat:@"/%@", part] : part;
+		if (![_folders containsObject:cur]) [_folders addObject:cur];
+	}
+}
+
+- (NSArray<NSString *> *)allFolders {
+	NSMutableSet *set = [NSMutableSet setWithArray:_folders];
+	for (BTBGGItem *it in _list) {
+		NSString *f = [BTBGGEngine normalizedFolder:it.folder];
+		NSString *cur = @"";
+		for (NSString *part in f.length ? [f componentsSeparatedByString:@"/"] : @[]) {
+			cur = cur.length ? [cur stringByAppendingFormat:@"/%@", part] : part;
+			[set addObject:cur];
+		}
+	}
+	return [set.allObjects sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+}
+
+- (NSArray<NSString *> *)subfoldersOf:(NSString *)path {
+	NSString *p = [BTBGGEngine normalizedFolder:path];
+	NSMutableArray *out = [NSMutableArray array];
+	for (NSString *f in [self allFolders]) {
+		NSString *rest = f;
+		if (p.length) {
+			if (![f hasPrefix:[p stringByAppendingString:@"/"]]) continue;
+			rest = [f substringFromIndex:p.length + 1];
+		}
+		if ([rest containsString:@"/"]) continue; // deeper than a direct child
+		[out addObject:f];
+	}
+	return out;
+}
+
+- (NSArray<BTBGGItem *> *)itemsInFolder:(NSString *)path {
+	NSString *p = [BTBGGEngine normalizedFolder:path];
+	NSMutableArray *out = [NSMutableArray array];
+	for (BTBGGItem *it in _list) if ([[BTBGGEngine normalizedFolder:it.folder] isEqualToString:p]) [out addObject:it];
+	return out;
+}
+
+- (NSUInteger)countInFolder:(NSString *)path {
+	NSString *p = [BTBGGEngine normalizedFolder:path];
+	NSString *prefix = [p stringByAppendingString:@"/"];
+	NSUInteger n = 0;
+	for (BTBGGItem *it in _list) {
+		NSString *f = [BTBGGEngine normalizedFolder:it.folder];
+		if ([f isEqualToString:p] || [f hasPrefix:prefix]) n++;
+	}
+	return n;
+}
+
+- (BOOL)renameFolder:(NSString *)path to:(NSString *)newName {
+	NSString *old = [BTBGGEngine normalizedFolder:path];
+	NSString *name = [[newName stringByReplacingOccurrencesOfString:@"/" withString:@"-"] stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+	if (old.length == 0 || name.length == 0) return NO;
+	NSString *parent = old.stringByDeletingLastPathComponent;
+	NSString *fresh = parent.length ? [parent stringByAppendingFormat:@"/%@", name] : name;
+	if ([fresh isEqualToString:old]) return YES;
+	if ([[self allFolders] containsObject:fresh]) return NO;
+	NSString *oldPrefix = [old stringByAppendingString:@"/"];
+	[self addFolder:fresh];
+	NSMutableArray *next = [NSMutableArray array];
+	for (NSString *f in _folders) {
+		if ([f isEqualToString:old]) continue;
+		if ([f hasPrefix:oldPrefix]) [next addObject:[fresh stringByAppendingString:[f substringFromIndex:old.length]]];
+		else [next addObject:f];
+	}
+	for (NSString *f in next) if (![_folders containsObject:f]) [_folders addObject:f];
+	[_folders removeObject:old];
+	for (NSString *f in [_folders copy]) if ([f hasPrefix:oldPrefix]) [_folders removeObject:f];
+	for (BTBGGItem *it in _list) {
+		NSString *f = [BTBGGEngine normalizedFolder:it.folder];
+		if ([f isEqualToString:old]) it.folder = fresh;
+		else if ([f hasPrefix:oldPrefix]) it.folder = [fresh stringByAppendingString:[f substringFromIndex:old.length]];
+	}
+	return YES;
+}
+
+- (void)deleteFolder:(NSString *)path {
+	NSString *p = [BTBGGEngine normalizedFolder:path];
+	if (p.length == 0) return;
+	NSString *prefix = [p stringByAppendingString:@"/"];
+	NSMutableArray *gone = [NSMutableArray array];
+	for (BTBGGItem *it in _list) {
+		NSString *f = [BTBGGEngine normalizedFolder:it.folder];
+		if ([f isEqualToString:p] || [f hasPrefix:prefix]) [gone addObject:it];
+	}
+	[self removeListItems:gone];
+	for (NSString *f in [_folders copy]) if ([f isEqualToString:p] || [f hasPrefix:prefix]) [_folders removeObject:f];
+}
+
+- (void)moveItem:(BTBGGItem *)item toFolder:(NSString *)path {
+	item.folder = [BTBGGEngine normalizedFolder:path];
+	[self addFolder:item.folder];
+}
+
 - (BTBGGItem *)addToListAddress:(uint64_t)address type:(BTBGGType)type label:(NSString *)label {
+	return [self addToListAddress:address type:type label:label note:nil folder:nil];
+}
+
+- (BTBGGItem *)addToListAddress:(uint64_t)address type:(BTBGGType)type label:(NSString *)label note:(NSString *)note folder:(NSString *)folder {
 	if (type == BTBGGTypeAuto || type == BTBGGTypeHidden) type = BTBGGTypeDword;
-	for (BTBGGItem *it in _list) if (it.address == address && it.type == type) { if (label.length) it.label = label; return it; }
+	for (BTBGGItem *it in _list) {
+		if (!it.stale && it.address == address && it.type == type) {
+			if (label.length) it.label = label;
+			if (note.length) it.note = note;
+			if (folder) { it.folder = [BTBGGEngine normalizedFolder:folder]; [self addFolder:it.folder]; }
+			return it;
+		}
+	}
 	BTBGGItem *item = [BTBGGItem new];
 	item.address = address;
 	item.type = type;
 	item.label = label ?: @"";
+	item.note = note ?: @"";
+	item.folder = [BTBGGEngine normalizedFolder:folder];
+	item.recipe = @"";
+	[self addFolder:item.folder];
 	NSString *m = nil;
 	uint64_t off = 0;
 	if ([self moduleForAddress:address name:&m offset:&off]) { item.module = m; item.offset = off; }
@@ -887,34 +1019,48 @@ static NSString *ListPath(void) {
 }
 
 - (void)removeListItems:(NSArray<BTBGGItem *> *)items {
-	for (BTBGGItem *it in items) [self unfreezeAddress:it.address];
+	for (BTBGGItem *it in items) if (!it.stale) [self unfreezeAddress:it.address];
 	[_list removeObjectsInArray:items];
 }
 
 - (void)clearList {
-	for (BTBGGItem *it in _list) [self unfreezeAddress:it.address];
+	for (BTBGGItem *it in _list) if (!it.stale) [self unfreezeAddress:it.address];
 	[_list removeAllObjects];
+	[_folders removeAllObjects];
 }
 
-- (NSArray *)persistableEntries {
-	NSMutableArray *out = [NSMutableArray array];
+- (NSDictionary *)persistableDocument {
+	NSMutableArray *items = [NSMutableArray array];
 	for (BTBGGItem *it in _list) {
-		if (!it.module) continue; // heap addresses change on every launch: not worth saving
-		[out addObject:@{@"label": it.label ?: @"", @"type": @(it.type), @"module": it.module, @"offset": @(it.offset)}];
+		NSMutableDictionary *d = [NSMutableDictionary dictionaryWithDictionary:@{
+			@"label": it.label ?: @"", @"note": it.note ?: @"", @"folder": it.folder ?: @"", @"recipe": it.recipe ?: @"", @"type": @(it.type)}];
+		if (it.module) { d[@"module"] = it.module; d[@"offset"] = @(it.offset); }
+		else d[@"heap"] = @YES; // the address is only valid in this launch: kept for the name, the note and the recipe
+		[items addObject:d];
 	}
-	return out;
+	return @{@"version": @2, @"folders": [self allFolders], @"items": items};
 }
 
 - (void)persistList {
-	NSData *data = [NSJSONSerialization dataWithJSONObject:[self persistableEntries] options:0 error:nil];
+	NSData *data = [NSJSONSerialization dataWithJSONObject:[self persistableDocument] options:0 error:nil];
 	if (data) [data writeToFile:ListPath() atomically:YES];
 }
 
 - (void)loadPersistedList {
 	NSData *data = [NSData dataWithContentsOfFile:ListPath()];
 	if (!data) return;
-	NSArray *entries = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-	if ([entries isKindOfClass:[NSArray class]]) [self addEntries:entries];
+	id obj = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+	[self addDocument:obj];
+}
+
+/// A version 2 document, or the old plain array of entries.
+- (NSInteger)addDocument:(id)obj {
+	if ([obj isKindOfClass:[NSArray class]]) return [self addEntries:obj];
+	if (![obj isKindOfClass:[NSDictionary class]]) return -1;
+	NSArray *folders = ((NSDictionary *)obj)[@"folders"];
+	if ([folders isKindOfClass:[NSArray class]]) for (id f in folders) if ([f isKindOfClass:[NSString class]]) [self addFolder:f];
+	NSArray *items = ((NSDictionary *)obj)[@"items"];
+	return [items isKindOfClass:[NSArray class]] ? [self addEntries:items] : 0;
 }
 
 - (NSInteger)addEntries:(NSArray *)entries {
@@ -922,35 +1068,56 @@ static NSString *ListPath(void) {
 	NSInteger added = 0;
 	for (id e in entries) {
 		if (![e isKindOfClass:[NSDictionary class]]) continue;
+		NSNumber *type = e[@"type"];
+		if (!type || type.integerValue < 0 || type.integerValue > BTBGGTypeNegQword || type.integerValue == BTBGGTypeAuto) continue;
+		NSString *folder = [BTBGGEngine normalizedFolder:Str(e[@"folder"])];
 		NSString *module = e[@"module"];
-		NSNumber *type = e[@"type"], *offset = e[@"offset"];
-		if (![module isKindOfClass:[NSString class]] || !type || !offset || type.integerValue < 0 || type.integerValue > BTBGGTypeNegQword || type.integerValue == BTBGGTypeAuto) continue;
-		long found = -1;
-		for (NSUInteger i = 0; i < _imageNames.count; i++) {
-			if (![_imageNames[i].lastPathComponent isEqualToString:module]) continue;
-			if (found < 0 || _imageIsApp[i].boolValue) found = (long)i;
+		NSNumber *offset = e[@"offset"];
+		if ([module isKindOfClass:[NSString class]] && offset) {
+			long found = -1;
+			for (NSUInteger i = 0; i < _imageNames.count; i++) {
+				if (![_imageNames[i].lastPathComponent isEqualToString:module]) continue;
+				if (found < 0 || _imageIsApp[i].boolValue) found = (long)i;
+			}
+			if (found < 0) continue;
+			uint64_t address = _imageBases[found].unsignedLongLongValue + offset.unsignedLongLongValue;
+			NSUInteger before = _list.count;
+			BTBGGItem *item = [self addToListAddress:address type:(BTBGGType)type.integerValue label:Str(e[@"label"]) note:Str(e[@"note"]) folder:folder];
+			item.recipe = Str(e[@"recipe"]);
+			if (_list.count > before) added++;
+		} else if ([e[@"heap"] boolValue]) {
+			BTBGGItem *item = [BTBGGItem new];
+			item.type = (BTBGGType)type.integerValue;
+			item.label = Str(e[@"label"]);
+			item.note = Str(e[@"note"]);
+			item.folder = folder;
+			item.recipe = Str(e[@"recipe"]);
+			item.stale = YES;
+			[self addFolder:folder];
+			[_list addObject:item];
+			added++;
 		}
-		if (found < 0) continue;
-		uint64_t address = _imageBases[found].unsignedLongLongValue + offset.unsignedLongLongValue;
-		NSUInteger before = _list.count;
-		BTBGGItem *item = [self addToListAddress:address type:(BTBGGType)type.integerValue label:[e[@"label"] isKindOfClass:[NSString class]] ? e[@"label"] : @""];
-		if (_list.count > before) { added++; (void)item; }
 	}
 	return added;
 }
 
 - (NSString *)listJSON {
-	NSData *data = [NSJSONSerialization dataWithJSONObject:[self persistableEntries] options:NSJSONWritingPrettyPrinted error:nil];
-	return data ? [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] : @"[]";
+	NSData *data = [NSJSONSerialization dataWithJSONObject:[self persistableDocument] options:NSJSONWritingPrettyPrinted error:nil];
+	return data ? [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] : @"{}";
 }
 
 - (NSInteger)importListJSON:(NSString *)json {
 	NSData *data = [json dataUsingEncoding:NSUTF8StringEncoding];
 	id obj = data ? [NSJSONSerialization JSONObjectWithData:data options:0 error:nil] : nil;
-	if (![obj isKindOfClass:[NSArray class]]) return -1;
-	NSInteger n = [self addEntries:obj];
-	[self persistList];
+	NSInteger n = [self addDocument:obj];
+	if (n >= 0) [self persistList];
 	return n;
 }
+
+// MARK: Recipe steps
+
+- (NSArray<NSDictionary *> *)recipeSteps { return [_recipe copy]; }
+- (void)recipeReset { [_recipe removeAllObjects]; }
+- (void)recipeAddStep:(NSDictionary *)step { if (step) [_recipe addObject:step]; }
 
 @end

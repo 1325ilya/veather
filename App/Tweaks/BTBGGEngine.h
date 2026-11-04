@@ -54,6 +54,10 @@ static inline BTBGGType BTBGGHitType(BTBGGHit h) { return (BTBGGType)(h.addrType
 @property (nonatomic, copy) NSString *label;
 @property (nonatomic, copy) NSString *module;   // set when the address is inside a code image (survives restarts)
 @property (nonatomic) uint64_t offset;          // offset from the image header
+@property (nonatomic, copy) NSString *folder;   // "" is the root, "Speed/Player" a nested folder
+@property (nonatomic, copy) NSString *note;
+@property (nonatomic, copy) NSString *recipe;   // a search recipe (script of the game) that finds this value again
+@property (nonatomic) BOOL stale;               // a heap address from an earlier launch: kept for its name and note
 @end
 
 @interface BTBGGEngine : NSObject
@@ -112,7 +116,24 @@ static inline BTBGGType BTBGGHitType(BTBGGHit h) { return (BTBGGType)(h.addrType
 // MARK: saved list
 @property (nonatomic, readonly) NSMutableArray<BTBGGItem *> *list;
 - (BTBGGItem *)addToListAddress:(uint64_t)address type:(BTBGGType)type label:(NSString *)label;
+- (BTBGGItem *)addToListAddress:(uint64_t)address type:(BTBGGType)type label:(NSString *)label note:(NSString *)note folder:(NSString *)folder;
 - (void)removeListItems:(NSArray<BTBGGItem *> *)items;
+
+// folders of the saved list ("" is the root, "A/B" is B inside A)
++ (NSString *)normalizedFolder:(NSString *)path;
+- (void)addFolder:(NSString *)path;                                   // also creates the parents
+- (BOOL)renameFolder:(NSString *)path to:(NSString *)newName;         // NO when that name is taken
+- (void)deleteFolder:(NSString *)path;                                // with everything inside
+- (NSArray<NSString *> *)subfoldersOf:(NSString *)path;               // direct children, full paths, sorted
+- (NSArray<BTBGGItem *> *)itemsInFolder:(NSString *)path;             // direct children only
+- (NSUInteger)countInFolder:(NSString *)path;                         // items inside, nested ones too
+- (NSArray<NSString *> *)allFolders;                                  // every folder, full paths, sorted
+- (void)moveItem:(BTBGGItem *)item toFolder:(NSString *)path;
+
+// the steps of the current search, recorded for "save as a recipe"
+@property (nonatomic, readonly) NSArray<NSDictionary *> *recipeSteps;
+- (void)recipeReset;
+- (void)recipeAddStep:(NSDictionary *)step;
 - (void)clearList;
 - (void)persistList;
 - (NSString *)listJSON;

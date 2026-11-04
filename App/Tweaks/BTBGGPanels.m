@@ -44,9 +44,7 @@ void BTBGGPresentValueEditor(UIViewController *host, uint64_t address, BTBGGType
 		}]];
 	}
 	[a addAction:[UIAlertAction actionWithTitle:BL(@"Save to the list", @"Сохранить в список") style:UIAlertActionStyleDefault handler:^(UIAlertAction *x) {
-		[e addToListAddress:address type:type label:nil];
-		[e persistList];
-		if (changed) changed();
+		BTBGGPresentSaveItem(host, address, type, changed);
 	}]];
 	[a addAction:[UIAlertAction actionWithTitle:BL(@"Open in memory view", @"Открыть в просмотре памяти") style:UIAlertActionStyleDefault handler:^(UIAlertAction *x) { BTBGGShowMemory(address); }]];
 	[a addAction:[UIAlertAction actionWithTitle:BL(@"Cancel", @"Отмена") style:UIAlertActionStyleCancel handler:nil]];
@@ -89,6 +87,7 @@ NSString *BTBGGRegionSummary(NSUInteger mask) {
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	self.title = BL(@"Search regions", @"Регионы поиска");
+	self.tableView.backgroundColor = BTBGGBackground();
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tv { return 2; }
@@ -175,33 +174,244 @@ NSString *BTBGGRegionSummary(NSUInteger mask) {
 
 UIViewController *BTBGGMakeRegionsVC(void) { return [BTBGGRegionsVC new]; }
 
+// MARK: - Folder picker
+
+@interface BTBGGFolderPickerVC : UITableViewController
+- (instancetype)initWithPath:(NSString *)path origin:(UIViewController *)origin picked:(void (^)(NSString *))picked;
+@end
+
+@implementation BTBGGFolderPickerVC {
+	NSString *_path;
+	__weak UIViewController *_origin;
+	void (^_picked)(NSString *);
+	NSArray<NSString *> *_subs;
+}
+
+- (instancetype)initWithPath:(NSString *)path origin:(UIViewController *)origin picked:(void (^)(NSString *))picked {
+	if ((self = [super initWithStyle:UITableViewStyleInsetGrouped])) { _path = path ?: @""; _origin = origin; _picked = [picked copy]; }
+	return self;
+}
+
+- (void)viewDidLoad {
+	[super viewDidLoad];
+	self.tableView.backgroundColor = BTBGGBackground();
+	self.title = _path.length ? _path.lastPathComponent : BL(@"Saved values", @"Сохранённые значения");
+	self.navigationItem.rightBarButtonItems = @[
+		[[UIBarButtonItem alloc] initWithTitle:BL(@"Choose", @"Выбрать") style:UIBarButtonItemStyleDone target:self action:@selector(choose)],
+		[[UIBarButtonItem alloc] initWithImage:[UIImage systemImageNamed:@"folder.badge.plus"] style:UIBarButtonItemStylePlain target:self action:@selector(newFolder)],
+	];
+	[self reload];
+}
+
+- (void)reload {
+	_subs = [[BTBGGEngine shared] subfoldersOf:_path];
+	[self.tableView reloadData];
+}
+
+- (void)choose {
+	void (^cb)(NSString *) = _picked;
+	UIViewController *o = _origin;
+	if (o && [self.navigationController.viewControllers containsObject:o]) [self.navigationController popToViewController:o animated:YES];
+	if (cb) cb(_path);
+}
+
+- (void)newFolder {
+	UIAlertController *a = [UIAlertController alertControllerWithTitle:BL(@"New folder", @"Новая папка") message:nil preferredStyle:UIAlertControllerStyleAlert];
+	[a addTextFieldWithConfigurationHandler:^(UITextField *f) { f.placeholder = BL(@"e.g. Speed", @"например, Скорость"); }];
+	__weak UIAlertController *wa = a;
+	[a addAction:[UIAlertAction actionWithTitle:BL(@"Create", @"Создать") style:UIAlertActionStyleDefault handler:^(UIAlertAction *x) {
+		NSString *name = [wa.textFields.firstObject.text stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+		name = [name stringByReplacingOccurrencesOfString:@"/" withString:@"-"];
+		if (name.length == 0) return;
+		[[BTBGGEngine shared] addFolder:self->_path.length ? [self->_path stringByAppendingPathComponent:name] : name];
+		[[BTBGGEngine shared] persistList];
+		[self reload];
+	}]];
+	[a addAction:[UIAlertAction actionWithTitle:BL(@"Cancel", @"Отмена") style:UIAlertActionStyleCancel handler:nil]];
+	[self presentViewController:a animated:YES completion:nil];
+}
+
+- (NSInteger)tableView:(UITableView *)tv numberOfRowsInSection:(NSInteger)s { return (NSInteger)_subs.count; }
+
+- (NSString *)tableView:(UITableView *)tv titleForFooterInSection:(NSInteger)s {
+	return _subs.count ? BL(@"Tap a folder to open it, then “Choose”.", @"Нажми на папку, чтобы открыть, затем «Выбрать».") : BL(@"No folders inside. Choose this one or create a new folder with the button at the top.", @"Внутри нет папок. Выбери эту или создай новую кнопкой сверху.");
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tv cellForRowAtIndexPath:(NSIndexPath *)ip {
+	UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+	cell.textLabel.text = _subs[ip.row].lastPathComponent;
+	cell.imageView.image = [UIImage systemImageNamed:@"folder.fill"];
+	cell.imageView.tintColor = BTBGGAccent();
+	cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+	return cell;
+}
+
+- (void)tableView:(UITableView *)tv didSelectRowAtIndexPath:(NSIndexPath *)ip {
+	[tv deselectRowAtIndexPath:ip animated:YES];
+	[self.navigationController pushViewController:[[BTBGGFolderPickerVC alloc] initWithPath:_subs[ip.row] origin:_origin picked:_picked] animated:YES];
+}
+
+@end
+
+void BTBGGPickFolder(UINavigationController *nav, NSString *current, void (^picked)(NSString *path)) {
+	[nav pushViewController:[[BTBGGFolderPickerVC alloc] initWithPath:@"" origin:nav.topViewController picked:picked] animated:YES];
+}
+
+// MARK: - Save sheet (name, note, folder, recipe)
+
+@interface BTBGGSaveItemVC : UIViewController
+- (instancetype)initWithAddress:(uint64_t)address type:(BTBGGType)type done:(void (^)(void))done;
+- (void)setFolderValue:(NSString *)path;
+@end
+
+@implementation BTBGGSaveItemVC {
+	uint64_t _address;
+	BTBGGType _type;
+	void (^_done)(void);
+	UITextField *_name, *_note;
+	UIButton *_folderButton;
+	UISwitch *_recipeSwitch;
+	NSString *_folder;
+}
+
+- (instancetype)initWithAddress:(uint64_t)address type:(BTBGGType)type done:(void (^)(void))done {
+	if ((self = [super init])) { _address = address; _type = type; _done = [done copy]; _folder = @""; }
+	return self;
+}
+
+- (UITextField *)field:(NSString *)placeholder {
+	UITextField *f = [UITextField new];
+	f.borderStyle = UITextBorderStyleRoundedRect;
+	f.placeholder = placeholder;
+	f.clearButtonMode = UITextFieldViewModeWhileEditing;
+	[f.heightAnchor constraintEqualToConstant:44].active = YES;
+	return f;
+}
+
+- (void)viewDidLoad {
+	[super viewDidLoad];
+	self.title = BL(@"Save the value", @"Сохранить значение");
+	self.view.backgroundColor = BTBGGBackground();
+	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:BL(@"Cancel", @"Отмена") style:UIBarButtonItemStylePlain target:self action:@selector(cancel)];
+	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:BL(@"Save", @"Сохранить") style:UIBarButtonItemStyleDone target:self action:@selector(save)];
+
+	UILabel *info = BTBGGLabel([UIFont monospacedSystemFontOfSize:12 weight:UIFontWeightRegular], UIColor.secondaryLabelColor);
+	info.text = [NSString stringWithFormat:@"%@ · 0x%llx", [BTBGGEngine nameOfType:_type], _address];
+	_name = [self field:BL(@"Name, e.g. Player", @"Название, например, Игрок")];
+	_note = [self field:BL(@"Note (optional)", @"Заметка (необязательно)")];
+
+	_folderButton = [UIButton buttonWithType:UIButtonTypeSystem];
+	_folderButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeading;
+	_folderButton.titleLabel.font = [UIFont systemFontOfSize:17];
+	[_folderButton addTarget:self action:@selector(pickFolder) forControlEvents:UIControlEventTouchUpInside];
+	[_folderButton.heightAnchor constraintEqualToConstant:44].active = YES;
+	[self updateFolderTitle];
+
+	NSMutableArray *views = [NSMutableArray arrayWithObjects:info, _name, _note, _folderButton, nil];
+	if ([BTBGGEngine shared].recipeSteps.count > 0) {
+		_recipeSwitch = [UISwitch new];
+		_recipeSwitch.on = YES;
+		_recipeSwitch.onTintColor = BTBGGAccent();
+		UILabel *l = BTBGGLabel([UIFont systemFontOfSize:15], UIColor.labelColor);
+		l.text = BL(@"Also save the search recipe (a GG script that finds this value again)", @"Сохранить и рецепт поиска (GG-скрипт, который находит это значение заново)");
+		UIStackView *row = [[UIStackView alloc] initWithArrangedSubviews:@[l, _recipeSwitch]];
+		row.spacing = 12;
+		row.alignment = UIStackViewAlignmentCenter;
+		[views addObject:row];
+	}
+	UIStackView *stack = [[UIStackView alloc] initWithArrangedSubviews:views];
+	stack.axis = UILayoutConstraintAxisVertical;
+	stack.spacing = 14;
+	stack.translatesAutoresizingMaskIntoConstraints = NO;
+	[self.view addSubview:stack];
+	UILayoutGuide *g = self.view.safeAreaLayoutGuide;
+	[NSLayoutConstraint activateConstraints:@[
+		[stack.topAnchor constraintEqualToAnchor:g.topAnchor constant:16],
+		[stack.leadingAnchor constraintEqualToAnchor:g.leadingAnchor constant:20],
+		[stack.trailingAnchor constraintEqualToAnchor:g.trailingAnchor constant:-20],
+	]];
+}
+
+- (void)updateFolderTitle {
+	NSString *shown = _folder.length ? _folder : BL(@"Root", @"Корень");
+	[_folderButton setTitle:[NSString stringWithFormat:BL(@"Folder: %@  ›", @"Папка: %@  ›"), shown] forState:UIControlStateNormal];
+}
+
+- (void)pickFolder {
+	[self.view endEditing:YES];
+	__weak typeof(self) weak = self;
+	BTBGGPickFolder(self.navigationController, _folder, ^(NSString *path) {
+		[weak setFolderValue:path];
+	});
+}
+
+- (void)setFolderValue:(NSString *)path { _folder = path ?: @""; [self updateFolderTitle]; }
+
+- (void)cancel { [self dismissViewControllerAnimated:YES completion:nil]; }
+
+- (void)save {
+	BTBGGEngine *e = [BTBGGEngine shared];
+	NSString *name = [_name.text stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+	NSString *note = [_note.text stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+	BTBGGItem *item = [e addToListAddress:_address type:_type label:name note:note folder:_folder];
+	if (_recipeSwitch.on && item) {
+		NSString *title = name.length ? name : [e describeAddress:_address];
+		NSString *rel = BTBGGSaveRecipe(title, BTBGGRecipeSource(title, e.recipeSteps));
+		if (rel) item.recipe = rel;
+	}
+	[e persistList];
+	void (^done)(void) = _done;
+	[self dismissViewControllerAnimated:YES completion:^{ if (done) done(); }];
+}
+
+@end
+
+void BTBGGPresentSaveItem(UIViewController *host, uint64_t address, BTBGGType type, void (^done)(void)) {
+	UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:[[BTBGGSaveItemVC alloc] initWithAddress:address type:type done:done]];
+	nav.modalPresentationStyle = UIModalPresentationPageSheet;
+	[host presentViewController:nav animated:YES completion:nil];
+}
+
 // MARK: - Saved list
 
 @interface BTBGGSavedListVC : UITableViewController
+- (instancetype)initWithFolder:(NSString *)folder;
 @end
 
 @implementation BTBGGSavedListVC {
 	NSTimer *_timer;
+	NSString *_folder;
+	NSArray<NSString *> *_subs;
+	NSArray<BTBGGItem *> *_items;
 }
 
-- (instancetype)init { return [super initWithStyle:UITableViewStyleInsetGrouped]; }
+- (instancetype)init { return [self initWithFolder:@""]; }
+
+- (instancetype)initWithFolder:(NSString *)folder {
+	if ((self = [super initWithStyle:UITableViewStyleInsetGrouped])) _folder = folder ?: @"";
+	return self;
+}
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
+	self.tableView.backgroundColor = BTBGGBackground();
+	if (_folder.length) self.title = _folder.lastPathComponent;
 	__weak typeof(self) weak = self;
-	NSArray *items = @[
-		[UIAction actionWithTitle:BL(@"Freeze all", @"Заморозить все") image:nil identifier:nil handler:^(UIAction *x) { [weak freezeAll]; }],
+	NSMutableArray *items = [NSMutableArray arrayWithArray:@[
+		[UIAction actionWithTitle:BL(@"New folder", @"Новая папка") image:[UIImage systemImageNamed:@"folder.badge.plus"] identifier:nil handler:^(UIAction *x) { [weak newFolder]; }],
+		[UIAction actionWithTitle:BL(@"Freeze all here", @"Заморозить все здесь") image:nil identifier:nil handler:^(UIAction *x) { [weak freezeAll]; }],
 		[UIAction actionWithTitle:BL(@"Unfreeze all", @"Разморозить все") image:nil identifier:nil handler:^(UIAction *x) { [[BTBGGEngine shared] unfreezeAll]; [weak.tableView reloadData]; }],
 		[UIAction actionWithTitle:BL(@"Share the list", @"Поделиться списком") image:nil identifier:nil handler:^(UIAction *x) { [weak shareList]; }],
 		[UIAction actionWithTitle:BL(@"Import from clipboard", @"Импорт из буфера обмена") image:nil identifier:nil handler:^(UIAction *x) { [weak importList]; }],
-		[UIAction actionWithTitle:BL(@"Clear the list", @"Очистить список") image:nil identifier:nil handler:^(UIAction *x) { [weak confirmClear]; }],
-	];
-	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage systemImageNamed:@"ellipsis.circle"] menu:[UIMenu menuWithChildren:items]];
+	]];
+	if (_folder.length == 0) [items addObject:[UIAction actionWithTitle:BL(@"Clear the list", @"Очистить список") image:nil identifier:nil handler:^(UIAction *x) { [weak confirmClear]; }]];
+	UIBarButtonItem *menu = [[UIBarButtonItem alloc] initWithImage:[UIImage systemImageNamed:@"ellipsis.circle"] menu:[UIMenu menuWithChildren:items]];
+	if (_folder.length) self.navigationItem.rightBarButtonItem = menu; else self.navigationItem.leftBarButtonItem = menu;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-	[self.tableView reloadData];
+	[self reload];
 	__weak typeof(self) weak = self;
 	_timer = [NSTimer scheduledTimerWithTimeInterval:0.8 repeats:YES block:^(NSTimer *t) { [weak updateVisibleValues]; }];
 }
@@ -212,51 +422,80 @@ UIViewController *BTBGGMakeRegionsVC(void) { return [BTBGGRegionsVC new]; }
 	_timer = nil;
 }
 
-- (NSArray<BTBGGItem *> *)items { return [BTBGGEngine shared].list; }
+- (void)reload {
+	BTBGGEngine *e = [BTBGGEngine shared];
+	if (_folder.length && ![[e allFolders] containsObject:_folder]) { [self.navigationController popViewControllerAnimated:NO]; return; }
+	_subs = [e subfoldersOf:_folder];
+	_items = [e itemsInFolder:_folder];
+	[self.tableView reloadData];
+}
 
 - (void)updateVisibleValues {
 	for (NSIndexPath *ip in self.tableView.indexPathsForVisibleRows) {
+		if (ip.section != 1) continue;
 		UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:ip];
-		if (ip.row < (NSInteger)self.items.count && [cell.accessoryView isKindOfClass:[UILabel class]]) [self fillValue:(UILabel *)cell.accessoryView item:self.items[ip.row]];
+		if (ip.row < (NSInteger)_items.count && [cell.accessoryView isKindOfClass:[UILabel class]]) [self fillValue:(UILabel *)cell.accessoryView item:_items[ip.row]];
 	}
 }
 
 - (void)fillValue:(UILabel *)label item:(BTBGGItem *)item {
 	BTBGGEngine *e = [BTBGGEngine shared];
+	if (item.stale) { label.text = @"—"; [label sizeToFit]; return; }
 	uint64_t raw = 0;
 	label.text = [([e readValue:item.address type:item.type raw:&raw] ? [BTBGGEngine format:raw type:item.type] : @"?") stringByAppendingString:FreezeMark(e, item.address)];
 	[label sizeToFit];
 }
 
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tv { return 2; }
+
 - (NSInteger)tableView:(UITableView *)tv numberOfRowsInSection:(NSInteger)s {
-	NSInteger n = (NSInteger)self.items.count;
-	if (n == 0) {
-		UILabel *l = BTBGGLabel([UIFont systemFontOfSize:15], UIColor.secondaryLabelColor);
-		l.textAlignment = NSTextAlignmentCenter;
-		l.text = BL(@"The list is empty.\nIn the search results, tap a line and choose “Save to the list”.\nAddresses inside the app’s code stay after a restart; heap addresses do not.", @"Список пуст.\nВ результатах поиска нажми на строку и выбери «Сохранить в список».\nАдреса внутри кода приложения остаются после перезапуска, адреса в куче — нет.");
-		UIView *wrap = [UIView new];
-		l.translatesAutoresizingMaskIntoConstraints = NO;
-		[wrap addSubview:l];
-		[NSLayoutConstraint activateConstraints:@[
-			[l.leadingAnchor constraintEqualToAnchor:wrap.leadingAnchor constant:30],
-			[l.trailingAnchor constraintEqualToAnchor:wrap.trailingAnchor constant:-30],
-			[l.centerYAnchor constraintEqualToAnchor:wrap.centerYAnchor constant:-40],
-		]];
-		tv.backgroundView = wrap;
-	} else {
-		tv.backgroundView = nil;
+	if (s == 0) {
+		if (_subs.count == 0 && _items.count == 0) {
+			UILabel *l = BTBGGLabel([UIFont systemFontOfSize:15], UIColor.secondaryLabelColor);
+			l.textAlignment = NSTextAlignmentCenter;
+			l.text = _folder.length ? BL(@"This folder is empty.", @"Эта папка пуста.")
+				: BL(@"Nothing saved yet.\nIn the search results, tap a line and choose “Save to the list”: give it a name, a note and a folder.\nValues stay in the list for this game between launches. Heap addresses change every launch, so they stay as a name and a note (and a recipe, if you saved one).", @"Пока ничего не сохранено.\nВ результатах поиска нажми на строку и выбери «Сохранить в список»: задай название, заметку и папку.\nСписок хранится для этой игры между запусками. Адреса в куче меняются при каждом запуске, поэтому остаются как название и заметка (и рецепт, если ты его сохранил).");
+			UIView *wrap = [UIView new];
+			l.translatesAutoresizingMaskIntoConstraints = NO;
+			[wrap addSubview:l];
+			[NSLayoutConstraint activateConstraints:@[
+				[l.leadingAnchor constraintEqualToAnchor:wrap.leadingAnchor constant:30],
+				[l.trailingAnchor constraintEqualToAnchor:wrap.trailingAnchor constant:-30],
+				[l.centerYAnchor constraintEqualToAnchor:wrap.centerYAnchor constant:-40],
+			]];
+			tv.backgroundView = wrap;
+		} else {
+			tv.backgroundView = nil;
+		}
+		return (NSInteger)_subs.count;
 	}
-	return n;
+	return (NSInteger)_items.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tv cellForRowAtIndexPath:(NSIndexPath *)ip {
 	UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:nil];
 	BTBGGEngine *e = [BTBGGEngine shared];
-	BTBGGItem *item = self.items[ip.row];
-	cell.textLabel.text = item.label.length ? item.label : [e describeAddress:item.address];
 	cell.detailTextLabel.textColor = UIColor.secondaryLabelColor;
-	cell.detailTextLabel.font = [UIFont monospacedSystemFontOfSize:12 weight:UIFontWeightRegular];
-	cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ · 0x%llx%@", [BTBGGEngine nameOfType:item.type], item.address, item.module ? @"" : BL(@" · this launch only", @" · только этот запуск")];
+	cell.detailTextLabel.numberOfLines = 0;
+	if (ip.section == 0) {
+		NSString *path = _subs[ip.row];
+		cell.textLabel.text = path.lastPathComponent;
+		cell.imageView.image = [UIImage systemImageNamed:@"folder.fill"];
+		cell.imageView.tintColor = BTBGGAccent();
+		cell.detailTextLabel.text = [NSString stringWithFormat:BL(@"%lu values", @"значений: %lu"), (unsigned long)[e countInFolder:path]];
+		cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+		return cell;
+	}
+	BTBGGItem *item = _items[ip.row];
+	cell.textLabel.text = item.label.length ? item.label : (item.stale ? BL(@"(no name)", @"(без названия)") : [e describeAddress:item.address]);
+	NSMutableArray *lines = [NSMutableArray array];
+	if (item.note.length) [lines addObject:item.note];
+	if (item.stale) {
+		[lines addObject:item.recipe.length ? BL(@"Heap address of an earlier launch · tap to run the recipe", @"Адрес в куче с прошлого запуска · нажми, чтобы запустить рецепт") : BL(@"Heap address of an earlier launch · find it again", @"Адрес в куче с прошлого запуска · найди заново")];
+	} else {
+		[lines addObject:[NSString stringWithFormat:@"%@ · 0x%llx%@", [BTBGGEngine nameOfType:item.type], item.address, item.module ? @"" : BL(@" · this launch only", @" · только этот запуск")]];
+	}
+	cell.detailTextLabel.text = [lines componentsJoinedByString:@"\n"];
 	UILabel *value = BTBGGLabel([UIFont monospacedSystemFontOfSize:18 weight:UIFontWeightSemibold], UIColor.labelColor);
 	value.numberOfLines = 1;
 	[self fillValue:value item:item];
@@ -266,56 +505,142 @@ UIViewController *BTBGGMakeRegionsVC(void) { return [BTBGGRegionsVC new]; }
 
 - (void)tableView:(UITableView *)tv didSelectRowAtIndexPath:(NSIndexPath *)ip {
 	[tv deselectRowAtIndexPath:ip animated:YES];
-	BTBGGItem *item = self.items[ip.row];
+	if (ip.section == 0) {
+		[self.navigationController pushViewController:[[BTBGGSavedListVC alloc] initWithFolder:_subs[ip.row]] animated:YES];
+		return;
+	}
+	BTBGGItem *item = _items[ip.row];
+	if (item.stale) { [self staleSheet:item]; return; }
 	BTBGGPresentValueEditor(self, item.address, item.type, ^{ [tv reloadData]; });
 }
 
-- (UISwipeActionsConfiguration *)tableView:(UITableView *)tv trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)ip {
-	BTBGGItem *item = self.items[ip.row];
-	UIContextualAction *del = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleDestructive title:BL(@"Delete", @"Удалить") handler:^(UIContextualAction *a, UIView *v, void (^done)(BOOL)) {
-		[[BTBGGEngine shared] removeListItems:@[item]];
+- (void)staleSheet:(BTBGGItem *)item {
+	UIAlertController *a = [UIAlertController alertControllerWithTitle:item.label.length ? item.label : BL(@"Value", @"Значение")
+		message:[(item.note.length ? [item.note stringByAppendingString:@"\n\n"] : @"") stringByAppendingString:BL(@"This value was on the heap, and heap addresses change on every launch. Find it again with a search.", @"Это значение лежало в куче, а адреса в куче меняются при каждом запуске. Найди его заново поиском.")]
+		preferredStyle:UIAlertControllerStyleAlert];
+	if (item.recipe.length) {
+		[a addAction:[UIAlertAction actionWithTitle:BL(@"Run the recipe", @"Запустить рецепт") style:UIAlertActionStyleDefault handler:^(UIAlertAction *x) {
+			if (BTBGGRunRecipe(item.recipe)) BTBGGSelectTab(2);
+			else Notice(self, BL(@"Could not run", @"Не удалось запустить"), BL(@"The recipe is missing or another script is running.", @"Рецепта нет или уже работает другой скрипт."));
+		}]];
+	}
+	[a addAction:[UIAlertAction actionWithTitle:BL(@"Edit name and note", @"Название и заметка") style:UIAlertActionStyleDefault handler:^(UIAlertAction *x) { [self editItem:item]; }]];
+	[a addAction:[UIAlertAction actionWithTitle:BL(@"Cancel", @"Отмена") style:UIAlertActionStyleCancel handler:nil]];
+	[self presentViewController:a animated:YES completion:nil];
+}
+
+- (void)editItem:(BTBGGItem *)item {
+	UIAlertController *alert = [UIAlertController alertControllerWithTitle:BL(@"Name and note", @"Название и заметка") message:nil preferredStyle:UIAlertControllerStyleAlert];
+	[alert addTextFieldWithConfigurationHandler:^(UITextField *f) { f.text = item.label; f.placeholder = BL(@"Name, e.g. Player", @"Название, например, Игрок"); }];
+	[alert addTextFieldWithConfigurationHandler:^(UITextField *f) { f.text = item.note; f.placeholder = BL(@"Note", @"Заметка"); }];
+	__weak UIAlertController *wa = alert;
+	[alert addAction:[UIAlertAction actionWithTitle:BL(@"Save", @"Сохранить") style:UIAlertActionStyleDefault handler:^(UIAlertAction *x) {
+		item.label = wa.textFields[0].text ?: @"";
+		item.note = wa.textFields[1].text ?: @"";
 		[[BTBGGEngine shared] persistList];
-		[tv reloadData];
+		[self reload];
+	}]];
+	[alert addAction:[UIAlertAction actionWithTitle:BL(@"Cancel", @"Отмена") style:UIAlertActionStyleCancel handler:nil]];
+	[self presentViewController:alert animated:YES completion:nil];
+}
+
+- (UISwipeActionsConfiguration *)tableView:(UITableView *)tv trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)ip {
+	BTBGGEngine *e = [BTBGGEngine shared];
+	if (ip.section == 0) {
+		NSString *path = _subs[ip.row];
+		UIContextualAction *del = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleDestructive title:BL(@"Delete", @"Удалить") handler:^(UIContextualAction *a, UIView *v, void (^done)(BOOL)) {
+			NSUInteger n = [e countInFolder:path];
+			void (^doDelete)(void) = ^{ [e deleteFolder:path]; [e persistList]; [self reload]; };
+			if (n == 0) { doDelete(); done(YES); return; }
+			UIAlertController *c = [UIAlertController alertControllerWithTitle:BL(@"Delete the folder?", @"Удалить папку?") message:[NSString stringWithFormat:BL(@"%lu saved values inside will be deleted too.", @"Сохранённые значения внутри (%lu) тоже удалятся."), (unsigned long)n] preferredStyle:UIAlertControllerStyleAlert];
+			[c addAction:[UIAlertAction actionWithTitle:BL(@"Delete", @"Удалить") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *x) { doDelete(); }]];
+			[c addAction:[UIAlertAction actionWithTitle:BL(@"Cancel", @"Отмена") style:UIAlertActionStyleCancel handler:nil]];
+			[self presentViewController:c animated:YES completion:nil];
+			done(YES);
+		}];
+		UIContextualAction *ren = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleNormal title:BL(@"Rename", @"Имя") handler:^(UIContextualAction *a, UIView *v, void (^done)(BOOL)) {
+			UIAlertController *alert = [UIAlertController alertControllerWithTitle:BL(@"Rename the folder", @"Название папки") message:nil preferredStyle:UIAlertControllerStyleAlert];
+			[alert addTextFieldWithConfigurationHandler:^(UITextField *f) { f.text = path.lastPathComponent; }];
+			__weak UIAlertController *wa = alert;
+			[alert addAction:[UIAlertAction actionWithTitle:BL(@"Save", @"Сохранить") style:UIAlertActionStyleDefault handler:^(UIAlertAction *x) {
+				NSString *name = [[wa.textFields.firstObject.text stringByReplacingOccurrencesOfString:@"/" withString:@"-"] stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+				if (name.length == 0) return;
+				if (![e renameFolder:path to:name]) Notice(self, BL(@"Name is taken", @"Такое имя уже есть"), nil);
+				[e persistList];
+				[self reload];
+			}]];
+			[alert addAction:[UIAlertAction actionWithTitle:BL(@"Cancel", @"Отмена") style:UIAlertActionStyleCancel handler:nil]];
+			[self presentViewController:alert animated:YES completion:nil];
+			done(YES);
+		}];
+		ren.backgroundColor = UIColor.systemOrangeColor;
+		return [UISwipeActionsConfiguration configurationWithActions:@[del, ren]];
+	}
+	BTBGGItem *item = _items[ip.row];
+	UIContextualAction *del = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleDestructive title:BL(@"Delete", @"Удалить") handler:^(UIContextualAction *a, UIView *v, void (^done)(BOOL)) {
+		[e removeListItems:@[item]];
+		[e persistList];
+		[self reload];
 		done(YES);
 	}];
-	UIContextualAction *view = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleNormal title:BL(@"Memory", @"Память") handler:^(UIContextualAction *a, UIView *v, void (^done)(BOOL)) {
-		BTBGGShowMemory(item.address);
+	UIContextualAction *move = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleNormal title:BL(@"Move", @"Папка") handler:^(UIContextualAction *a, UIView *v, void (^done)(BOOL)) {
+		BTBGGPickFolder(self.navigationController, item.folder, ^(NSString *path) {
+			[e moveItem:item toFolder:path];
+			[e persistList];
+			[self reload];
+		});
 		done(YES);
 	}];
-	view.backgroundColor = BTBGGAccent();
-	return [UISwipeActionsConfiguration configurationWithActions:@[del, view]];
+	move.backgroundColor = UIColor.systemGrayColor;
+	NSMutableArray *actions = [NSMutableArray arrayWithObjects:del, move, nil];
+	if (!item.stale) {
+		UIContextualAction *view = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleNormal title:BL(@"Memory", @"Память") handler:^(UIContextualAction *a, UIView *v, void (^done)(BOOL)) {
+			BTBGGShowMemory(item.address);
+			done(YES);
+		}];
+		view.backgroundColor = BTBGGAccent();
+		[actions addObject:view];
+	}
+	return [UISwipeActionsConfiguration configurationWithActions:actions];
 }
 
 - (UISwipeActionsConfiguration *)tableView:(UITableView *)tv leadingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)ip {
-	BTBGGItem *item = self.items[ip.row];
-	UIContextualAction *rename = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleNormal title:BL(@"Rename", @"Название") handler:^(UIContextualAction *a, UIView *v, void (^done)(BOOL)) {
-		UIAlertController *alert = [UIAlertController alertControllerWithTitle:BL(@"Name", @"Название") message:nil preferredStyle:UIAlertControllerStyleAlert];
-		[alert addTextFieldWithConfigurationHandler:^(UITextField *f) { f.text = item.label; f.placeholder = BL(@"e.g. Coins", @"например, Монеты"); }];
-		__weak UIAlertController *wa = alert;
-		[alert addAction:[UIAlertAction actionWithTitle:BL(@"Save", @"Сохранить") style:UIAlertActionStyleDefault handler:^(UIAlertAction *x) {
-			item.label = wa.textFields.firstObject.text ?: @"";
-			[[BTBGGEngine shared] persistList];
-			[tv reloadData];
-		}]];
-		[alert addAction:[UIAlertAction actionWithTitle:BL(@"Cancel", @"Отмена") style:UIAlertActionStyleCancel handler:nil]];
-		[self presentViewController:alert animated:YES completion:nil];
+	if (ip.section == 0) return nil;
+	BTBGGItem *item = _items[ip.row];
+	UIContextualAction *edit = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleNormal title:BL(@"Edit", @"Заметка") handler:^(UIContextualAction *a, UIView *v, void (^done)(BOOL)) {
+		[self editItem:item];
 		done(YES);
 	}];
-	rename.backgroundColor = UIColor.systemOrangeColor;
-	return [UISwipeActionsConfiguration configurationWithActions:@[rename]];
+	edit.backgroundColor = UIColor.systemOrangeColor;
+	return [UISwipeActionsConfiguration configurationWithActions:@[edit]];
+}
+
+- (void)newFolder {
+	UIAlertController *a = [UIAlertController alertControllerWithTitle:BL(@"New folder", @"Новая папка") message:nil preferredStyle:UIAlertControllerStyleAlert];
+	[a addTextFieldWithConfigurationHandler:^(UITextField *f) { f.placeholder = BL(@"e.g. Speed", @"например, Скорость"); }];
+	__weak UIAlertController *wa = a;
+	[a addAction:[UIAlertAction actionWithTitle:BL(@"Create", @"Создать") style:UIAlertActionStyleDefault handler:^(UIAlertAction *x) {
+		NSString *name = [[wa.textFields.firstObject.text stringByReplacingOccurrencesOfString:@"/" withString:@"-"] stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+		if (name.length == 0) return;
+		[[BTBGGEngine shared] addFolder:self->_folder.length ? [self->_folder stringByAppendingPathComponent:name] : name];
+		[[BTBGGEngine shared] persistList];
+		[self reload];
+	}]];
+	[a addAction:[UIAlertAction actionWithTitle:BL(@"Cancel", @"Отмена") style:UIAlertActionStyleCancel handler:nil]];
+	[self presentViewController:a animated:YES completion:nil];
 }
 
 - (void)freezeAll {
 	BTBGGEngine *e = [BTBGGEngine shared];
-	for (BTBGGItem *item in self.items) {
+	for (BTBGGItem *item in _items) {
 		uint64_t raw;
-		if ([e readValue:item.address type:item.type raw:&raw]) [e freezeAddress:item.address type:item.type raw:raw mode:BTBGGFreezeExact];
+		if (!item.stale && [e readValue:item.address type:item.type raw:&raw]) [e freezeAddress:item.address type:item.type raw:raw mode:BTBGGFreezeExact];
 	}
 	[self.tableView reloadData];
 }
 
 - (void)shareList {
-	if (self.items.count == 0) return;
+	if ([BTBGGEngine shared].list.count == 0) return;
 	UIActivityViewController *vc = [[UIActivityViewController alloc] initWithActivityItems:@[[[BTBGGEngine shared] listJSON]] applicationActivities:nil];
 	vc.popoverPresentationController.sourceView = self.view;
 	[self presentViewController:vc animated:YES completion:nil];
@@ -325,17 +650,17 @@ UIViewController *BTBGGMakeRegionsVC(void) { return [BTBGGRegionsVC new]; }
 	NSString *text = UIPasteboard.generalPasteboard.string;
 	NSInteger n = text.length ? [[BTBGGEngine shared] importListJSON:text] : -1;
 	if (n < 0) { Notice(self, BL(@"Nothing to import", @"Нечего импортировать"), BL(@"Copy a list exported with “Share the list” first.", @"Сначала скопируй список, выгруженный через «Поделиться списком».")); return; }
-	[self.tableView reloadData];
-	Notice(self, BL(@"Imported", @"Импортировано"), [NSString stringWithFormat:BL(@"Added: %ld. Only addresses inside the app’s code can be restored.", @"Добавлено: %ld. Восстанавливаются только адреса внутри кода приложения."), (long)n]);
+	[self reload];
+	Notice(self, BL(@"Imported", @"Импортировано"), [NSString stringWithFormat:BL(@"Added: %ld. Only addresses inside the app’s code can be restored; the rest stay as a name and a note.", @"Добавлено: %ld. Восстанавливаются только адреса внутри кода приложения, остальные остаются как название и заметка."), (long)n]);
 }
 
 - (void)confirmClear {
-	if (self.items.count == 0) return;
-	UIAlertController *a = [UIAlertController alertControllerWithTitle:BL(@"Clear the list?", @"Очистить список?") message:nil preferredStyle:UIAlertControllerStyleAlert];
+	if ([BTBGGEngine shared].list.count == 0) return;
+	UIAlertController *a = [UIAlertController alertControllerWithTitle:BL(@"Clear the list?", @"Очистить список?") message:BL(@"All saved values and folders will be deleted.", @"Все сохранённые значения и папки будут удалены.") preferredStyle:UIAlertControllerStyleAlert];
 	[a addAction:[UIAlertAction actionWithTitle:BL(@"Clear", @"Очистить") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *x) {
 		[[BTBGGEngine shared] clearList];
 		[[BTBGGEngine shared] persistList];
-		[self.tableView reloadData];
+		[self reload];
 	}]];
 	[a addAction:[UIAlertAction actionWithTitle:BL(@"Cancel", @"Отмена") style:UIAlertActionStyleCancel handler:nil]];
 	[self presentViewController:a animated:YES completion:nil];
@@ -382,7 +707,7 @@ static BOOL ParseHexBytes(NSString *text, NSMutableData *out) {
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	self.view.backgroundColor = UIColor.systemBackgroundColor;
+	self.view.backgroundColor = BTBGGBackground();
 
 	_field = [UITextField new];
 	_field.borderStyle = UITextBorderStyleRoundedRect;
@@ -542,8 +867,7 @@ static BOOL ParseHexBytes(NSString *text, NSMutableData *out) {
 		[self loadPage];
 	}]];
 	[a addAction:[UIAlertAction actionWithTitle:BL(@"Save Dword to the list", @"Dword в список") style:UIAlertActionStyleDefault handler:^(UIAlertAction *x) {
-		[[BTBGGEngine shared] addToListAddress:addr type:BTBGGTypeDword label:nil];
-		[[BTBGGEngine shared] persistList];
+		BTBGGPresentSaveItem(self, addr, BTBGGTypeDword, nil);
 	}]];
 	[a addAction:[UIAlertAction actionWithTitle:BL(@"Cancel", @"Отмена") style:UIAlertActionStyleCancel handler:nil]];
 	[self presentViewController:a animated:YES completion:nil];

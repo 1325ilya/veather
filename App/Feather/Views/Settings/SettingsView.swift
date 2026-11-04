@@ -94,6 +94,9 @@ struct SettingsView: View {
 					NavigationLink(destination: BTBBackgroundSettingsView()) {
 						BTBRowLabel(.localized("Background Checks"), systemImage: "bell.badge.fill", color: .red)
 					}
+					NavigationLink(destination: BTBGameGuardSettingsView()) {
+						BTBRowLabel(.localized("GameGuardian"), systemImage: "gamecontroller.fill", color: .teal)
+					}
 				}
 				
 				NBSection(.localized("Data")) {

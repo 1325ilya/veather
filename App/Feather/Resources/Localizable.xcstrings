@@ -24509,6 +24509,105 @@
           }
         }
       }
+    },
+    "Shared scripts folder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Папка общих скриптов"
+          }
+        }
+      }
+    },
+    "Default folder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Папка по умолчанию"
+          }
+        }
+      }
+    },
+    "Chosen folder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выбранная папка"
+          }
+        }
+      }
+    },
+    "Scripts in it" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скриптов в ней"
+          }
+        }
+      }
+    },
+    "Choose a folder…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выбрать папку…"
+          }
+        }
+      }
+    },
+    "Use the default folder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вернуть папку по умолчанию"
+          }
+        }
+      }
+    },
+    "Scripts in the GG folder use the gg.* API; scripts in the Lua folder are plain Lua. Every game with GameGuardian gets them in its Scripts tab (Shared). They are copied into the game when Veather signs it, so sign the game again after changing them. The default folder is also visible in the Files app, under Veather." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скрипты в папке GG используют API gg.*, скрипты в папке Lua — обычный Lua. Каждая игра с GameGuardian получает их на вкладке «Скрипты» (Общие). Они копируются в игру при подписи в Veather, поэтому после изменений подпиши игру заново. Папка по умолчанию видна и в приложении «Файлы», в разделе Veather."
+          }
+        }
+      }
+    },
+    "Example of a shared script: it is available in every game." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пример общего скрипта: он доступен в каждой игре."
+          }
+        }
+      }
+    },
+    "It asks for a number, searches for it and shows how many places hold it. It changes nothing." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Спрашивает число, ищет его и показывает, сколько мест нашлось. Ничего не меняет."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

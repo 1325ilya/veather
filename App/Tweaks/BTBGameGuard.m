@@ -36,21 +36,15 @@ void BTBGGNotifyResultsChanged(void) {
 @interface BTBGGPanelHelper : NSObject
 + (instancetype)shared;
 - (void)close;
-@end
-@implementation BTBGGPanelHelper
-+ (instancetype)shared {
-	static BTBGGPanelHelper *h;
-	static dispatch_once_t once;
-	dispatch_once(&once, ^{ h = [BTBGGPanelHelper new]; });
-	return h;
-}
-- (void)close { BTBGGClosePanel(); }
+- (void)openSettings;
 @end
 
 static BTBGGWindow *gOverlay;
 static UIWindow *gPanelWindow;
 static __weak UIWindow *gGameWindow;
 static UITabBarController *gTabs;
+static BOOL gButtonHidden;                 // "hide the button until the game restarts"
+static CGPoint gButtonCenter = {-1, -1};   // where the user left the floating button
 
 static UIWindowScene *ActiveScene(void) {
 	for (UIScene *s in UIApplication.sharedApplication.connectedScenes) {
@@ -64,8 +58,11 @@ static UIWindowScene *ActiveScene(void) {
 
 static UINavigationController *MakeNav(UIViewController *vc, NSString *title, NSString *symbol) {
 	vc.title = title;
-	vc.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:BL(@"Close", @"Закрыть") style:UIBarButtonItemStylePlain target:[BTBGGPanelHelper shared] action:@selector(close)];
+	UIBarButtonItem *close = [[UIBarButtonItem alloc] initWithTitle:BL(@"Close", @"Закрыть") style:UIBarButtonItemStylePlain target:[BTBGGPanelHelper shared] action:@selector(close)];
+	UIBarButtonItem *gear = [[UIBarButtonItem alloc] initWithImage:[UIImage systemImageNamed:@"gearshape"] style:UIBarButtonItemStylePlain target:[BTBGGPanelHelper shared] action:@selector(openSettings)];
+	vc.navigationItem.rightBarButtonItems = @[close, gear];
 	UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
+	nav.navigationBar.tintColor = BTBGGAccent();
 	nav.tabBarItem = [[UITabBarItem alloc] initWithTitle:title image:[UIImage systemImageNamed:symbol] tag:0];
 	return nav;
 }
@@ -84,6 +81,22 @@ static UITabBarController *Tabs(void) {
 	return t;
 }
 
+@implementation BTBGGPanelHelper
++ (instancetype)shared {
+	static BTBGGPanelHelper *h;
+	static dispatch_once_t once;
+	dispatch_once(&once, ^{ h = [BTBGGPanelHelper new]; });
+	return h;
+}
+- (void)close { BTBGGClosePanel(); }
+- (void)openSettings {
+	UINavigationController *nav = (UINavigationController *)gTabs.selectedViewController;
+	if (![nav isKindOfClass:[UINavigationController class]]) return;
+	if ([NSStringFromClass([nav.topViewController class]) isEqualToString:@"BTBGGSettingsVC"]) return;
+	[nav pushViewController:BTBGGMakeSettingsVC() animated:YES];
+}
+@end
+
 BOOL BTBGGPanelIsOpen(void) { return gPanelWindow != nil; }
 
 void BTBGGOpenPanel(void) {
@@ -97,7 +110,8 @@ void BTBGGOpenPanel(void) {
 	UIWindow *window = [[UIWindow alloc] initWithWindowScene:scene];
 	window.frame = scene.coordinateSpace.bounds;
 	window.windowLevel = UIWindowLevelAlert + 200;
-	window.backgroundColor = UIColor.systemBackgroundColor;
+	window.backgroundColor = BTBGGBackground();
+	window.alpha = BTBGGPanelAlpha();
 	window.rootViewController = Tabs();
 	gPanelWindow = window;
 	[window makeKeyAndVisible];
@@ -116,6 +130,35 @@ void BTBGGClosePanel(void) {
 void BTBGGRestoreKeyWindow(void) {
 	if (gPanelWindow) [gPanelWindow makeKeyWindow]; else [gGameWindow makeKeyWindow];
 }
+
+void BTBGGApplyPanelAlpha(void) {
+	BTBOnMain(^{ if (gPanelWindow) gPanelWindow.alpha = BTBGGPanelAlpha(); });
+}
+
+static void RestyleFloatingButton(void);
+
+void BTBGGRebuildPanel(BOOL openSettings) {
+	BTBOnMain(^{
+		NSInteger index = gTabs ? gTabs.selectedIndex : 0;
+		gTabs = nil;
+		RestyleFloatingButton();
+		if (!gPanelWindow) return;
+		gPanelWindow.backgroundColor = BTBGGBackground();
+		gPanelWindow.rootViewController = Tabs();
+		gTabs.selectedIndex = index;
+		if (openSettings) [[BTBGGPanelHelper shared] openSettings];
+	});
+}
+
+void BTBGGHideFloatingButton(void) {
+	BTBOnMain(^{
+		gButtonHidden = YES;
+		gOverlay.hidden = YES;
+		gOverlay = nil;
+	});
+}
+
+BOOL BTBGGFloatingButtonHidden(void) { return gButtonHidden; }
 
 void BTBGGSelectTab(NSInteger index) {
 	BTBOnMain(^{
@@ -176,9 +219,10 @@ void BTBGGShowMemory(uint64_t address) {
 	if (g.state == UIGestureRecognizerStateBegan) BTBGGOpenPanel();
 }
 
-/// A small draggable "GG" button: works even where a multi-finger gesture can't be recognised.
+/// A round draggable button: works even where a multi-finger gesture can't be recognised.
+/// It snaps to the nearest screen edge when released.
 - (void)showFloatingButton {
-	if (gOverlay) return;
+	if (gOverlay || gButtonHidden) return;
 	UIWindowScene *scene = ActiveScene();
 	if (!scene) return;
 	BTBGGWindow *window = [[BTBGGWindow alloc] initWithWindowScene:scene];
@@ -187,16 +231,11 @@ void BTBGGShowMemory(uint64_t address) {
 	window.backgroundColor = UIColor.clearColor;
 	window.rootViewController = [UIViewController new];
 	window.rootViewController.view.backgroundColor = UIColor.clearColor;
-	UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
-	button.frame = CGRectMake(12, 140, 46, 46);
-	button.backgroundColor = [UIColor colorWithRed:0.49 green:0.36 blue:1 alpha:0.9];
-	button.layer.cornerRadius = 23;
+	BTBGGGradientButton *button = [BTBGGGradientButton buttonWithType:UIButtonTypeCustom];
+	button.filled = YES;
 	button.layer.shadowOpacity = 0.35;
 	button.layer.shadowRadius = 6;
 	button.layer.shadowOffset = CGSizeMake(0, 2);
-	[button setTitle:@"GG" forState:UIControlStateNormal];
-	[button setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
-	button.titleLabel.font = [UIFont boldSystemFontOfSize:15];
 	[button addTarget:self action:@selector(openPanel) forControlEvents:UIControlEventTouchUpInside];
 	UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(dragButton:)];
 	[button addGestureRecognizer:pan];
@@ -204,6 +243,7 @@ void BTBGGShowMemory(uint64_t address) {
 	window.button = button;
 	window.hidden = NO;
 	gOverlay = window;
+	RestyleFloatingButton();
 }
 
 - (void)openPanel { BTBGGOpenPanel(); }
@@ -213,9 +253,46 @@ void BTBGGShowMemory(uint64_t address) {
 	CGPoint t = [pan translationInView:button.superview];
 	button.center = CGPointMake(button.center.x + t.x, button.center.y + t.y);
 	[pan setTranslation:CGPointZero inView:button.superview];
+	if (pan.state == UIGestureRecognizerStateEnded || pan.state == UIGestureRecognizerStateCancelled) {
+		CGRect bounds = button.superview.bounds;
+		UIEdgeInsets safe = button.superview.safeAreaInsets;
+		CGFloat r = button.bounds.size.width / 2;
+		CGFloat x = button.center.x < bounds.size.width / 2 ? safe.left + r + 6 : bounds.size.width - safe.right - r - 6;
+		CGFloat y = MIN(MAX(button.center.y, safe.top + r + 6), bounds.size.height - safe.bottom - r - 6);
+		[UIView animateWithDuration:0.25 delay:0 usingSpringWithDamping:0.8 initialSpringVelocity:0 options:0 animations:^{
+			button.center = CGPointMake(x, y);
+		} completion:nil];
+		gButtonCenter = CGPointMake(x, y);
+	}
 }
 
 @end
+
+/// Draws the button for the current style: a flat "GG" disc in the legacy style, a gradient disc with a target in the new one.
+static void RestyleFloatingButton(void) {
+	BTBGGGradientButton *button = (BTBGGGradientButton *)gOverlay.button;
+	if (![button isKindOfClass:[BTBGGGradientButton class]]) return;
+	BOOL legacy = BTBGGCurrentStyle() == BTBGGStyleLegacy;
+	CGFloat size = legacy ? 46 : 54;
+	CGPoint center = gButtonCenter.x >= 0 ? gButtonCenter : CGPointMake(12 + size / 2, 140 + size / 2);
+	button.bounds = CGRectMake(0, 0, size, size);
+	button.center = center;
+	button.layer.cornerRadius = size / 2;
+	button.clipsToBounds = NO;
+	[button applyStyle];
+	if (legacy) {
+		[button setImage:nil forState:UIControlStateNormal];
+		[button setTitle:@"GG" forState:UIControlStateNormal];
+		button.titleLabel.font = [UIFont boldSystemFontOfSize:15];
+		[button setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
+	} else {
+		[button setTitle:nil forState:UIControlStateNormal];
+		UIImageSymbolConfiguration *cfg = [UIImageSymbolConfiguration configurationWithPointSize:24 weight:UIImageSymbolWeightSemibold];
+		UIImage *icon = [UIImage systemImageNamed:@"scope" withConfiguration:cfg] ?: [UIImage systemImageNamed:@"magnifyingglass" withConfiguration:cfg];
+		[button setImage:icon forState:UIControlStateNormal];
+		button.tintColor = UIColor.whiteColor;
+	}
+}
 
 // MARK: - Search tab
 
@@ -269,7 +346,7 @@ static BOOL ModeNeedsField(BTBGGMode m) {
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	self.view.backgroundColor = UIColor.systemBackgroundColor;
+	self.view.backgroundColor = BTBGGBackground();
 	_type = BTBGGTypeDword;
 	_mode = BTBGGModeExact;
 
@@ -338,6 +415,7 @@ static BOOL ModeNeedsField(BTBGGMode m) {
 	]];
 
 	_table = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleInsetGrouped];
+	_table.backgroundColor = BTBGGBackground();
 	_table.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	_table.dataSource = self;
 	_table.delegate = self;
@@ -527,6 +605,7 @@ static BOOL ModeNeedsField(BTBGGMode m) {
 	BTBGGEngine *e = [BTBGGEngine shared];
 	if (![e tryLock]) { [self setStatus:BL(@"A script is using the memory right now.", @"Сейчас память занята скриптом.")]; return; }
 	[e clearResults];
+	[e recipeReset];
 	[e unlock];
 	_unknown = NO;
 	_mode = BTBGGModeExact;
@@ -569,7 +648,9 @@ static BOOL ModeNeedsField(BTBGGMode m) {
 			} else if (found == 0) {
 				[self setStatus:BL(@"Nothing found. Check the number and the type (try Float for numbers with a dot), or widen the regions.", @"Ничего не найдено. Проверь число и тип (для чисел с точкой попробуй Float) или расширь регионы.")];
 			} else {
-				self->_mode = unknown ? BTBGGModeChanged : BTBGGModeExact;
+				[e recipeReset];
+					[e recipeAddStep:@{@"op": unknown ? @"unknown" : @"search", @"type": @(type), @"text": text, @"regions": @(e.regions)}];
+					self->_mode = unknown ? BTBGGModeChanged : BTBGGModeExact;
 				self->_field.text = @"";
 				[self setStatus:[NSString stringWithFormat:BL(@"Found %lu places%@.", @"Найдено мест: %lu%@."), (unsigned long)found,
 					early ? BL(@" (stopped: the phone is out of memory, try again on a quieter screen)", @" (остановился: не хватает памяти телефона, попробуй на более тихом экране)") : @""]];
@@ -602,7 +683,8 @@ static BOOL ModeNeedsField(BTBGGMode m) {
 			if (!ok) {
 				[self setStatus:error ?: @""];
 			} else {
-				if (!keepMode) self->_mode = BTBGGModeExact;
+				[e recipeAddStep:@{@"op": @"refine", @"mode": @(mode), @"text": text}];
+					if (!keepMode) self->_mode = BTBGGModeExact;
 				self->_field.text = @"";
 				[self setStatus:left == 0 ? BL(@"Nothing left. Tap Start over and try again.", @"Ничего не осталось. Нажми «Сначала» и попробуй ещё раз.")
 					: [NSString stringWithFormat:BL(@"Left: %lu places.", @"Осталось мест: %lu."), (unsigned long)left]];

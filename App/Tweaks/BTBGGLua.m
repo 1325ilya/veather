@@ -20,7 +20,7 @@ NSString *const BTBGGScriptStateNotification = @"BTBGGScriptState";
 
 enum {
 	GG_TYPE_BYTE = 1, GG_TYPE_WORD = 2, GG_TYPE_DWORD = 4, GG_TYPE_XOR = 8,
-	GG_TYPE_FLOAT = 16, GG_TYPE_QWORD = 32, GG_TYPE_DOUBLE = 64, GG_TYPE_AUTO = 127,
+	GG_TYPE_FLOAT = 16, GG_TYPE_QWORD = 32, GG_TYPE_DOUBLE = 64, GG_TYPE_AUTO = 127, GG_TYPE_HIDDEN = 128,
 };
 enum {
 	GG_REGION_C_HEAP = 1, GG_REGION_JAVA_HEAP = 2, GG_REGION_C_ALLOC = 4, GG_REGION_C_DATA = 8,
@@ -42,7 +42,8 @@ static lua_Integer GGType(BTBGGType t) {
 		case BTBGGTypeFloat: return GG_TYPE_FLOAT;
 		case BTBGGTypeQword: return GG_TYPE_QWORD;
 		case BTBGGTypeDouble: return GG_TYPE_DOUBLE;
-		case BTBGGTypeAuto: case BTBGGTypeHidden: return GG_TYPE_AUTO;
+		case BTBGGTypeAuto: return GG_TYPE_AUTO;
+		case BTBGGTypeHidden: return GG_TYPE_HIDDEN;
 		case BTBGGTypeUByte: return GG_TYPE_BYTE;
 		case BTBGGTypeUWord: return GG_TYPE_WORD;
 		case BTBGGTypeUDword: case BTBGGTypeNotDword: case BTBGGTypeNegDword: return GG_TYPE_DWORD;
@@ -53,6 +54,7 @@ static lua_Integer GGType(BTBGGType t) {
 
 static BTBGGType EngType(lua_Integer v) {
 	if (v == GG_TYPE_AUTO) return BTBGGTypeAuto;
+	if (v == GG_TYPE_HIDDEN) return BTBGGTypeHidden;
 	if (v & GG_TYPE_DWORD) return BTBGGTypeDword;
 	if (v & GG_TYPE_FLOAT) return BTBGGTypeFloat;
 	if (v & GG_TYPE_QWORD) return BTBGGTypeQword;
@@ -87,7 +89,7 @@ static lua_Integer GGRegionOf(NSUInteger cls) {
 
 // MARK: - Runner state
 
-static void RegisterAPI(lua_State *L);
+static void RegisterAPI(lua_State *L, BOOL plain);
 static void StopHook(lua_State *L, lua_Debug *ar);
 
 static volatile BOOL gStop = NO;
@@ -125,17 +127,7 @@ static void PostState(void) {
 }
 
 + (NSString *)scriptsDirectory {
-	NSString *dir = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES).firstObject stringByAppendingPathComponent:@"Veather/GameGuard/Scripts"];
-	NSFileManager *fm = [NSFileManager defaultManager];
-	if (![fm fileExistsAtPath:dir]) {
-		[fm createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
-		// a harmless example that shows the API: it only searches and counts
-		NSString *example = BL(
-			@"-- Example: asks for a number, searches for it and shows how many places hold it.\n-- It changes nothing.\nlocal r = gg.prompt({\"Number to look for\"}, {\"\"}, {\"number\"})\nif not r then return end\ngg.setRanges(gg.REGION_ANONYMOUS | gg.REGION_C_ALLOC | gg.REGION_C_DATA)\ngg.searchNumber(r[1], gg.TYPE_DWORD)\ngg.alert(\"Found: \" .. gg.getResultCount())\ngg.clearResults()\n",
-			@"-- Пример: спрашивает число, ищет его и показывает, сколько мест нашлось.\n-- Ничего не меняет.\nlocal r = gg.prompt({\"Какое число искать\"}, {\"\"}, {\"number\"})\nif not r then return end\ngg.setRanges(gg.REGION_ANONYMOUS | gg.REGION_C_ALLOC | gg.REGION_C_DATA)\ngg.searchNumber(r[1], gg.TYPE_DWORD)\ngg.alert(\"Найдено: \" .. gg.getResultCount())\ngg.clearResults()\n");
-		[example writeToFile:[dir stringByAppendingPathComponent:@"example.lua"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
-	}
-	return dir;
+	return BTBGGScriptsRoot(NO, YES);
 }
 
 - (NSString *)log {
@@ -168,6 +160,10 @@ static void PostState(void) {
 }
 
 - (void)runSource:(NSString *)source name:(NSString *)name {
+	[self runSource:source name:name plainLua:NO];
+}
+
+- (void)runSource:(NSString *)source name:(NSString *)name plainLua:(BOOL)plain {
 	if (self.running) { [self appendLog:BL(@"A script is already running.\n", @"Скрипт уже запущен.\n")]; return; }
 	self.running = YES;
 	self.runningName = name;
@@ -181,7 +177,7 @@ static void PostState(void) {
 			if (!L) {
 				[self appendLog:BL(@"Out of memory.\n", @"Не хватает памяти.\n")];
 			} else {
-				RegisterAPI(L);
+				RegisterAPI(L, plain);
 				lua_sethook(L, StopHook, LUA_MASKCOUNT, 1000);
 				const char *code = source.UTF8String;
 				BOOL failed = luaL_loadbufferx(L, code, strlen(code), [[@"=" stringByAppendingString:name] UTF8String], "t") != LUA_OK
@@ -1011,7 +1007,7 @@ static const luaL_Reg kGG[] = {
 
 static void SetInt(lua_State *L, const char *name, lua_Integer v) { lua_pushinteger(L, v); lua_setfield(L, -2, name); }
 
-static void RegisterAPI(lua_State *L) {
+static void RegisterAPI(lua_State *L, BOOL plain) {
 	luaL_requiref(L, "_G", luaopen_base, 1); lua_pop(L, 1);
 	luaL_requiref(L, LUA_COLIBNAME, luaopen_coroutine, 1); lua_pop(L, 1);
 	luaL_requiref(L, LUA_TABLIBNAME, luaopen_table, 1); lua_pop(L, 1);
@@ -1029,10 +1025,12 @@ static void RegisterAPI(lua_State *L) {
 	lua_pushcfunction(L, os_date); lua_setfield(L, -2, "date");
 	lua_setglobal(L, "os");
 
+	if (plain) return;
+
 	luaL_newlib(L, kGG);
 	SetInt(L, "TYPE_BYTE", GG_TYPE_BYTE); SetInt(L, "TYPE_WORD", GG_TYPE_WORD); SetInt(L, "TYPE_DWORD", GG_TYPE_DWORD);
 	SetInt(L, "TYPE_XOR", GG_TYPE_XOR); SetInt(L, "TYPE_FLOAT", GG_TYPE_FLOAT); SetInt(L, "TYPE_QWORD", GG_TYPE_QWORD);
-	SetInt(L, "TYPE_DOUBLE", GG_TYPE_DOUBLE); SetInt(L, "TYPE_AUTO", GG_TYPE_AUTO);
+	SetInt(L, "TYPE_DOUBLE", GG_TYPE_DOUBLE); SetInt(L, "TYPE_AUTO", GG_TYPE_AUTO); SetInt(L, "TYPE_HIDDEN", GG_TYPE_HIDDEN);
 	SetInt(L, "REGION_C_HEAP", GG_REGION_C_HEAP); SetInt(L, "REGION_JAVA_HEAP", GG_REGION_JAVA_HEAP);
 	SetInt(L, "REGION_C_ALLOC", GG_REGION_C_ALLOC); SetInt(L, "REGION_C_DATA", GG_REGION_C_DATA);
 	SetInt(L, "REGION_C_BSS", GG_REGION_C_BSS); SetInt(L, "REGION_ANONYMOUS", GG_REGION_ANONYMOUS);

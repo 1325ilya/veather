@@ -5,17 +5,31 @@
 
 #define BL(en, ru) BTBGGL(en, ru)
 
-static inline UIColor *BTBGGAccent(void) { return [UIColor colorWithRed:0.49 green:0.36 blue:1 alpha:1]; }
+// MARK: style (BTBGGSettings.m)
+typedef NS_ENUM(NSInteger, BTBGGStyleKind) { BTBGGStyleNew = 0, BTBGGStyleLegacy = 1 };
+BTBGGStyleKind BTBGGCurrentStyle(void);
+void BTBGGSetStyle(BTBGGStyleKind style);
+CGFloat BTBGGPanelAlpha(void);                 // 0.3 … 1
+void BTBGGSetPanelAlpha(CGFloat alpha);
+UIColor *BTBGGAccent(void);                    // main colour of the current style
+UIColor *BTBGGAccent2(void);                   // second colour of the gradient
+UIColor *BTBGGBackground(void);                // screen background of the current style
+UIViewController *BTBGGMakeSettingsVC(void);
+
+/// A button that draws a gradient in the new style and a flat colour in the legacy one.
+@interface BTBGGGradientButton : UIButton
+@property (nonatomic) BOOL filled;
+- (void)applyStyle;
+@end
 
 static inline UIButton *BTBGGBigButton(NSString *title, BOOL filled, id target, SEL action) {
-	UIButton *b = [UIButton buttonWithType:UIButtonTypeSystem];
+	BTBGGGradientButton *b = [BTBGGGradientButton buttonWithType:UIButtonTypeSystem];
 	[b setTitle:title forState:UIControlStateNormal];
 	b.titleLabel.font = [UIFont boldSystemFontOfSize:17];
 	b.titleLabel.adjustsFontSizeToFitWidth = YES;
 	b.titleLabel.minimumScaleFactor = 0.7;
-	b.backgroundColor = filled ? BTBGGAccent() : [BTBGGAccent() colorWithAlphaComponent:0.15];
-	[b setTitleColor:filled ? UIColor.whiteColor : BTBGGAccent() forState:UIControlStateNormal];
-	b.layer.cornerRadius = 14;
+	b.filled = filled;
+	[b applyStyle];
 	[b.heightAnchor constraintEqualToConstant:50].active = YES;
 	if (action) [b addTarget:target action:action forControlEvents:UIControlEventTouchUpInside];
 	return b;
@@ -36,6 +50,10 @@ BOOL BTBGGPanelIsOpen(void);
 void BTBGGSelectTab(NSInteger index);       // 0 search, 1 saved list, 2 scripts, 3 memory
 void BTBGGShowMemory(uint64_t address);
 void BTBGGRestoreKeyWindow(void);           // gives focus back to the panel (if open) or the game after a dialog
+void BTBGGApplyPanelAlpha(void);            // after the transparency setting changed
+void BTBGGRebuildPanel(BOOL openSettings);  // after the style changed
+void BTBGGHideFloatingButton(void);         // until the game is restarted
+BOOL BTBGGFloatingButtonHidden(void);
 extern NSString *const BTBGGResultsChangedNotification;
 void BTBGGNotifyResultsChanged(void);
 
@@ -45,6 +63,10 @@ void BTBGGPresentValueEditor(UIViewController *host, uint64_t address, BTBGGType
 NSString *BTBGGRegionSummary(NSUInteger mask);
 UIViewController *BTBGGMakeRegionsVC(void);
 UIViewController *BTBGGMakeSavedListVC(void);
+/// The "name, note, folder" sheet for saving an address to the list. `done` runs after saving.
+void BTBGGPresentSaveItem(UIViewController *host, uint64_t address, BTBGGType type, void (^done)(void));
+/// Picks a folder of the saved list ("" is the root). The picker is pushed on `nav`.
+void BTBGGPickFolder(UINavigationController *nav, NSString *current, void (^picked)(NSString *path));
 UIViewController *BTBGGMakeMemoryVC(void);
 UIViewController *BTBGGMakeScriptsVC(void);
 void BTBGGMemoryShowAddress(UIViewController *memoryVC, uint64_t address);
@@ -53,6 +75,7 @@ void BTBGGMemoryShowAddress(UIViewController *memoryVC, uint64_t address);
 extern NSString *const BTBGGScriptStateNotification;  // running state or log changed
 @interface BTBGGScriptRunner : NSObject
 + (instancetype)shared;
+- (void)runSource:(NSString *)source name:(NSString *)name plainLua:(BOOL)plain; // plain: without the gg table
 @property (atomic, readonly) BOOL running;
 @property (atomic, readonly, copy) NSString *runningName;
 - (NSString *)log;
@@ -61,3 +84,15 @@ extern NSString *const BTBGGScriptStateNotification;  // running state or log ch
 - (void)stop;
 + (NSString *)scriptsDirectory;
 @end
+
+// MARK: storage and recipes (BTBGGStore.m)
+/// Scripts of this game live in Application Support/Veather/GameGuard/Scripts/{GG,Lua};
+/// shared ones are copied into the app by Veather when it signs the game (read only).
+NSString *BTBGGScriptsRoot(BOOL shared, BOOL gg);
+BOOL BTBGGSharedScriptsPresent(void);
+/// Lua source that repeats a recorded search (see BTBGGEngine recipeSteps).
+NSString *BTBGGRecipeSource(NSString *title, NSArray<NSDictionary *> *steps);
+/// Saves `source` as a GG script of this game in "Рецепты"; returns the path relative to the GG folder, or nil.
+NSString *BTBGGSaveRecipe(NSString *baseName, NSString *source);
+/// Runs a recipe saved by BTBGGSaveRecipe.
+BOOL BTBGGRunRecipe(NSString *relativePath);
