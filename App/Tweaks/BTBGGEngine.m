@@ -566,7 +566,9 @@ typedef BOOL (^ChunkBlock)(uint64_t base, const uint8_t *buf, size_t n, size_t a
 
 	// results are written through `f`; the macro stops the scan when the store or the phone's memory is full
 #define EMIT(a, ty, rw) do { \
-		store[f].addrType = ((uint64_t)(a)) | ((uint64_t)(ty) << 56); store[f].raw = (rw); f++; \
+		uint64_t _at = ((uint64_t)(a)) | ((uint64_t)(ty) << 56); \
+		if (f > 0 && store[f - 1].addrType == _at) break; \
+		store[f].addrType = _at; store[f].raw = (rw); f++; \
 		if (f >= maxHits || ((f & 0xFFFF) == 0 && os_proc_available_memory() < kMemoryFloor)) { full = YES; found = f; return NO; } \
 	} while (0)
 
@@ -588,7 +590,8 @@ typedef BOOL (^ChunkBlock)(uint64_t base, const uint8_t *buf, size_t n, size_t a
 							uint32_t a, b;
 							memcpy(&a, p, 4);
 							memcpy(&b, p + 4, 4);
-							if ((a ^ b) == (uint32_t)spec.candRaw[k]) EMIT(base + i, ct, spec.candRaw[k]);
+							// a == 0 or b == 0 is just a plain number (and writing would damage the neighbour word)
+							if (a != 0 && b != 0 && (a ^ b) == (uint32_t)spec.candRaw[k]) EMIT(base + i, ct, spec.candRaw[k]);
 						} else if (memcmp(p, &spec.candRaw[k], sz) == 0) {
 							EMIT(base + i, ct, spec.candRaw[k]);
 						}
@@ -722,6 +725,7 @@ typedef BOOL (^ChunkBlock)(uint64_t base, const uint8_t *buf, size_t n, size_t a
 				break;
 			}
 		}
+		if (keep && kept > 0 && src[kept - 1].addrType == h.addrType) keep = NO;
 		if (keep) { src[kept].addrType = h.addrType; src[kept].raw = now; kept++; }
 	}
 	_count = kept;
