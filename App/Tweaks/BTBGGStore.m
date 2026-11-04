@@ -154,7 +154,7 @@ NSString *BTBGGRecipeSource(NSString *title, NSArray<NSDictionary *> *steps) {
 			case BTBGGModeDecreasedBy: {
 				BOOL up = mode == BTBGGModeIncreasedBy;
 				[o appendFormat:@"step(%@)\n", LuaStr(up ? BL(@"Earn some in the game (a known amount). After OK you have WAIT seconds.", @"Заработай в игре известную сумму. После OK у вас WAIT секунд.")
-					: BL(@"Spend a known amount in the game. After OK you have WAIT seconds.", @"Потрать в игре известную сумму. После OK у вас WAIT секунд.")];
+					: BL(@"Spend a known amount in the game. After OK you have WAIT seconds.", @"Потрать в игре известную сумму. После OK у вас WAIT секунд."))];
 				[o appendString:PromptLine(@"d", up ? BL(@"By how much it grew", @"На сколько выросло") : BL(@"By how much it dropped", @"На сколько уменьшилось"), text)];
 				[o appendFormat:@"gg.searchFuzzy(tostring(d[1]), %@)\n", up ? @"gg.SIGN_FUZZY_GREATER" : @"gg.SIGN_FUZZY_LESS"];
 				break;
