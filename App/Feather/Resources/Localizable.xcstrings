@@ -24489,6 +24489,26 @@
           }
         }
       }
+    },
+    "Skip Rewarded Ads" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Награда без рекламы"
+          }
+        }
+      }
+    },
+    "Rewarded ads are not shown, but the app still gives you the reward (AdMob, AppLovin MAX). Also blocks all other ads. Rewards that the game's server checks can't be skipped." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Рекламу за награду не показывает, но приложение всё равно даёт награду (AdMob, AppLovin MAX). Остальную рекламу тоже блокирует. Награды, которые проверяет сервер игры, пропустить нельзя."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
