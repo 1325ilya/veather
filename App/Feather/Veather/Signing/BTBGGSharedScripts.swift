@@ -4,15 +4,14 @@
 //
 //  The folder of GameGuardian scripts that every game gets ("Shared" in the panel's Scripts tab).
 //  It has two sub-folders: GG (scripts that use the gg.* API) and Lua (plain Lua).
-//  By default it is Documents/GameGuardian/Scripts, which is visible in the Files app
-//  (Veather exposes its Documents). The user can pick another folder in Settings.
+//  It is Documents/GameGuardian/Scripts, which is visible in the Files app
+//  (Veather exposes its Documents). Files can also be added from Settings.
 //  The scripts are copied into the game when Veather signs it, so a game sees them read-only.
 //
 
 import Foundation
 
 enum BTBGGSharedScripts {
-	static let bookmarkKey = "BTB.GG.SharedFolderBookmark"
 	static let subfolders = ["GG", "Lua"]
 
 	static var defaultFolder: URL {
@@ -21,39 +20,33 @@ enum BTBGGSharedScripts {
 			.appendingPathComponent("Scripts", isDirectory: true)
 	}
 
-	/// The folder picked in Settings (nil: the default one is used).
-	static var chosenFolder: URL? {
-		guard let data = UserDefaults.standard.data(forKey: bookmarkKey) else { return nil }
-		var stale = false
-		guard let url = try? URL(resolvingBookmarkData: data, options: [], relativeTo: nil, bookmarkDataIsStale: &stale) else { return nil }
-		if stale, url.startAccessingSecurityScopedResource() {
-			defer { url.stopAccessingSecurityScopedResource() }
-			if let fresh = try? url.bookmarkData() { UserDefaults.standard.set(fresh, forKey: bookmarkKey) }
+	static var folder: URL { defaultFolder }
+
+	/// Copies picked files into the GG or Lua sub-folder.
+	@discardableResult
+	static func add(_ urls: [URL], toGG: Bool) -> Int {
+		prepare()
+		let fm = FileManager.default
+		let dir = folder.appendingPathComponent(toGG ? "GG" : "Lua", isDirectory: true)
+		var added = 0
+		for url in urls where isScript(url) {
+			let scoped = url.startAccessingSecurityScopedResource()
+			defer { if scoped { url.stopAccessingSecurityScopedResource() } }
+			var target = dir.appendingPathComponent(url.lastPathComponent)
+			var n = 2
+			while fm.fileExists(atPath: target.path) {
+				target = dir.appendingPathComponent("\(url.deletingPathExtension().lastPathComponent) \(n).\(url.pathExtension)")
+				n += 1
+			}
+			if (try? fm.copyItem(at: url, to: target)) != nil { added += 1 }
 		}
-		return url
-	}
-
-	static var folder: URL { chosenFolder ?? defaultFolder }
-
-	static func choose(_ url: URL) throws {
-		let scoped = url.startAccessingSecurityScopedResource()
-		defer { if scoped { url.stopAccessingSecurityScopedResource() } }
-		let data = try url.bookmarkData()
-		UserDefaults.standard.set(data, forKey: bookmarkKey)
-		prepare(url)
-	}
-
-	static func useDefault() {
-		UserDefaults.standard.removeObject(forKey: bookmarkKey)
-		prepare(defaultFolder)
+		return added
 	}
 
 	/// Creates the GG and Lua folders (and an example in a brand new default folder).
-	static func prepare(_ root: URL? = nil) {
+	static func prepare() {
 		let fm = FileManager.default
-		let base = root ?? folder
-		let scoped = base.startAccessingSecurityScopedResource()
-		defer { if scoped { base.stopAccessingSecurityScopedResource() } }
+		let base = folder
 		for name in subfolders {
 			try? fm.createDirectory(at: base.appendingPathComponent(name, isDirectory: true), withIntermediateDirectories: true)
 		}
@@ -83,8 +76,6 @@ enum BTBGGSharedScripts {
 	static func scriptCount() -> Int {
 		let fm = FileManager.default
 		let base = folder
-		let scoped = base.startAccessingSecurityScopedResource()
-		defer { if scoped { base.stopAccessingSecurityScopedResource() } }
 		var count = 0
 		for name in subfolders {
 			let dir = base.appendingPathComponent(name, isDirectory: true)
@@ -98,8 +89,6 @@ enum BTBGGSharedScripts {
 	static func copy(into app: URL) {
 		let fm = FileManager.default
 		let base = folder
-		let scoped = base.startAccessingSecurityScopedResource()
-		defer { if scoped { base.stopAccessingSecurityScopedResource() } }
 		let target = app.appendingPathComponent("BTBGGShared", isDirectory: true)
 		try? fm.removeItem(at: target)
 		var copied = 0

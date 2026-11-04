@@ -368,7 +368,7 @@ static NSInteger gKind = 0;    // 0 GG scripts, 1 plain Lua
 			UILabel *l = BTBGGLabel([UIFont systemFontOfSize:15], UIColor.secondaryLabelColor);
 			l.textAlignment = NSTextAlignmentCenter;
 			if ([self isShared]) {
-				l.text = BL(@"No shared scripts in this game.\nChoose the folder in Veather → Settings → GameGuardian, then sign the game again.", @"В этой игре нет общих скриптов.\nВыбери папку в Veather → Настройки → GameGuardian и подпиши игру заново.");
+				l.text = BL(@"No shared scripts in this game.\nAdd scripts in Veather → Settings → GameGuardian, then sign the game again.", @"В этой игре нет общих скриптов.\nДобавь скрипты в Veather → Настройки → GameGuardian и подпиши игру заново.");
 			} else {
 				l.text = BL(@"No scripts yet.\nUse the menu at the top to create one, paste from the clipboard or import a file.", @"Скриптов пока нет.\nВ меню сверху можно создать скрипт, вставить из буфера обмена или импортировать файл.");
 			}

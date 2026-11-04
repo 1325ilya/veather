@@ -130,7 +130,7 @@ static NSUInteger CountFiles(NSString *dir) {
 		case 0: return BL(@"“Legacy” is the old purple look.", @"«Legacy» — прежний фиолетовый вид.");
 		case 1: return BL(@"Lower it to see the game behind the panel.", @"Уменьши, чтобы видеть игру за панелью.");
 		case 2: return BL(@"The panel also opens with a four-finger long press anywhere on the screen. The button comes back when the game restarts.", @"Панель также открывается долгим нажатием четырьмя пальцами в любом месте экрана. Кнопка вернётся при перезапуске игры.");
-		default: return BL(@"The folder of shared scripts is chosen in Veather → Settings → GameGuardian. Scripts are copied into the game when Veather signs it, so sign the game again after changing them.", @"Папка общих скриптов выбирается в Veather → Настройки → GameGuardian. Скрипты копируются в игру при подписи, поэтому после изменений подпиши игру заново.");
+		default: return BL(@"Shared scripts are added in Veather → Settings → GameGuardian (or in the Files app, folder Veather/GameGuardian/Scripts). Scripts are copied into the game when Veather signs it, so sign the game again after changing them.", @"Общие скрипты добавляются в Veather → Настройки → GameGuardian (или в приложении «Файлы», папка Veather/GameGuardian/Scripts). Скрипты копируются в игру при подписи, поэтому после изменений подпиши игру заново.");
 	}
 }
 
