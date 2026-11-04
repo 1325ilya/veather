@@ -13,6 +13,11 @@ typedef NS_ENUM(uint8_t, BTBGGType) {
 	BTBGGTypeFloat, BTBGGTypeDouble,
 	BTBGGTypeXor,   // two neighbouring dwords whose XOR is the value (a common way to hide numbers)
 	BTBGGTypeAuto,  // search only: tries Dword, Qword, Float and Double
+	// unsigned readings (same bytes in memory, different comparison and display)
+	BTBGGTypeUByte, BTBGGTypeUWord, BTBGGTypeUDword, BTBGGTypeUQword,
+	// numbers a game may store inverted: memory holds ~value or -value
+	BTBGGTypeNotDword, BTBGGTypeNegDword, BTBGGTypeNotQword, BTBGGTypeNegQword,
+	BTBGGTypeHidden, // search only: tries XOR, ~value and -value in 32 and 64 bits
 };
 
 typedef NS_ENUM(NSInteger, BTBGGMode) {

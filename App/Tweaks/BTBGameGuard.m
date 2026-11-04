@@ -220,17 +220,28 @@ void BTBGGShowMemory(uint64_t address) {
 // MARK: - Search tab
 
 static NSArray<NSNumber *> *AllTypes(void) {
-	return @[@(BTBGGTypeDword), @(BTBGGTypeFloat), @(BTBGGTypeDouble), @(BTBGGTypeQword), @(BTBGGTypeWord), @(BTBGGTypeByte), @(BTBGGTypeXor), @(BTBGGTypeAuto)];
+	return @[@(BTBGGTypeDword), @(BTBGGTypeFloat), @(BTBGGTypeDouble), @(BTBGGTypeQword), @(BTBGGTypeWord), @(BTBGGTypeByte), @(BTBGGTypeXor), @(BTBGGTypeHidden), @(BTBGGTypeAuto),
+		@(BTBGGTypeUDword), @(BTBGGTypeUQword), @(BTBGGTypeUWord), @(BTBGGTypeUByte),
+		@(BTBGGTypeNotDword), @(BTBGGTypeNegDword), @(BTBGGTypeNotQword), @(BTBGGTypeNegQword)];
 }
 
 static NSString *TypeTitle(BTBGGType t) {
 	switch (t) {
-		case BTBGGTypeDword: return BL(@"Dword — whole number (most common)", @"Dword — целое число (чаще всего)");
+		case BTBGGTypeDword: return BL(@"Dword = Int32 — whole number (most common)", @"Dword = Int32 — целое число (чаще всего)");
 		case BTBGGTypeFloat: return BL(@"Float — decimal", @"Float — дробное");
 		case BTBGGTypeDouble: return BL(@"Double — decimal ×2", @"Double — дробное ×2");
-		case BTBGGTypeQword: return BL(@"Qword — big whole number", @"Qword — большое целое");
-		case BTBGGTypeWord: return BL(@"Word — small whole number", @"Word — малое целое (2 байта)");
-		case BTBGGTypeByte: return BL(@"Byte — tiny whole number", @"Byte — крошечное целое (1 байт)");
+		case BTBGGTypeQword: return BL(@"Qword = Int64 — big whole number", @"Qword = Int64 — большое целое");
+		case BTBGGTypeWord: return BL(@"Word = Int16 — small whole number", @"Word = Int16 — малое целое (2 байта)");
+		case BTBGGTypeByte: return BL(@"Byte = Int8 — tiny whole number", @"Byte = Int8 — крошечное целое (1 байт)");
+		case BTBGGTypeUDword: return BL(@"UInt32 — Dword without a sign", @"UInt32 — Dword без знака");
+		case BTBGGTypeUQword: return BL(@"UInt64 — Qword without a sign", @"UInt64 — Qword без знака");
+		case BTBGGTypeUWord: return BL(@"UInt16 — Word without a sign", @"UInt16 — Word без знака");
+		case BTBGGTypeUByte: return BL(@"UInt8 — Byte without a sign", @"UInt8 — Byte без знака");
+		case BTBGGTypeNotDword: return BL(@"~Int32 — stored inverted (bitwise NOT)", @"~Int32 — хранится инвертированным (NOT)");
+		case BTBGGTypeNegDword: return BL(@"-Int32 — stored with the opposite sign", @"-Int32 — хранится с обратным знаком");
+		case BTBGGTypeNotQword: return BL(@"~Int64 — stored inverted (bitwise NOT)", @"~Int64 — хранится инвертированным (NOT)");
+		case BTBGGTypeNegQword: return BL(@"-Int64 — stored with the opposite sign", @"-Int64 — хранится с обратным знаком");
+		case BTBGGTypeHidden: return BL(@"Hidden — try XOR, NOT and minus (32/64 bit)", @"Скрытое — перебрать XOR, NOT и минус (32/64 бит)");
 		case BTBGGTypeXor: return BL(@"XOR — number hidden by encryption", @"XOR — число спрятано шифром");
 		case BTBGGTypeAuto: return BL(@"Auto — try several types", @"Авто — перебрать несколько типов");
 	}

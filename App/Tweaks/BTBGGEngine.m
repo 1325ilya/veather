@@ -23,22 +23,35 @@ NSString *BTBGGL(NSString *en, NSString *ru) {
 
 // MARK: - Types and numbers
 
+enum { kTypeCount = BTBGGTypeHidden + 1 };
+
 static size_t TS(BTBGGType t) { // size of one value
 	switch (t) {
-		case BTBGGTypeByte: return 1;
-		case BTBGGTypeWord: return 2;
-		case BTBGGTypeQword: case BTBGGTypeDouble: return 8;
+		case BTBGGTypeByte: case BTBGGTypeUByte: return 1;
+		case BTBGGTypeWord: case BTBGGTypeUWord: return 2;
+		case BTBGGTypeQword: case BTBGGTypeDouble: case BTBGGTypeUQword: case BTBGGTypeNotQword: case BTBGGTypeNegQword: return 8;
 		default: return 4;
 	}
 }
+static BOOL IsEnc(BTBGGType t) { return t >= BTBGGTypeNotDword && t <= BTBGGTypeNegQword; } // memory holds ~value or -value
+/// memory bits <-> value for the inverted types (each is its own inverse)
+static uint64_t Enc(uint64_t v, BTBGGType t) {
+	uint64_t r = (t == BTBGGTypeNotDword || t == BTBGGTypeNotQword) ? ~v : (0 - v);
+	return TS(t) == 8 ? r : (r & 0xFFFFFFFFull);
+}
+/// types that cannot be used for a range, a group or an unknown-value search
+static BOOL NoRange(BTBGGType t) { return t == BTBGGTypeAuto || t == BTBGGTypeXor || t == BTBGGTypeHidden || IsEnc(t); }
 static size_t RS(BTBGGType t) { return t == BTBGGTypeXor ? 8 : TS(t); } // bytes that must be read
 static BOOL IsFloat(BTBGGType t) { return t == BTBGGTypeFloat || t == BTBGGTypeDouble; }
 
 static int64_t SV(uint64_t raw, BTBGGType t) {
 	switch (t) {
 		case BTBGGTypeByte: return (int8_t)raw;
+		case BTBGGTypeUByte: return (uint8_t)raw;
 		case BTBGGTypeWord: return (int16_t)raw;
-		case BTBGGTypeQword: return (int64_t)raw;
+		case BTBGGTypeUWord: return (uint16_t)raw;
+		case BTBGGTypeUDword: return (uint32_t)raw;
+		case BTBGGTypeQword: case BTBGGTypeUQword: case BTBGGTypeNotQword: case BTBGGTypeNegQword: return (int64_t)raw;
 		default: return (int32_t)raw;
 	}
 }
@@ -55,6 +68,7 @@ static int Cmp(uint64_t a, uint64_t b, BTBGGType t) {
 		if (isnan(x) || isnan(y)) return 2;
 		return x < y ? -1 : (x > y);
 	}
+	if (t == BTBGGTypeUQword) return a < b ? -1 : (a > b);
 	int64_t x = SV(a, t), y = SV(b, t);
 	return x < y ? -1 : (x > y);
 }
@@ -95,6 +109,7 @@ static NSString *Fmt(uint64_t raw, BTBGGType t) {
 	switch (t) {
 		case BTBGGTypeFloat: { float f; memcpy(&f, &raw, 4); return [NSString stringWithFormat:@"%g", f]; }
 		case BTBGGTypeDouble: { double d; memcpy(&d, &raw, 8); return [NSString stringWithFormat:@"%.10g", d]; }
+		case BTBGGTypeUQword: return [NSString stringWithFormat:@"%llu", (unsigned long long)raw];
 		case BTBGGTypeQword: return [NSString stringWithFormat:@"%lld", (long long)SV(raw, t)];
 		default: return [NSString stringWithFormat:@"%lld", (long long)SV(raw, t)];
 	}
@@ -107,8 +122,8 @@ typedef NS_ENUM(int, SpecKind) { SpecSingle, SpecRange, SpecGroup, SpecUnknown }
 typedef struct {
 	SpecKind kind;
 	BTBGGType type;
-	BTBGGType candType[4];
-	uint64_t candRaw[4];
+	BTBGGType candType[8];
+	uint64_t candRaw[8];
 	int candCount;
 	uint64_t lo, hi;
 	uint64_t group[8];
@@ -128,7 +143,7 @@ static BOOL ParseSpec(NSString *text, BTBGGType t, Spec *s, NSString **err) {
 	if (str.length == 0) { if (err) *err = BTBGGL(@"Type the number first.", @"Сначала введи число."); return NO; }
 
 	if ([str containsString:@";"]) {
-		if (t == BTBGGTypeAuto || t == BTBGGTypeXor) { if (err) *err = BTBGGL(@"Group search needs a concrete type (Dword, Float…).", @"Для поиска группы выбери конкретный тип (Dword, Float…)."); return NO; }
+		if (NoRange(t)) { if (err) *err = BTBGGL(@"Group search needs a concrete type (Dword, Float…).", @"Для поиска группы выбери конкретный тип (Dword, Float…)."); return NO; }
 		NSArray *halves = [str componentsSeparatedByString:@"::"];
 		NSArray *tokens = [halves[0] componentsSeparatedByString:@";"];
 		s->dist = 128;
@@ -146,7 +161,7 @@ static BOOL ParseSpec(NSString *text, BTBGGType t, Spec *s, NSString **err) {
 
 	NSRange tilde = [str rangeOfString:@"~"];
 	if (tilde.location != NSNotFound && tilde.location > 0) {
-		if (t == BTBGGTypeAuto || t == BTBGGTypeXor) { if (err) *err = BTBGGL(@"A range needs a concrete type (Dword, Float…).", @"Для диапазона выбери конкретный тип (Dword, Float…)."); return NO; }
+		if (NoRange(t)) { if (err) *err = BTBGGL(@"A range needs a concrete type (Dword, Float…).", @"Для диапазона выбери конкретный тип (Dword, Float…)."); return NO; }
 		uint64_t a, b;
 		if (!ParseRaw([str substringToIndex:tilde.location], t, &a) || !ParseRaw([str substringFromIndex:NSMaxRange(tilde)], t, &b)) { if (err) *err = WrongNumber(t); return NO; }
 		int c = Cmp(a, b, t);
@@ -157,6 +172,17 @@ static BOOL ParseSpec(NSString *text, BTBGGType t, Spec *s, NSString **err) {
 	}
 
 	s->kind = SpecSingle;
+	if (t == BTBGGTypeHidden) { // every common way to hide a whole number
+		NSString *norm = [str stringByReplacingOccurrencesOfString:@"," withString:@"."];
+		uint64_t d, q;
+		if (!ParseRaw(norm, BTBGGTypeDword, &d) || !ParseRaw(norm, BTBGGTypeQword, &q)) { if (err) *err = WrongNumber(t); return NO; }
+		if ((uint32_t)d != 0) { s->candType[s->candCount] = BTBGGTypeXor; s->candRaw[s->candCount++] = d; }
+		s->candType[s->candCount] = BTBGGTypeNotDword; s->candRaw[s->candCount++] = d;
+		s->candType[s->candCount] = BTBGGTypeNegDword; s->candRaw[s->candCount++] = d;
+		s->candType[s->candCount] = BTBGGTypeNotQword; s->candRaw[s->candCount++] = q;
+		s->candType[s->candCount] = BTBGGTypeNegQword; s->candRaw[s->candCount++] = q;
+		return YES;
+	}
 	if (t == BTBGGTypeAuto) {
 		NSString *norm = [str stringByReplacingOccurrencesOfString:@"," withString:@"."];
 		BOOL looksFloat = [norm rangeOfCharacterFromSet:[NSCharacterSet characterSetWithCharactersInString:@".eE"]].location != NSNotFound
@@ -275,7 +301,7 @@ static int HitCompare(const void *a, const void *b) {
 + (size_t)sizeOfType:(BTBGGType)type { return TS(type); }
 + (BOOL)isFloatType:(BTBGGType)type { return IsFloat(type); }
 + (BOOL)parse:(NSString *)text type:(BTBGGType)type raw:(uint64_t *)raw {
-	if (type == BTBGGTypeAuto) type = BTBGGTypeDword;
+	if (type == BTBGGTypeAuto || type == BTBGGTypeHidden) type = BTBGGTypeDword;
 	return ParseRaw(text, type, raw);
 }
 + (NSString *)format:(uint64_t)raw type:(BTBGGType)type { return Fmt(raw, type); }
@@ -306,6 +332,15 @@ static int HitCompare(const void *a, const void *b) {
 		case BTBGGTypeDouble: return @"Double";
 		case BTBGGTypeXor: return @"XOR";
 		case BTBGGTypeAuto: return @"Auto";
+		case BTBGGTypeUByte: return @"UByte";
+		case BTBGGTypeUWord: return @"UWord";
+		case BTBGGTypeUDword: return @"UDword";
+		case BTBGGTypeUQword: return @"UQword";
+		case BTBGGTypeNotDword: return @"~Dword";
+		case BTBGGTypeNegDword: return @"-Dword";
+		case BTBGGTypeNotQword: return @"~Qword";
+		case BTBGGTypeNegQword: return @"-Qword";
+		case BTBGGTypeHidden: return @"Hidden";
 	}
 	return @"?";
 }
@@ -328,7 +363,7 @@ static int HitCompare(const void *a, const void *b) {
 	}
 	uint64_t v = 0;
 	if (![self readBytes:address into:&v length:TS(type)]) return NO;
-	*raw = v;
+	*raw = IsEnc(type) ? Enc(v, type) : v;
 	return YES;
 }
 
@@ -339,7 +374,8 @@ static int HitCompare(const void *a, const void *b) {
 		uint32_t b = (uint32_t)raw ^ a;
 		return [self writeBytes:address + 4 from:&b length:4];
 	}
-	return [self writeBytes:address from:&raw length:TS(type)];
+	uint64_t mem = IsEnc(type) ? Enc(raw, type) : raw;
+	return [self writeBytes:address from:&mem length:TS(type)];
 }
 
 // MARK: Images and regions
@@ -546,8 +582,8 @@ typedef BOOL (^ChunkBlock)(uint64_t base, const uint8_t *buf, size_t n, size_t a
 - (BOOL)search:(NSString *)text type:(BTBGGType)type unknown:(BOOL)unknown error:(NSString **)error {
 	Spec spec;
 	if (unknown) {
-		if (type == BTBGGTypeXor) { if (error) *error = BTBGGL(@"XOR cannot be searched without a number.", @"XOR нельзя искать без числа."); return NO; }
-		if (type == BTBGGTypeAuto) type = BTBGGTypeDword;
+		if (type == BTBGGTypeXor || type == BTBGGTypeHidden || IsEnc(type)) { if (error) *error = BTBGGL(@"This type cannot be searched without a number.", @"Этот тип нельзя искать без числа."); return NO; }
+		if (type == BTBGGTypeAuto || type == BTBGGTypeHidden) type = BTBGGTypeDword;
 		memset(&spec, 0, sizeof(spec));
 		spec.kind = SpecUnknown;
 		spec.type = type;
@@ -592,8 +628,9 @@ typedef BOOL (^ChunkBlock)(uint64_t base, const uint8_t *buf, size_t n, size_t a
 							memcpy(&b, p + 4, 4);
 							// a == 0 or b == 0 is just a plain number (and writing would damage the neighbour word)
 							if (a != 0 && b != 0 && (a ^ b) == (uint32_t)spec.candRaw[k]) EMIT(base + i, ct, spec.candRaw[k]);
-						} else if (memcmp(p, &spec.candRaw[k], sz) == 0) {
-							EMIT(base + i, ct, spec.candRaw[k]);
+						} else {
+							uint64_t needle = IsEnc(ct) ? Enc(spec.candRaw[k], ct) : spec.candRaw[k];
+							if (memcmp(p, &needle, sz) == 0) EMIT(base + i, ct, spec.candRaw[k]);
 						}
 					}
 				}
@@ -663,8 +700,8 @@ typedef BOOL (^ChunkBlock)(uint64_t base, const uint8_t *buf, size_t n, size_t a
 	if (_count == 0 || !_store) return YES;
 
 	// the typed numbers, parsed once per type
-	uint64_t arg[8] = {0}, arg2[8] = {0};
-	BOOL ok[8] = {NO};
+	uint64_t arg[kTypeCount] = {0}, arg2[kTypeCount] = {0};
+	BOOL ok[kTypeCount] = {NO};
 	BOOL needsText = mode == BTBGGModeExact || mode == BTBGGModeRange || mode == BTBGGModeIncreasedBy || mode == BTBGGModeDecreasedBy
 		|| mode == BTBGGModeNotEqual || mode == BTBGGModeAtMost || mode == BTBGGModeAtLeast;
 	if (needsText) {
@@ -678,7 +715,7 @@ typedef BOOL (^ChunkBlock)(uint64_t base, const uint8_t *buf, size_t n, size_t a
 			second = [str substringFromIndex:NSMaxRange(t)];
 		}
 		BOOL any = NO;
-		for (int t = 0; t < 7; t++) {
+		for (int t = 0; t < kTypeCount; t++) {
 			ok[t] = ParseRaw(first, (BTBGGType)t, &arg[t]) && (!second || ParseRaw(second, (BTBGGType)t, &arg2[t]));
 			if (ok[t] && second && Cmp(arg[t], arg2[t], (BTBGGType)t) == 1) { uint64_t x = arg[t]; arg[t] = arg2[t]; arg2[t] = x; }
 			any = any || ok[t];
@@ -741,8 +778,8 @@ typedef BOOL (^ChunkBlock)(uint64_t base, const uint8_t *buf, size_t n, size_t a
 
 - (NSUInteger)editAll:(NSString *)text freeze:(BOOL)freeze mode:(BTBGGFreezeMode)mode typeFilter:(int)typeFilter {
 	NSUInteger written = 0, frozen = 0;
-	uint64_t parsed[8] = {0};
-	BOOL parsedOK[8] = {NO}, tried[8] = {NO};
+	uint64_t parsed[kTypeCount] = {0};
+	BOOL parsedOK[kTypeCount] = {NO}, tried[kTypeCount] = {NO};
 	for (size_t i = 0; i < _count; i++) {
 		BTBGGHit h = _store[i];
 		BTBGGType t = BTBGGHitType(h);
@@ -836,7 +873,7 @@ static NSString *ListPath(void) {
 }
 
 - (BTBGGItem *)addToListAddress:(uint64_t)address type:(BTBGGType)type label:(NSString *)label {
-	if (type == BTBGGTypeAuto) type = BTBGGTypeDword;
+	if (type == BTBGGTypeAuto || type == BTBGGTypeHidden) type = BTBGGTypeDword;
 	for (BTBGGItem *it in _list) if (it.address == address && it.type == type) { if (label.length) it.label = label; return it; }
 	BTBGGItem *item = [BTBGGItem new];
 	item.address = address;
@@ -887,7 +924,7 @@ static NSString *ListPath(void) {
 		if (![e isKindOfClass:[NSDictionary class]]) continue;
 		NSString *module = e[@"module"];
 		NSNumber *type = e[@"type"], *offset = e[@"offset"];
-		if (![module isKindOfClass:[NSString class]] || !type || !offset || type.integerValue < 0 || type.integerValue > BTBGGTypeXor) continue;
+		if (![module isKindOfClass:[NSString class]] || !type || !offset || type.integerValue < 0 || type.integerValue > BTBGGTypeNegQword || type.integerValue == BTBGGTypeAuto) continue;
 		long found = -1;
 		for (NSUInteger i = 0; i < _imageNames.count; i++) {
 			if (![_imageNames[i].lastPathComponent isEqualToString:module]) continue;

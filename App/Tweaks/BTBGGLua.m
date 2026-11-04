@@ -42,7 +42,11 @@ static lua_Integer GGType(BTBGGType t) {
 		case BTBGGTypeFloat: return GG_TYPE_FLOAT;
 		case BTBGGTypeQword: return GG_TYPE_QWORD;
 		case BTBGGTypeDouble: return GG_TYPE_DOUBLE;
-		case BTBGGTypeAuto: return GG_TYPE_AUTO;
+		case BTBGGTypeAuto: case BTBGGTypeHidden: return GG_TYPE_AUTO;
+		case BTBGGTypeUByte: return GG_TYPE_BYTE;
+		case BTBGGTypeUWord: return GG_TYPE_WORD;
+		case BTBGGTypeUDword: case BTBGGTypeNotDword: case BTBGGTypeNegDword: return GG_TYPE_DWORD;
+		case BTBGGTypeUQword: case BTBGGTypeNotQword: case BTBGGTypeNegQword: return GG_TYPE_QWORD;
 	}
 	return GG_TYPE_DWORD;
 }
