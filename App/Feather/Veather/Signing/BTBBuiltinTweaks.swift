@@ -48,7 +48,7 @@ enum BTBBuiltinTweak: String, CaseIterable, Codable, Identifiable {
 		case .ipadui: .localized("Forces the iPad layout on iPhone; menus no longer crash the app.")
 		case .noupd: .localized("Answers App Store version checks with \"no update\" so the app stops nagging.")
 		case .spoofads: .localized("Rewarded ads are not shown, but the app still gives you the reward (AdMob, AppLovin MAX). Also blocks all other ads. Rewards that the game's server checks can't be skipped.")
-		case .gameguard: .localized("Memory editor for offline games: hold four fingers on the screen, search a value (coins, lives), change or freeze it. Offline games only.")
+		case .gameguard: .localized("Memory editor for offline games (the GG button or four fingers): search any value type, numbers hidden by XOR, ranges and groups; saved list, hex view and Lua scripts. Offline games only.")
 		}
 	}
 

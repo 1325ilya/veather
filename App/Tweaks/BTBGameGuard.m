@@ -1,66 +1,23 @@
 //  BTBGameGuard.m — /gameguard: a memory scanner/editor for OFFLINE single-player games.
-//  Four-finger long press opens a panel: search the app's own memory for a value
-//  (score, coins, lives…), change what is left after a few scans, optionally freeze it.
+//  Four-finger long press (or the floating "GG" button) opens a panel with four tabs:
+//    Search — find a number (Byte…Qword, Float, Double, XOR, ranges, groups, Auto) in chosen memory regions,
+//             narrow it down, change or freeze it.
+//    List   — saved addresses that stay between launches when they live in the app's code.
+//    Scripts — Lua scripts that use a GameGuardian-style gg.* API (see BTBGGLua.m).
+//    Memory — hex view/editor.
 //  Works only on the process it is injected into. Do not use it in online games.
 
 #import "BTBCommon.h"
+#import "BTBGGUI.h"
 #import <UIKit/UIKit.h>
-#import <mach/mach.h>
-#import <os/proc.h>
-#import <sys/mman.h>
 
-typedef NS_ENUM(NSInteger, BTBType) { BTBTypeInt32, BTBTypeFloat, BTBTypeDouble };
-typedef NS_ENUM(NSInteger, BTBMode) { BTBModeExact, BTBModeChanged, BTBModeSame, BTBModeBigger, BTBModeSmaller, BTBModeUnknown };
+NSString *const BTBGGResultsChangedNotification = @"BTBGGResultsChanged";
 
-typedef struct { uint64_t address; uint64_t raw; } BTBHit;
-
-// No fixed result limit: the store is a big lazily-committed virtual range (memory is only used as
-// results are written). The scan stops by itself when the app is about to run out of memory.
-static size_t gMaxHits = 0;
-static const size_t kMemoryFloor = 400u << 20; // stop when less than ~400 MB is left for the game
-static const size_t kChunk = 1 << 20;
-
-static size_t BTBSize(BTBType t) { return t == BTBTypeDouble ? 8 : 4; }
-
-static BOOL BTBParse(NSString *text, BTBType t, uint64_t *raw) {
-	NSString *s = [text stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
-	if (s.length == 0) return NO;
-	*raw = 0;
-	switch (t) {
-		case BTBTypeInt32: { int32_t v = (int32_t)s.longLongValue; memcpy(raw, &v, 4); return YES; }
-		case BTBTypeFloat: { float v = s.floatValue; memcpy(raw, &v, 4); return YES; }
-		case BTBTypeDouble: { double v = s.doubleValue; memcpy(raw, &v, 8); return YES; }
-	}
-	return NO;
+void BTBGGNotifyResultsChanged(void) {
+	BTBOnMain(^{ [[NSNotificationCenter defaultCenter] postNotificationName:BTBGGResultsChangedNotification object:nil]; });
 }
 
-static NSString *BTBFormat(uint64_t raw, BTBType t) {
-	switch (t) {
-		case BTBTypeInt32: { int32_t v; memcpy(&v, &raw, 4); return [NSString stringWithFormat:@"%d", v]; }
-		case BTBTypeFloat: { float v; memcpy(&v, &raw, 4); return [NSString stringWithFormat:@"%g", v]; }
-		case BTBTypeDouble: { double v; memcpy(&v, &raw, 8); return [NSString stringWithFormat:@"%g", v]; }
-	}
-	return @"";
-}
-
-// -1 less, 0 equal, 1 greater
-static int BTBCompare(uint64_t a, uint64_t b, BTBType t) {
-	switch (t) {
-		case BTBTypeInt32: { int32_t x, y; memcpy(&x, &a, 4); memcpy(&y, &b, 4); return x < y ? -1 : (x > y); }
-		case BTBTypeFloat: { float x, y; memcpy(&x, &a, 4); memcpy(&y, &b, 4); return x < y ? -1 : (x > y); }
-		case BTBTypeDouble: { double x, y; memcpy(&x, &a, 8); memcpy(&y, &b, 8); return x < y ? -1 : (x > y); }
-	}
-	return 0;
-}
-
-static BOOL BTBReadMemory(uint64_t address, void *buffer, size_t size) {
-	vm_size_t outSize = 0;
-	return vm_read_overwrite(mach_task_self(), (vm_address_t)address, size, (vm_address_t)buffer, &outSize) == KERN_SUCCESS && outSize == size;
-}
-
-static BOOL BTBWriteMemory(uint64_t address, uint64_t raw, size_t size) {
-	return vm_write(mach_task_self(), (vm_address_t)address, (vm_offset_t)&raw, (mach_msg_type_number_t)size) == KERN_SUCCESS;
-}
+// MARK: - Panel window
 
 // Overlay window that only reacts to touches on its own button; everything else goes to the game.
 @interface BTBGGWindow : UIWindow
@@ -76,32 +33,118 @@ static BOOL BTBWriteMemory(uint64_t address, uint64_t raw, size_t size) {
 }
 @end
 
-@interface BTBGameGuard : UIViewController <UITableViewDataSource, UITableViewDelegate>
+@interface BTBGGPanelHelper : NSObject
++ (instancetype)shared;
+- (void)close;
+@end
+@implementation BTBGGPanelHelper
++ (instancetype)shared {
+	static BTBGGPanelHelper *h;
+	static dispatch_once_t once;
+	dispatch_once(&once, ^{ h = [BTBGGPanelHelper new]; });
+	return h;
+}
+- (void)close { BTBGGClosePanel(); }
+@end
+
+static BTBGGWindow *gOverlay;
+static UIWindow *gPanelWindow;
+static __weak UIWindow *gGameWindow;
+static UITabBarController *gTabs;
+
+static UIWindowScene *ActiveScene(void) {
+	for (UIScene *s in UIApplication.sharedApplication.connectedScenes) {
+		if ([s isKindOfClass:[UIWindowScene class]] && s.activationState == UISceneActivationStateForegroundActive) return (UIWindowScene *)s;
+	}
+	return nil;
+}
+
+@interface BTBGGSearchVC : UIViewController <UITableViewDataSource, UITableViewDelegate>
+@end
+
+static UINavigationController *MakeNav(UIViewController *vc, NSString *title, NSString *symbol) {
+	vc.title = title;
+	vc.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:BL(@"Close", @"Закрыть") style:UIBarButtonItemStylePlain target:[BTBGGPanelHelper shared] action:@selector(close)];
+	UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
+	nav.tabBarItem = [[UITabBarItem alloc] initWithTitle:title image:[UIImage systemImageNamed:symbol] tag:0];
+	return nav;
+}
+
+static UITabBarController *Tabs(void) {
+	if (gTabs) return gTabs;
+	UITabBarController *t = [UITabBarController new];
+	t.viewControllers = @[
+		MakeNav([BTBGGSearchVC new], BL(@"Search", @"Поиск"), @"magnifyingglass"),
+		MakeNav(BTBGGMakeSavedListVC(), BL(@"List", @"Список"), @"list.bullet"),
+		MakeNav(BTBGGMakeScriptsVC(), BL(@"Scripts", @"Скрипты"), @"scroll"),
+		MakeNav(BTBGGMakeMemoryVC(), BL(@"Memory", @"Память"), @"memorychip"),
+	];
+	t.view.tintColor = BTBGGAccent();
+	gTabs = t;
+	return t;
+}
+
+BOOL BTBGGPanelIsOpen(void) { return gPanelWindow != nil; }
+
+void BTBGGOpenPanel(void) {
+	if (gPanelWindow) return;
+	UIWindowScene *scene = ActiveScene();
+	if (!scene) return;
+	// the game's window, never our own overlay (a tap on the GG button can make the overlay key)
+	for (UIWindow *w in scene.windows) if (![w isKindOfClass:[BTBGGWindow class]] && w.windowLevel <= UIWindowLevelNormal && !w.hidden) { gGameWindow = w; if (w.isKeyWindow) break; }
+	// The panel lives in its own window instead of being presented on the game's view controller:
+	// game engines (Unity, Unreal) often manage their own controllers and swallow presentations or touches.
+	UIWindow *window = [[UIWindow alloc] initWithWindowScene:scene];
+	window.frame = scene.coordinateSpace.bounds;
+	window.windowLevel = UIWindowLevelAlert + 200;
+	window.backgroundColor = UIColor.systemBackgroundColor;
+	window.rootViewController = Tabs();
+	gPanelWindow = window;
+	[window makeKeyAndVisible];
+}
+
+void BTBGGClosePanel(void) {
+	UIWindow *panel = gPanelWindow;
+	if (!panel) return;
+	[panel endEditing:YES];
+	gPanelWindow = nil;
+	panel.hidden = YES;
+	panel.rootViewController = nil;
+	[gGameWindow makeKeyWindow];
+}
+
+void BTBGGRestoreKeyWindow(void) {
+	if (gPanelWindow) [gPanelWindow makeKeyWindow]; else [gGameWindow makeKeyWindow];
+}
+
+void BTBGGSelectTab(NSInteger index) {
+	BTBOnMain(^{
+		BTBGGOpenPanel();
+		if (gTabs && index >= 0 && index < (NSInteger)gTabs.viewControllers.count) gTabs.selectedIndex = index;
+	});
+}
+
+void BTBGGShowMemory(uint64_t address) {
+	BTBOnMain(^{
+		BTBGGOpenPanel();
+		if (!gTabs) return;
+		gTabs.selectedIndex = 3;
+		UINavigationController *nav = gTabs.viewControllers[3];
+		[nav popToRootViewControllerAnimated:NO];
+		BTBGGMemoryShowAddress(nav.viewControllers.firstObject, address);
+	});
+}
+
+// MARK: - Trigger and floating button
+
+@interface BTBGameGuard : NSObject
 + (instancetype)shared;
 - (void)attachToWindow:(UIWindow *)window;
 - (void)attachToAllWindows;
 - (void)showFloatingButton;
-- (void)openPanel;
 @end
 
-@implementation BTBGameGuard {
-	UISegmentedControl *_typeControl;
-	UITextField *_field;
-	UILabel *_step, *_hint, *_status;
-	UIButton *_primary, *_reset, *_more, *_unknown, *_refresh;
-	UIStackView *_secondaryRow;
-	UITableView *_table;
-	BTBHit *_store;              // vm_allocate'd, so scans can skip it (it would find itself)
-	size_t _count;
-	uint8_t *_readBuffer;        // same
-	BTBType _hitType;
-	BTBMode _mode;
-	BOOL _refining;
-	BOOL _busy;
-	BOOL _unknownFlow;           // the value is hidden: keep narrowing by changed/bigger/smaller
-	NSMutableDictionary<NSNumber *, NSNumber *> *_frozen; // address -> raw
-	NSTimer *_freezeTimer;
-}
+@implementation BTBGameGuard
 
 + (instancetype)shared {
 	static BTBGameGuard *g;
@@ -109,8 +152,6 @@ static BOOL BTBWriteMemory(uint64_t address, uint64_t raw, size_t size) {
 	dispatch_once(&once, ^{ g = [BTBGameGuard new]; });
 	return g;
 }
-
-#pragma mark - Trigger
 
 - (void)attachToWindow:(UIWindow *)window {
 	for (UIGestureRecognizer *g in window.gestureRecognizers) if ([g.name isEqualToString:@"BTBGameGuard"]) return;
@@ -132,19 +173,13 @@ static BOOL BTBWriteMemory(uint64_t address, uint64_t raw, size_t size) {
 }
 
 - (void)handle:(UILongPressGestureRecognizer *)g {
-	if (g.state != UIGestureRecognizerStateBegan) return;
-	[self openPanel];
+	if (g.state == UIGestureRecognizerStateBegan) BTBGGOpenPanel();
 }
-
-static BTBGGWindow *gOverlay;
 
 /// A small draggable "GG" button: works even where a multi-finger gesture can't be recognised.
 - (void)showFloatingButton {
 	if (gOverlay) return;
-	UIWindowScene *scene = nil;
-	for (UIScene *s in UIApplication.sharedApplication.connectedScenes) {
-		if ([s isKindOfClass:[UIWindowScene class]] && s.activationState == UISceneActivationStateForegroundActive) { scene = (UIWindowScene *)s; break; }
-	}
+	UIWindowScene *scene = ActiveScene();
 	if (!scene) return;
 	BTBGGWindow *window = [[BTBGGWindow alloc] initWithWindowScene:scene];
 	window.frame = scene.coordinateSpace.bounds;
@@ -171,6 +206,8 @@ static BTBGGWindow *gOverlay;
 	gOverlay = window;
 }
 
+- (void)openPanel { BTBGGOpenPanel(); }
+
 - (void)dragButton:(UIPanGestureRecognizer *)pan {
 	UIView *button = pan.view;
 	CGPoint t = [pan translationInView:button.superview];
@@ -178,85 +215,66 @@ static BTBGGWindow *gOverlay;
 	[pan setTranslation:CGPointZero inView:button.superview];
 }
 
-static UIWindow *gPanelWindow;
-static __weak UIWindow *gGameWindow;
+@end
 
-/// The panel lives in its own window instead of being presented on the game's view controller:
-/// game engines (Unity, Unreal) often manage their own controllers and swallow presentations or touches.
-- (void)openPanel {
-	if (gPanelWindow) return;
-	UIWindowScene *scene = nil;
-	for (UIScene *s in UIApplication.sharedApplication.connectedScenes) {
-		if ([s isKindOfClass:[UIWindowScene class]] && s.activationState == UISceneActivationStateForegroundActive) { scene = (UIWindowScene *)s; break; }
+// MARK: - Search tab
+
+static NSArray<NSNumber *> *AllTypes(void) {
+	return @[@(BTBGGTypeDword), @(BTBGGTypeFloat), @(BTBGGTypeDouble), @(BTBGGTypeQword), @(BTBGGTypeWord), @(BTBGGTypeByte), @(BTBGGTypeXor), @(BTBGGTypeAuto)];
+}
+
+static NSString *TypeTitle(BTBGGType t) {
+	switch (t) {
+		case BTBGGTypeDword: return BL(@"Dword — whole number (most common)", @"Dword — целое число (чаще всего)");
+		case BTBGGTypeFloat: return BL(@"Float — decimal", @"Float — дробное");
+		case BTBGGTypeDouble: return BL(@"Double — decimal ×2", @"Double — дробное ×2");
+		case BTBGGTypeQword: return BL(@"Qword — big whole number", @"Qword — большое целое");
+		case BTBGGTypeWord: return BL(@"Word — small whole number", @"Word — малое целое (2 байта)");
+		case BTBGGTypeByte: return BL(@"Byte — tiny whole number", @"Byte — крошечное целое (1 байт)");
+		case BTBGGTypeXor: return BL(@"XOR — number hidden by encryption", @"XOR — число спрятано шифром");
+		case BTBGGTypeAuto: return BL(@"Auto — try several types", @"Авто — перебрать несколько типов");
 	}
-	if (!scene) return;
-	// the game's window, never our own overlay (a tap on the GG button can make the overlay key)
-	for (UIWindow *w in scene.windows) if (![w isKindOfClass:[BTBGGWindow class]] && w.windowLevel <= UIWindowLevelNormal && !w.hidden) { gGameWindow = w; if (w.isKeyWindow) break; }
-	UIWindow *window = [[UIWindow alloc] initWithWindowScene:scene];
-	window.frame = scene.coordinateSpace.bounds;
-	window.windowLevel = UIWindowLevelAlert + 200;
-	window.backgroundColor = UIColor.systemBackgroundColor;
-	window.rootViewController = self;
-	gPanelWindow = window;
-	[window makeKeyAndVisible];
+	return @"";
 }
 
-#pragma mark - UI
-
-static BOOL BTBRussian(void) {
-	NSString *lang = NSLocale.preferredLanguages.firstObject;
-	return [lang hasPrefix:@"ru"];
-}
-static NSString *L(NSString *en, NSString *ru) { return BTBRussian() ? ru : en; }
-
-static UIColor *BTBAccent(void) { return [UIColor colorWithRed:0.49 green:0.36 blue:1 alpha:1]; }
-
-static UIButton *BTBBigButton(NSString *title, BOOL filled, id target, SEL action) {
-	UIButton *b = [UIButton buttonWithType:UIButtonTypeSystem];
-	[b setTitle:title forState:UIControlStateNormal];
-	b.titleLabel.font = [UIFont boldSystemFontOfSize:17];
-	b.backgroundColor = filled ? BTBAccent() : [BTBAccent() colorWithAlphaComponent:0.15];
-	[b setTitleColor:filled ? UIColor.whiteColor : BTBAccent() forState:UIControlStateNormal];
-	b.layer.cornerRadius = 14;
-	[b.heightAnchor constraintEqualToConstant:50].active = YES;
-	if (action) [b addTarget:target action:action forControlEvents:UIControlEventTouchUpInside];
-	return b;
+static BOOL ModeNeedsField(BTBGGMode m) {
+	return m == BTBGGModeExact || m == BTBGGModeRange || m == BTBGGModeIncreasedBy || m == BTBGGModeDecreasedBy;
 }
 
-static UILabel *BTBLabel(UIFont *font, UIColor *color) {
-	UILabel *l = [UILabel new];
-	l.font = font;
-	l.textColor = color;
-	l.numberOfLines = 0;
-	return l;
+@implementation BTBGGSearchVC {
+	UITableView *_table;
+	UIView *_header;
+	UIStackView *_stack;
+	UILabel *_step, *_hint, *_status;
+	UIButton *_typeButton, *_regionsButton, *_unknownButton, *_primary, *_reset, *_modeButton, *_refresh, *_more;
+	UIStackView *_optionsRow, *_secondaryRow, *_toolsRow;
+	UITextField *_field;
+	BTBGGType _type;
+	BTBGGMode _mode;
+	BOOL _unknown;
+	BOOL _busy;
+	CGFloat _headerWidth;
 }
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	self.view.backgroundColor = UIColor.systemBackgroundColor;
-	vm_address_t a = 0;
-	[self allocateStore];
-	if (vm_allocate(mach_task_self(), &a, kChunk, VM_FLAGS_ANYWHERE) == KERN_SUCCESS) _readBuffer = (uint8_t *)a;
-	_frozen = [NSMutableDictionary dictionary];
-	_mode = BTBModeExact;
+	_type = BTBGGTypeDword;
+	_mode = BTBGGModeExact;
 
-	UILabel *title = BTBLabel([UIFont boldSystemFontOfSize:20], UIColor.labelColor);
-	title.text = @"GameGuardian";
-	UIButton *close = [UIButton buttonWithType:UIButtonTypeSystem];
-	[close setTitle:L(@"Close", @"Закрыть") forState:UIControlStateNormal];
-	close.titleLabel.font = [UIFont systemFontOfSize:17];
-	[close addTarget:self action:@selector(closePanel) forControlEvents:UIControlEventTouchUpInside];
-	UIStackView *header = [[UIStackView alloc] initWithArrangedSubviews:@[title, close]];
-	header.alignment = UIStackViewAlignmentCenter;
+	UILabel *warn = BTBGGLabel([UIFont systemFontOfSize:12], UIColor.systemOrangeColor);
+	warn.text = BL(@"Offline single-player games only. Online, you can get banned.", @"Только оффлайн-игры для одного игрока. В онлайне могут забанить.");
+	_step = BTBGGLabel([UIFont boldSystemFontOfSize:22], UIColor.labelColor);
+	_hint = BTBGGLabel([UIFont systemFontOfSize:15], UIColor.secondaryLabelColor);
 
-	UILabel *warn = BTBLabel([UIFont systemFontOfSize:12], UIColor.systemOrangeColor);
-	warn.text = L(@"Offline single-player games only. Online, you can get banned.", @"Только оффлайн-игры для одного игрока. В онлайне могут забанить.");
-
-	_step = BTBLabel([UIFont boldSystemFontOfSize:22], UIColor.labelColor);
-	_hint = BTBLabel([UIFont systemFontOfSize:15], UIColor.secondaryLabelColor);
-
-	_typeControl = [[UISegmentedControl alloc] initWithItems:@[L(@"Whole number", @"Целое число"), L(@"Decimal", @"Дробное"), L(@"Decimal ×2", @"Дробное ×2")]];
-	_typeControl.selectedSegmentIndex = 0;
+	_typeButton = BTBGGBigButton(@"", NO, nil, nil);
+	_typeButton.titleLabel.font = [UIFont boldSystemFontOfSize:15];
+	_regionsButton = BTBGGBigButton(@"", NO, self, @selector(openRegions));
+	_regionsButton.titleLabel.font = [UIFont boldSystemFontOfSize:15];
+	[self buildTypeMenu];
+	_optionsRow = [[UIStackView alloc] initWithArrangedSubviews:@[_typeButton, _regionsButton]];
+	_optionsRow.spacing = 10;
+	_optionsRow.distribution = UIStackViewDistributionFillEqually;
 
 	_field = [UITextField new];
 	_field.borderStyle = UITextBorderStyleRoundedRect;
@@ -266,263 +284,284 @@ static UILabel *BTBLabel(UIFont *font, UIColor *color) {
 	_field.textAlignment = NSTextAlignmentCenter;
 	[_field.heightAnchor constraintEqualToConstant:50].active = YES;
 
-	_unknown = [UIButton buttonWithType:UIButtonTypeSystem];
-	_unknown.titleLabel.font = [UIFont systemFontOfSize:15];
-	_unknown.titleLabel.numberOfLines = 0;
-	_unknown.titleLabel.textAlignment = NSTextAlignmentCenter;
-	[_unknown addTarget:self action:@selector(toggleUnknown) forControlEvents:UIControlEventTouchUpInside];
+	_unknownButton = [UIButton buttonWithType:UIButtonTypeSystem];
+	_unknownButton.titleLabel.font = [UIFont systemFontOfSize:15];
+	_unknownButton.titleLabel.numberOfLines = 0;
+	_unknownButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+	[_unknownButton addTarget:self action:@selector(toggleUnknown) forControlEvents:UIControlEventTouchUpInside];
+
+	_primary = BTBGGBigButton(@"", YES, self, @selector(primaryTapped));
+	_reset = BTBGGBigButton(BL(@"Start over", @"Сначала"), NO, self, @selector(startOver));
+	_modeButton = BTBGGBigButton(@"", NO, nil, nil);
+	[self buildModeMenu];
+	_secondaryRow = [[UIStackView alloc] initWithArrangedSubviews:@[_reset, _modeButton]];
+	_secondaryRow.spacing = 10;
+	_secondaryRow.distribution = UIStackViewDistributionFillEqually;
 
 	_refresh = [UIButton buttonWithType:UIButtonTypeSystem];
 	_refresh.titleLabel.font = [UIFont boldSystemFontOfSize:16];
-	[_refresh setTitle:L(@"↻ Refresh values", @"↻ Обновить значения") forState:UIControlStateNormal];
+	[_refresh setTitle:BL(@"↻ Refresh", @"↻ Обновить") forState:UIControlStateNormal];
 	[_refresh addTarget:self action:@selector(refreshValues) forControlEvents:UIControlEventTouchUpInside];
+	_more = [UIButton buttonWithType:UIButtonTypeSystem];
+	_more.titleLabel.font = [UIFont boldSystemFontOfSize:16];
+	[_more setTitle:BL(@"All results ▾", @"Все результаты ▾") forState:UIControlStateNormal];
+	[self buildMoreMenu];
+	_toolsRow = [[UIStackView alloc] initWithArrangedSubviews:@[_refresh, _more]];
+	_toolsRow.distribution = UIStackViewDistributionFillEqually;
 
-	_primary = BTBBigButton(@"", YES, self, @selector(primaryTapped));
-	_reset = BTBBigButton(L(@"Start over", @"Сначала"), NO, self, @selector(startOver));
-	_more = BTBBigButton(L(@"Other options", @"Другие варианты"), NO, nil, nil);
-	[self buildModeMenu];
-	UIStackView *secondary = [[UIStackView alloc] initWithArrangedSubviews:@[_reset, _more]];
-	secondary.spacing = 10;
-	secondary.distribution = UIStackViewDistributionFillEqually;
-	_secondaryRow = secondary;
+	_status = BTBGGLabel([UIFont systemFontOfSize:13], UIColor.secondaryLabelColor);
 
-	_status = BTBLabel([UIFont systemFontOfSize:13], UIColor.secondaryLabelColor);
+	_stack = [[UIStackView alloc] initWithArrangedSubviews:@[warn, _step, _hint, _optionsRow, _field, _unknownButton, _primary, _secondaryRow, _toolsRow, _status]];
+	_stack.axis = UILayoutConstraintAxisVertical;
+	_stack.spacing = 10;
+	[_stack setCustomSpacing:14 afterView:warn];
+	_stack.translatesAutoresizingMaskIntoConstraints = NO;
 
-	UIStackView *top = [[UIStackView alloc] initWithArrangedSubviews:@[header, warn, _step, _hint, _typeControl, _field, _unknown, _primary, secondary, _refresh, _status]];
-	top.axis = UILayoutConstraintAxisVertical;
-	top.spacing = 10;
-	[top setCustomSpacing:14 afterView:warn];
-	top.translatesAutoresizingMaskIntoConstraints = NO;
+	_header = [UIView new];
+	[_header addSubview:_stack];
+	[NSLayoutConstraint activateConstraints:@[
+		[_stack.topAnchor constraintEqualToAnchor:_header.topAnchor constant:12],
+		[_stack.leadingAnchor constraintEqualToAnchor:_header.leadingAnchor constant:20],
+		[_stack.trailingAnchor constraintEqualToAnchor:_header.trailingAnchor constant:-20],
+		[_stack.bottomAnchor constraintEqualToAnchor:_header.bottomAnchor constant:-8],
+	]];
 
-	_table = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleInsetGrouped];
+	_table = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleInsetGrouped];
+	_table.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	_table.dataSource = self;
 	_table.delegate = self;
-	_table.translatesAutoresizingMaskIntoConstraints = NO;
 	_table.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
-
-	[self.view addSubview:top];
 	[self.view addSubview:_table];
-	UILayoutGuide *g = self.view.safeAreaLayoutGuide;
-	[NSLayoutConstraint activateConstraints:@[
-		[top.topAnchor constraintEqualToAnchor:g.topAnchor constant:16],
-		[top.leadingAnchor constraintEqualToAnchor:g.leadingAnchor constant:20],
-		[top.trailingAnchor constraintEqualToAnchor:g.trailingAnchor constant:-20],
-		[_table.topAnchor constraintEqualToAnchor:top.bottomAnchor constant:8],
-		[_table.leadingAnchor constraintEqualToAnchor:g.leadingAnchor],
-		[_table.trailingAnchor constraintEqualToAnchor:g.trailingAnchor],
-		[_table.bottomAnchor constraintEqualToAnchor:g.bottomAnchor],
-	]];
+
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resultsChanged) name:BTBGGResultsChangedNotification object:nil];
 	[self refreshUI];
+}
+
+- (void)dealloc { [[NSNotificationCenter defaultCenter] removeObserver:self]; }
+
+- (void)viewWillAppear:(BOOL)animated {
+	[super viewWillAppear:animated];
+	[self refreshUI];
+	[_table reloadData];
+}
+
+- (void)viewDidLayoutSubviews {
+	[super viewDidLayoutSubviews];
+	[self updateHeaderHeight];
+}
+
+/// A table header does not size itself: measure it whenever the width or the content changes.
+- (void)updateHeaderHeight {
+	CGFloat w = _table.bounds.size.width;
+	if (w <= 0) return;
+	CGFloat h = [_header systemLayoutSizeFittingSize:CGSizeMake(w, UILayoutFittingCompressedSize.height) withHorizontalFittingPriority:UILayoutPriorityRequired verticalFittingPriority:UILayoutPriorityFittingSizeLevel].height;
+	if (_table.tableHeaderView == _header && fabs(_header.frame.size.height - h) < 0.5 && _headerWidth == w) return;
+	_headerWidth = w;
+	_header.frame = CGRectMake(0, 0, w, h);
+	_table.tableHeaderView = _header;
+}
+
+- (void)resultsChanged {
+	if (_busy) return;
+	[self refreshUI];
+	[_table reloadData];
+}
+
+#pragma mark Menus
+
+- (void)buildTypeMenu {
+	NSMutableArray *actions = [NSMutableArray array];
+	for (NSNumber *n in AllTypes()) {
+		BTBGGType t = (BTBGGType)n.integerValue;
+		[actions addObject:[UIAction actionWithTitle:TypeTitle(t) image:nil identifier:nil handler:^(UIAction *x) {
+			self->_type = t;
+			[self refreshUI];
+		}]];
+	}
+	_typeButton.menu = [UIMenu menuWithChildren:actions];
+	_typeButton.showsMenuAsPrimaryAction = YES;
 }
 
 - (void)buildModeMenu {
 	NSArray *items = @[
-		@[@(BTBModeExact), L(@"Exact new value", @"Точное новое значение")],
-		@[@(BTBModeChanged), L(@"Value changed", @"Значение изменилось")],
-		@[@(BTBModeSame), L(@"Value did not change", @"Значение не менялось")],
-		@[@(BTBModeBigger), L(@"Value increased", @"Значение выросло")],
-		@[@(BTBModeSmaller), L(@"Value decreased", @"Значение уменьшилось")],
+		@[@(BTBGGModeExact), BL(@"Exact new value", @"Точное новое значение")],
+		@[@(BTBGGModeChanged), BL(@"Value changed", @"Значение изменилось")],
+		@[@(BTBGGModeUnchanged), BL(@"Value did not change", @"Значение не менялось")],
+		@[@(BTBGGModeGreater), BL(@"Value increased", @"Значение выросло")],
+		@[@(BTBGGModeSmaller), BL(@"Value decreased", @"Значение уменьшилось")],
+		@[@(BTBGGModeIncreasedBy), BL(@"Increased by exactly…", @"Выросло ровно на…")],
+		@[@(BTBGGModeDecreasedBy), BL(@"Decreased by exactly…", @"Уменьшилось ровно на…")],
+		@[@(BTBGGModeRange), BL(@"Within a range (10~20)", @"В диапазоне (10~20)")],
 	];
 	NSMutableArray *actions = [NSMutableArray array];
 	for (NSArray *item in items) {
-		BTBMode mode = (BTBMode)[item[0] integerValue];
+		BTBGGMode mode = (BTBGGMode)[item[0] integerValue];
 		[actions addObject:[UIAction actionWithTitle:item[1] image:nil identifier:nil handler:^(UIAction *x) {
 			self->_mode = mode;
 			[self refreshUI];
 		}]];
 	}
+	_modeButton.menu = [UIMenu menuWithChildren:actions];
+	_modeButton.showsMenuAsPrimaryAction = YES;
+}
+
+- (void)buildMoreMenu {
+	__weak typeof(self) weak = self;
+	NSArray *actions = @[
+		[UIAction actionWithTitle:BL(@"Set all to…", @"Изменить все на…") image:nil identifier:nil handler:^(UIAction *x) { [weak askValueThen:NO]; }],
+		[UIAction actionWithTitle:BL(@"Set all to… and freeze", @"Изменить все и заморозить…") image:nil identifier:nil handler:^(UIAction *x) { [weak askValueThen:YES]; }],
+		[UIAction actionWithTitle:BL(@"Save all to the list", @"Сохранить все в список") image:nil identifier:nil handler:^(UIAction *x) { [weak saveAll]; }],
+		[UIAction actionWithTitle:BL(@"Unfreeze everything", @"Разморозить всё") image:nil identifier:nil handler:^(UIAction *x) {
+			[[BTBGGEngine shared] unfreezeAll];
+			[weak setStatus:BL(@"Everything is unfrozen.", @"Всё разморожено.")];
+			[weak refreshValues];
+		}],
+	];
 	_more.menu = [UIMenu menuWithChildren:actions];
 	_more.showsMenuAsPrimaryAction = YES;
 }
 
-- (void)refreshUI {
-	BOOL refining = _refining;
-	BOOL exact = (_mode == BTBModeExact);
-	_typeControl.hidden = refining;
-	_secondaryRow.hidden = !refining;
-	BOOL unknown = !refining && _mode == BTBModeUnknown;
-	_field.hidden = (refining && !exact) || unknown;
-	_unknown.hidden = refining;
-	_refresh.hidden = [self hitCount] == 0;
-	[_unknown setTitle:unknown ? L(@"✓ The number is hidden or encrypted (tap to type it instead)", @"✓ Число скрыто или зашифровано (нажми, чтобы ввести число)") : L(@"I can't find it: the number is hidden or encrypted", @"Не находит? Число скрыто или зашифровано") forState:UIControlStateNormal];
-	NSUInteger n = [self hitCount];
-	if (!refining) {
-		_step.text = L(@"1. What are you looking for?", @"1. Что ищем?");
-		_hint.text = unknown
-			? L(@"Some games hide numbers on purpose. Without typing anything, tap Find all: Veather remembers every value, then you change the number in the game and narrow it down. Works best in a quiet screen (menu) and may take longer.", @"Некоторые игры прячут числа. Ничего не вводи и нажми «Найти всё»: запомню все значения, потом ты меняешь число в игре и сужаешь поиск. Лучше делать на тихом экране (меню), может занять больше времени.")
-			: L(@"Type the number you see in the game right now (coins, lives, score) and tap Find.", @"Введи число, которое сейчас видишь в игре (монеты, жизни, очки), и нажми «Найти».");
-		_field.placeholder = L(@"e.g. 250", @"например, 250");
-		[_primary setTitle:unknown ? L(@"Find all", @"Найти всё") : L(@"Find", @"Найти") forState:UIControlStateNormal];
-	} else if (n > 0 && n <= 20) {
-		_step.text = L(@"3. Pick the address", @"3. Выбери адрес");
-		_hint.text = L(@"Tap a line below to change the number. If it does not work, tap Refine again after changing the number in the game.", @"Нажми на строку ниже, чтобы изменить число. Если не получилось, поменяй число в игре и нажми «Уточнить» ещё раз.");
-		_field.placeholder = L(@"the new number from the game", @"новое число из игры");
-		[_primary setTitle:L(@"Refine", @"Уточнить") forState:UIControlStateNormal];
-	} else {
-		_step.text = L(@"2. Change the number in the game", @"2. Измени число в игре");
-		NSString *modeText = @"";
-		switch (_mode) {
-			case BTBModeExact: modeText = L(@"Spend or earn some, type the new number here and tap Refine. Repeat until a few lines are left.", @"Потрать или заработай немного, введи новое число здесь и нажми «Уточнить». Повторяй, пока не останется несколько строк."); break;
-			case BTBModeChanged: modeText = L(@"Change the number in the game, then tap Refine: only places whose value changed stay.", @"Измени число в игре и нажми «Уточнить»: останутся места, где значение изменилось."); break;
-			case BTBModeSame: modeText = L(@"Do nothing in the game, tap Refine: only places whose value did not change stay.", @"Ничего не меняй в игре и нажми «Уточнить»: останутся места, где значение не менялось."); break;
-			case BTBModeBigger: modeText = L(@"Make the number bigger in the game, then tap Refine.", @"Сделай число в игре больше и нажми «Уточнить»."); break;
-			case BTBModeSmaller: modeText = L(@"Make the number smaller in the game, then tap Refine.", @"Сделай число в игре меньше и нажми «Уточнить»."); break;
-			case BTBModeUnknown: break;
-		}
-		_hint.text = modeText;
-		_field.placeholder = L(@"the new number from the game", @"новое число из игры");
-		[_primary setTitle:L(@"Refine", @"Уточнить") forState:UIControlStateNormal];
-	}
-	NSString *modeTitle = @"";
-	switch (_mode) {
-		case BTBModeExact: modeTitle = L(@"Other options", @"Другие варианты"); break;
-		case BTBModeChanged: modeTitle = L(@"Changed ▾", @"Изменилось ▾"); break;
-		case BTBModeSame: modeTitle = L(@"Same ▾", @"Не менялось ▾"); break;
-		case BTBModeBigger: modeTitle = L(@"Increased ▾", @"Выросло ▾"); break;
-		case BTBModeSmaller: modeTitle = L(@"Decreased ▾", @"Уменьшилось ▾"); break;
-		case BTBModeUnknown: modeTitle = L(@"Other options", @"Другие варианты"); break;
-	}
-	[_more setTitle:modeTitle forState:UIControlStateNormal];
-}
+#pragma mark State
 
-- (void)closePanel {
-	[self.view endEditing:YES];
-	UIWindow *panel = gPanelWindow;
-	gPanelWindow = nil;
-	panel.hidden = YES;
-	panel.rootViewController = nil;
-	[gGameWindow makeKeyWindow];
+- (NSString *)typeShortTitle { return [BTBGGEngine nameOfType:_type]; }
+
+- (void)refreshUI {
+	BTBGGEngine *e = [BTBGGEngine shared];
+	NSUInteger n = e.count;
+	BOOL refining = n > 0;
+	if (!refining && ModeNeedsField(_mode) == NO) _mode = BTBGGModeExact;
+	BOOL fieldNeeded = refining ? ModeNeedsField(_mode) : !_unknown;
+	_optionsRow.hidden = refining;
+	_secondaryRow.hidden = !refining;
+	_toolsRow.hidden = !refining;
+	_unknownButton.hidden = refining;
+	_field.hidden = !fieldNeeded;
+	[_typeButton setTitle:[NSString stringWithFormat:BL(@"Type: %@ ▾", @"Тип: %@ ▾"), [self typeShortTitle]] forState:UIControlStateNormal];
+	[_regionsButton setTitle:[NSString stringWithFormat:BL(@"Regions: %@ ▾", @"Регионы: %@ ▾"), BTBGGRegionSummary(e.regions)] forState:UIControlStateNormal];
+	[_unknownButton setTitle:_unknown ? BL(@"✓ The number is hidden (tap to type it instead)", @"✓ Число скрыто (нажми, чтобы ввести число)") : BL(@"I can't find it: the number is hidden", @"Не находит? Число скрыто или зашифровано") forState:UIControlStateNormal];
+
+	if (!refining) {
+		_step.text = BL(@"1. What are you looking for?", @"1. Что ищем?");
+		_hint.text = _unknown
+			? BL(@"Without typing anything, tap Find all: every value is remembered, then you change the number in the game and narrow it down. Works best on a quiet screen (menu) and may take longer.", @"Ничего не вводи и нажми «Найти всё»: запомню все значения, потом ты меняешь число в игре и сужаешь поиск. Лучше делать на тихом экране (меню), может занять больше времени.")
+			: BL(@"Type the number you see in the game (coins, lives, score) and tap Find. Also works: a range like 10~20, or a group like 100;250 (numbers stored close to each other). If the game hides the number, pick type XOR.", @"Введи число, которое видишь в игре (монеты, жизни, очки), и нажми «Найти». Ещё можно: диапазон 10~20 или группу 100;250 (числа лежат рядом в памяти). Если игра прячет число, выбери тип XOR.");
+		_field.placeholder = BL(@"e.g. 250", @"например, 250");
+		[_primary setTitle:_unknown ? BL(@"Find all", @"Найти всё") : BL(@"Find", @"Найти") forState:UIControlStateNormal];
+	} else if (n <= 20) {
+		_step.text = BL(@"3. Pick the address", @"3. Выбери адрес");
+		_hint.text = BL(@"Tap a line below to change, freeze or save it. If it does not work, change the number in the game and tap Refine again.", @"Нажми на строку ниже, чтобы изменить, заморозить или сохранить. Если не получилось, поменяй число в игре и нажми «Уточнить» ещё раз.");
+		[_primary setTitle:BL(@"Refine", @"Уточнить") forState:UIControlStateNormal];
+	} else {
+		_step.text = BL(@"2. Change the number in the game", @"2. Измени число в игре");
+		NSString *t = @"";
+		switch (_mode) {
+			case BTBGGModeExact: t = BL(@"Spend or earn some, type the new number here and tap Refine. Repeat until a few lines are left.", @"Потрать или заработай немного, введи новое число здесь и нажми «Уточнить». Повторяй, пока не останется несколько строк."); break;
+			case BTBGGModeChanged: t = BL(@"Change the number in the game, then tap Refine: only places whose value changed stay.", @"Измени число в игре и нажми «Уточнить»: останутся места, где значение изменилось."); break;
+			case BTBGGModeUnchanged: t = BL(@"Do nothing in the game, tap Refine: only places whose value did not change stay.", @"Ничего не меняй в игре и нажми «Уточнить»: останутся места, где значение не менялось."); break;
+			case BTBGGModeGreater: t = BL(@"Make the number bigger in the game, then tap Refine.", @"Сделай число в игре больше и нажми «Уточнить»."); break;
+			case BTBGGModeSmaller: t = BL(@"Make the number smaller in the game, then tap Refine.", @"Сделай число в игре меньше и нажми «Уточнить»."); break;
+			case BTBGGModeIncreasedBy: t = BL(@"Type by how much the number grew in the game (e.g. 50), then tap Refine.", @"Введи, на сколько выросло число в игре (например, 50), и нажми «Уточнить»."); break;
+			case BTBGGModeDecreasedBy: t = BL(@"Type by how much the number dropped in the game (e.g. 50), then tap Refine.", @"Введи, на сколько уменьшилось число в игре (например, 50), и нажми «Уточнить»."); break;
+			case BTBGGModeRange: t = BL(@"Type a range such as 10~20 and tap Refine: only places with a value in it stay.", @"Введи диапазон, например 10~20, и нажми «Уточнить»: останутся места со значением в нём."); break;
+			default: break;
+		}
+		_hint.text = t;
+		[_primary setTitle:BL(@"Refine", @"Уточнить") forState:UIControlStateNormal];
+	}
+	if (refining) {
+		switch (_mode) {
+			case BTBGGModeIncreasedBy: _field.placeholder = BL(@"by how much", @"на сколько"); break;
+			case BTBGGModeDecreasedBy: _field.placeholder = BL(@"by how much", @"на сколько"); break;
+			case BTBGGModeRange: _field.placeholder = BL(@"e.g. 10~20", @"например, 10~20"); break;
+			default: _field.placeholder = BL(@"the new number from the game", @"новое число из игры"); break;
+		}
+	}
+	NSString *modeTitle = BL(@"Other options", @"Другие варианты");
+	switch (_mode) {
+		case BTBGGModeChanged: modeTitle = BL(@"Changed ▾", @"Изменилось ▾"); break;
+		case BTBGGModeUnchanged: modeTitle = BL(@"Same ▾", @"Не менялось ▾"); break;
+		case BTBGGModeGreater: modeTitle = BL(@"Increased ▾", @"Выросло ▾"); break;
+		case BTBGGModeSmaller: modeTitle = BL(@"Decreased ▾", @"Уменьшилось ▾"); break;
+		case BTBGGModeIncreasedBy: modeTitle = BL(@"Grew by ▾", @"Выросло на ▾"); break;
+		case BTBGGModeDecreasedBy: modeTitle = BL(@"Dropped by ▾", @"Упало на ▾"); break;
+		case BTBGGModeRange: modeTitle = BL(@"Range ▾", @"Диапазон ▾"); break;
+		default: break;
+	}
+	[_modeButton setTitle:modeTitle forState:UIControlStateNormal];
+	[self.view setNeedsLayout];
+	[self updateHeaderHeight];
 }
 
 - (void)setStatus:(NSString *)text {
-	BTBOnMain(^{ self->_status.text = text; });
-}
-
-- (BTBHit *)hits { return _store; }
-
-/// Reserve the result store (lazily committed). It is given back when the search is reset,
-/// so the game gets its memory back.
-- (void)allocateStore {
-	if (_store) return;
-	for (size_t entries = (size_t)1 << 27; entries >= (1u << 22) && !_store; entries >>= 1) {
-		vm_address_t a = 0;
-		if (vm_allocate(mach_task_self(), &a, entries * sizeof(BTBHit), VM_FLAGS_ANYWHERE) == KERN_SUCCESS) { _store = (BTBHit *)a; gMaxHits = entries; }
-	}
-}
-
-- (void)freeStore {
-	if (!_store) return;
-	vm_deallocate(mach_task_self(), (vm_address_t)_store, gMaxHits * sizeof(BTBHit));
-	_store = NULL;
-	gMaxHits = 0;
-}
-- (NSUInteger)hitCount { return _count; }
-
-- (BOOL)overlapsOwnMemory:(vm_address_t)start size:(vm_size_t)size {
-	vm_address_t end = start + size;
-	vm_address_t s1 = (vm_address_t)_store, e1 = s1 + gMaxHits * sizeof(BTBHit);
-	vm_address_t s2 = (vm_address_t)_readBuffer, e2 = s2 + kChunk;
-	return (start < e1 && end > s1) || (start < e2 && end > s2);
-}
-
-/// Re-read the current value of every listed address (the game keeps changing them).
-- (void)refreshValues {
-	if (_busy) return;
-	[_table reloadData];
-	[self setStatus:L(@"Values refreshed.", @"Значения обновлены.")];
+	BTBOnMain(^{ self->_status.text = text; [self updateHeaderHeight]; });
 }
 
 - (void)toggleUnknown {
-	if (_busy || _refining) return;
-	_mode = (_mode == BTBModeUnknown) ? BTBModeExact : BTBModeUnknown;
+	if (_busy) return;
+	_unknown = !_unknown;
 	[self refreshUI];
 }
 
+- (void)openRegions {
+	if (_busy) return;
+	[self.navigationController pushViewController:BTBGGMakeRegionsVC() animated:YES];
+}
+
 - (void)primaryTapped {
-	if (_refining) [self nextScan]; else [self newScan];
+	if ([BTBGGEngine shared].count > 0) [self nextScan]; else [self newScan];
 }
 
 - (void)startOver {
 	if (_busy) return;
-	_refining = NO;
-	_unknownFlow = NO;
-	_count = 0;
-	[self freeStore];
-	_mode = BTBModeExact;
+	BTBGGEngine *e = [BTBGGEngine shared];
+	if (![e tryLock]) { [self setStatus:BL(@"A script is using the memory right now.", @"Сейчас память занята скриптом.")]; return; }
+	[e clearResults];
+	[e unlock];
+	_unknown = NO;
+	_mode = BTBGGModeExact;
 	_field.text = @"";
-	[_frozen removeAllObjects];
-	[self updateFreezeTimer];
 	_status.text = @"";
 	[self refreshUI];
 	[_table reloadData];
 }
 
-#pragma mark - Scanning
+- (void)refreshValues {
+	if (_busy) return;
+	[_table reloadData];
+	[self setStatus:BL(@"Values refreshed.", @"Значения обновлены.")];
+}
+
+#pragma mark Scanning
 
 - (void)newScan {
 	if (_busy) return;
-	BTBType type = (BTBType)_typeControl.selectedSegmentIndex;
-	uint64_t target = 0;
-	BOOL unknownValue = (_mode == BTBModeUnknown);
-	if (!unknownValue && !BTBParse(_field.text, type, &target)) { [self setStatus:L(@"Type the number from the game first.", @"Сначала введи число из игры.")]; return; }
+	NSString *text = _field.text ?: @"";
+	BTBGGType type = _type;
+	BOOL unknown = _unknown;
+	if (!unknown && text.length == 0) { [self setStatus:BL(@"Type the number from the game first.", @"Сначала введи число из игры.")]; return; }
+	BTBGGEngine *e = [BTBGGEngine shared];
+	if (![e tryLock]) { [self setStatus:BL(@"A script is using the memory right now.", @"Сейчас память занята скриптом.")]; return; }
 	[self.view endEditing:YES];
-	[self allocateStore];
-	if (!_store || !_readBuffer) { [self setStatus:L(@"Out of memory.", @"Не хватает памяти.")]; return; }
 	_busy = YES;
-	_count = 0;
 	[_table reloadData];
-	[self setStatus:L(@"Searching memory… this can take a few seconds.", @"Ищу в памяти… это может занять несколько секунд.")];
+	[self setStatus:BL(@"Searching memory… this can take a few seconds.", @"Ищу в памяти… это может занять несколько секунд.")];
 	dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
-		size_t found = 0;
-		size_t size = BTBSize(type);
-		const size_t chunk = kChunk;
-		uint8_t *buffer = self->_readBuffer;
-		BTBHit *store = self->_store;
-		vm_address_t address = 0;
-		BOOL full = NO;
-		while (!full) {
-			vm_size_t regionSize = 0;
-			vm_region_basic_info_data_64_t info;
-			mach_msg_type_number_t count = VM_REGION_BASIC_INFO_COUNT_64;
-			mach_port_t object;
-			if (vm_region_64(mach_task_self(), &address, &regionSize, VM_REGION_BASIC_INFO_64, (vm_region_info_t)&info, &count, &object) != KERN_SUCCESS) break;
-			BOOL rw = (info.protection & VM_PROT_READ) && (info.protection & VM_PROT_WRITE);
-			if (rw && regionSize < (1ULL << 32) && ![self overlapsOwnMemory:address size:regionSize]) {
-				for (vm_size_t off = 0; off < regionSize && !full; off += chunk) {
-					size_t n = (size_t)MIN((vm_size_t)chunk, regionSize - off);
-					if (!BTBReadMemory(address + off, buffer, n)) continue;
-					for (size_t i = 0; i + size <= n; i += size) {
-						if (unknownValue) {
-							// hidden/encrypted value: remember every non-zero aligned word, narrow it down later
-							uint64_t word = 0;
-							memcpy(&word, buffer + i, size);
-							if (word == 0 || (address + off + i) % size != 0) continue;
-							store[found].address = address + off + i;
-							store[found].raw = word;
-							if (++found >= gMaxHits || ((found & 0xFFFF) == 0 && os_proc_available_memory() < kMemoryFloor)) { full = YES; break; }
-						} else if (memcmp(buffer + i, &target, size) == 0) {
-							store[found].address = address + off + i;
-							store[found].raw = target;
-							if (++found >= gMaxHits || ((found & 0xFFFF) == 0 && os_proc_available_memory() < kMemoryFloor)) { full = YES; break; }
-						}
-					}
-				}
-			}
-			address += regionSize;
-		}
+		NSString *error = nil;
+		BOOL ok = [e search:text type:type unknown:unknown error:&error];
+		size_t found = e.count;
+		BOOL early = e.stoppedEarly;
+		[e unlock];
 		dispatch_async(dispatch_get_main_queue(), ^{
-			self->_count = found;
-			self->_hitType = type;
 			self->_busy = NO;
-			self->_refining = found > 0;
-			self->_unknownFlow = unknownValue && found > 0;
-			if (self->_unknownFlow) self->_mode = BTBModeChanged;
-			if (found == 0) {
-				[self setStatus:L(@"Nothing found. Check the number and the type (try Decimal for numbers with a dot).", @"Ничего не найдено. Проверь число и тип (для чисел с точкой попробуй «Дробное»).")];
+			if (!ok) {
+				[self setStatus:error ?: @""];
+			} else if (found == 0) {
+				[self setStatus:BL(@"Nothing found. Check the number and the type (try Float for numbers with a dot), or widen the regions.", @"Ничего не найдено. Проверь число и тип (для чисел с точкой попробуй Float) или расширь регионы.")];
 			} else {
-				[self setStatus:[NSString stringWithFormat:L(@"Found %lu places%@.", @"Найдено мест: %lu%@."), (unsigned long)found,
-					full ? L(@" (stopped: the phone is out of memory, try again on a quieter screen)", @" (остановился: не хватает памяти телефона, попробуй на более тихом экране)") : @""]];
+				self->_mode = unknown ? BTBGGModeChanged : BTBGGModeExact;
 				self->_field.text = @"";
+				[self setStatus:[NSString stringWithFormat:BL(@"Found %lu places%@.", @"Найдено мест: %lu%@."), (unsigned long)found,
+					early ? BL(@" (stopped: the phone is out of memory, try again on a quieter screen)", @" (остановился: не хватает памяти телефона, попробуй на более тихом экране)") : @""]];
 			}
 			[self refreshUI];
 			[self->_table reloadData];
@@ -532,50 +571,30 @@ static UILabel *BTBLabel(UIFont *font, UIColor *color) {
 
 - (void)nextScan {
 	if (_busy) return;
-	if ([self hitCount] == 0) { [self startOver]; return; }
-	BTBType type = _hitType;
-	BTBMode mode = _mode;
-	uint64_t target = 0;
-	if (mode == BTBModeExact && !BTBParse(_field.text, type, &target)) { [self setStatus:L(@"Type the new number from the game first.", @"Сначала введи новое число из игры.")]; return; }
+	BTBGGEngine *e = [BTBGGEngine shared];
+	BTBGGMode mode = _mode;
+	NSString *text = _field.text ?: @"";
+	if (ModeNeedsField(mode) && text.length == 0) { [self setStatus:BL(@"Type the number first.", @"Сначала введи число.")]; return; }
+	if (![e tryLock]) { [self setStatus:BL(@"A script is using the memory right now.", @"Сейчас память занята скриптом.")]; return; }
 	[self.view endEditing:YES];
 	_busy = YES;
-	[self setStatus:L(@"Filtering…", @"Фильтрую…")];
-	size_t total = _count;
-	_count = 0;
 	[_table reloadData];
+	[self setStatus:BL(@"Filtering…", @"Фильтрую…")];
+	BOOL keepMode = (mode != BTBGGModeExact && !ModeNeedsField(mode)); // fuzzy flow: keep narrowing the same way
 	dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
-		size_t kept = 0;
-		BTBHit *src = self->_store; // filtered in place: the write index never passes the read index
-		size_t size = BTBSize(type);
-		for (size_t i = 0; i < total; i++) {
-			uint64_t now = 0;
-			if (!BTBReadMemory(src[i].address, &now, size)) continue;
-			BOOL keep = NO;
-			switch (mode) {
-				case BTBModeExact: keep = memcmp(&now, &target, size) == 0; break;
-				case BTBModeChanged: keep = memcmp(&now, &src[i].raw, size) != 0; break;
-				case BTBModeSame: keep = memcmp(&now, &src[i].raw, size) == 0; break;
-				case BTBModeBigger: keep = BTBCompare(now, src[i].raw, type) > 0; break;
-				case BTBModeSmaller: keep = BTBCompare(now, src[i].raw, type) < 0; break;
-			}
-			if (keep) { src[kept].address = src[i].address; src[kept].raw = now; kept++; }
-		}
+		NSString *error = nil;
+		BOOL ok = [e refine:text mode:mode error:&error];
+		size_t left = e.count;
+		[e unlock];
 		dispatch_async(dispatch_get_main_queue(), ^{
-			self->_count = kept;
 			self->_busy = NO;
-			if (kept > 0 && self->_store) {
-				// give the memory of the dropped results back to the game
-				uintptr_t keepEnd = ((uintptr_t)self->_store + kept * sizeof(BTBHit) + vm_page_size - 1) & ~((uintptr_t)vm_page_size - 1);
-				uintptr_t storeEnd = (uintptr_t)self->_store + gMaxHits * sizeof(BTBHit);
-				if (keepEnd < storeEnd) madvise((void *)keepEnd, storeEnd - keepEnd, MADV_FREE_REUSABLE);
-			}
-			if (!self->_unknownFlow) self->_mode = BTBModeExact;
-			self->_field.text = @"";
-			if (kept == 0) {
-				[self freeStore];
-				[self setStatus:L(@"Nothing left. Tap Start over and try again.", @"Ничего не осталось. Нажми «Сначала» и попробуй ещё раз.")];
+			if (!ok) {
+				[self setStatus:error ?: @""];
 			} else {
-				[self setStatus:[NSString stringWithFormat:L(@"Left: %lu places.", @"Осталось мест: %lu."), (unsigned long)kept]];
+				if (!keepMode) self->_mode = BTBGGModeExact;
+				self->_field.text = @"";
+				[self setStatus:left == 0 ? BL(@"Nothing left. Tap Start over and try again.", @"Ничего не осталось. Нажми «Сначала» и попробуй ещё раз.")
+					: [NSString stringWithFormat:BL(@"Left: %lu places.", @"Осталось мест: %lu."), (unsigned long)left]];
 			}
 			[self refreshUI];
 			[self->_table reloadData];
@@ -583,81 +602,94 @@ static UILabel *BTBLabel(UIFont *font, UIColor *color) {
 	});
 }
 
-#pragma mark - Results
+#pragma mark Bulk actions
+
+- (void)askValueThen:(BOOL)freeze {
+	if (_busy || [BTBGGEngine shared].count == 0) return;
+	UIAlertController *a = [UIAlertController alertControllerWithTitle:freeze ? BL(@"Set all and freeze", @"Изменить все и заморозить") : BL(@"Set all", @"Изменить все")
+		message:[NSString stringWithFormat:BL(@"Every one of the %lu places gets this value.", @"Это значение получат все места: %lu."), (unsigned long)[BTBGGEngine shared].count]
+		preferredStyle:UIAlertControllerStyleAlert];
+	[a addTextFieldWithConfigurationHandler:^(UITextField *f) { f.keyboardType = UIKeyboardTypeNumbersAndPunctuation; }];
+	__weak UIAlertController *wa = a;
+	[a addAction:[UIAlertAction actionWithTitle:BL(@"Apply", @"Применить") style:UIAlertActionStyleDefault handler:^(UIAlertAction *x) {
+		[self applyAll:wa.textFields.firstObject.text freeze:freeze];
+	}]];
+	[a addAction:[UIAlertAction actionWithTitle:BL(@"Cancel", @"Отмена") style:UIAlertActionStyleCancel handler:nil]];
+	[self presentViewController:a animated:YES completion:nil];
+}
+
+- (void)applyAll:(NSString *)text freeze:(BOOL)freeze {
+	BTBGGEngine *e = [BTBGGEngine shared];
+	if (![e tryLock]) { [self setStatus:BL(@"A script is using the memory right now.", @"Сейчас память занята скриптом.")]; return; }
+	_busy = YES;
+	[_table reloadData];
+	dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+		NSUInteger n = [e editAll:text freeze:freeze mode:BTBGGFreezeExact typeFilter:-1];
+		[e unlock];
+		dispatch_async(dispatch_get_main_queue(), ^{
+			self->_busy = NO;
+			[self setStatus:n == 0 ? BL(@"Nothing was changed. Check the number.", @"Ничего не изменилось. Проверь число.")
+				: [NSString stringWithFormat:BL(@"Changed: %lu places.", @"Изменено мест: %lu."), (unsigned long)n]];
+			[self->_table reloadData];
+		});
+	});
+}
+
+- (void)saveAll {
+	BTBGGEngine *e = [BTBGGEngine shared];
+	if (_busy || ![e tryLock]) return;
+	size_t n = MIN(e.count, (size_t)5000);
+	for (size_t i = 0; i < n; i++) {
+		BTBGGHit h = [e hitAtIndex:i];
+		[e addToListAddress:BTBGGHitAddress(h) type:BTBGGHitType(h) label:nil];
+	}
+	[e persistList];
+	[e unlock];
+	[self setStatus:[NSString stringWithFormat:BL(@"Saved to the List tab: %lu.", @"Сохранено на вкладке «Список»: %lu."), (unsigned long)n]];
+}
+
+#pragma mark Results table
 
 - (NSInteger)tableView:(UITableView *)tv numberOfRowsInSection:(NSInteger)s {
-	return (NSInteger)MIN([self hitCount], (NSUInteger)(_refining && [self hitCount] <= 200 ? 200 : 20));
+	if (_busy) return 0;
+	NSUInteger n = [BTBGGEngine shared].count;
+	return (NSInteger)MIN(n, (NSUInteger)(n <= 200 ? 200 : 20));
 }
 
 - (NSString *)tableView:(UITableView *)tv titleForHeaderInSection:(NSInteger)s {
-	NSUInteger n = [self hitCount];
+	if (_busy) return nil;
+	NSUInteger n = [BTBGGEngine shared].count;
 	if (n == 0) return nil;
-	return n > 200 ? [NSString stringWithFormat:L(@"%lu places — narrow it down first", @"Мест: %lu — сначала сузь поиск"), (unsigned long)n]
-		: [NSString stringWithFormat:L(@"%lu places — tap to change", @"Мест: %lu — нажми, чтобы изменить"), (unsigned long)n];
+	return n > 200 ? [NSString stringWithFormat:BL(@"%lu places — narrow it down first", @"Мест: %lu — сначала сузь поиск"), (unsigned long)n]
+		: [NSString stringWithFormat:BL(@"%lu places — tap to change", @"Мест: %lu — нажми, чтобы изменить"), (unsigned long)n];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tv cellForRowAtIndexPath:(NSIndexPath *)ip {
 	UITableViewCell *cell = [tv dequeueReusableCellWithIdentifier:@"c"] ?: [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"c"];
-	BTBHit h = [self hits][ip.row];
+	BTBGGEngine *e = [BTBGGEngine shared];
+	BTBGGHit h = [e hitAtIndex:(size_t)ip.row];
+	uint64_t addr = BTBGGHitAddress(h);
+	BTBGGType t = BTBGGHitType(h);
 	uint64_t now = 0;
-	BOOL ok = BTBReadMemory(h.address, &now, BTBSize(_hitType));
+	BOOL ok = [e readValue:addr type:t raw:&now];
 	cell.textLabel.font = [UIFont monospacedSystemFontOfSize:20 weight:UIFontWeightSemibold];
-	cell.textLabel.text = [NSString stringWithFormat:@"%@%@", ok ? BTBFormat(now, _hitType) : @"?", _frozen[@(h.address)] ? @"  ❄︎" : @""];
+	cell.textLabel.text = [NSString stringWithFormat:@"%@%@", ok ? [BTBGGEngine format:now type:t] : @"?", [e isFrozen:addr] ? @"  ❄︎" : @""];
 	cell.detailTextLabel.font = [UIFont monospacedSystemFontOfSize:12 weight:UIFontWeightRegular];
 	cell.detailTextLabel.textColor = UIColor.secondaryLabelColor;
-	cell.detailTextLabel.text = [NSString stringWithFormat:@"0x%llx", h.address];
+	cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ · 0x%llx", [BTBGGEngine nameOfType:t], addr];
 	cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 	return cell;
 }
 
 - (void)tableView:(UITableView *)tv didSelectRowAtIndexPath:(NSIndexPath *)ip {
 	[tv deselectRowAtIndexPath:ip animated:YES];
-	BTBHit h = [self hits][ip.row];
-	BTBType type = _hitType;
-	UIAlertController *a = [UIAlertController alertControllerWithTitle:L(@"Change the number", @"Изменить число")
-		message:L(@"Type the value you want.\n“Freeze” keeps it from changing back.", @"Введи нужное значение.\n«Заморозить» не даёт игре вернуть его назад.")
-		preferredStyle:UIAlertControllerStyleAlert];
-	[a addTextFieldWithConfigurationHandler:^(UITextField *f) {
-		f.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
-		uint64_t now = 0;
-		if (BTBReadMemory(h.address, &now, BTBSize(type))) f.text = BTBFormat(now, type);
-	}];
-	__weak UIAlertController *wa = a;
-	void (^apply)(BOOL) = ^(BOOL freeze) {
-		uint64_t raw;
-		if (!BTBParse(wa.textFields.firstObject.text, type, &raw)) return;
-		BTBWriteMemory(h.address, raw, BTBSize(type));
-		if (freeze) self->_frozen[@(h.address)] = @(raw); else [self->_frozen removeObjectForKey:@(h.address)];
-		[self updateFreezeTimer];
-		[tv reloadData];
-	};
-	[a addAction:[UIAlertAction actionWithTitle:L(@"Change", @"Изменить") style:UIAlertActionStyleDefault handler:^(UIAlertAction *x) { apply(NO); }]];
-	[a addAction:[UIAlertAction actionWithTitle:L(@"Change and freeze", @"Изменить и заморозить") style:UIAlertActionStyleDefault handler:^(UIAlertAction *x) { apply(YES); }]];
-	if (_frozen[@(h.address)]) {
-		[a addAction:[UIAlertAction actionWithTitle:L(@"Unfreeze", @"Разморозить") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *x) {
-			[self->_frozen removeObjectForKey:@(h.address)];
-			[self updateFreezeTimer];
-			[tv reloadData];
-		}]];
-	}
-	[a addAction:[UIAlertAction actionWithTitle:L(@"Cancel", @"Отмена") style:UIAlertActionStyleCancel handler:nil]];
-	[self presentViewController:a animated:YES completion:nil];
-}
-
-- (void)updateFreezeTimer {
-	if (_frozen.count == 0) { [_freezeTimer invalidate]; _freezeTimer = nil; return; }
-	if (_freezeTimer) return;
-	BTBType type = _hitType;
-	_freezeTimer = [NSTimer timerWithTimeInterval:0.05 repeats:YES block:^(NSTimer *t) {
-		[self->_frozen enumerateKeysAndObjectsUsingBlock:^(NSNumber *addr, NSNumber *raw, BOOL *stop) {
-			BTBWriteMemory(addr.unsignedLongLongValue, raw.unsignedLongLongValue, BTBSize(type));
-		}];
-	}];
-	// common modes: keeps freezing while the results list is being scrolled
-	[NSRunLoop.mainRunLoop addTimer:_freezeTimer forMode:NSRunLoopCommonModes];
+	BTBGGHit h = [[BTBGGEngine shared] hitAtIndex:(size_t)ip.row];
+	BTBGGPresentValueEditor(self, BTBGGHitAddress(h), BTBGGHitType(h), ^{ [tv reloadData]; });
 }
 
 @end
+
+// MARK: - Entry point
 
 void BTBFeatureGameGuard(void) {
 	NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
