@@ -29,7 +29,11 @@ enum BTBSelfUpdate {
 			guard let body, let range = body.range(of: #"Build (\d+)"#, options: .regularExpression) else { return nil }
 			return Int(body[range].dropFirst("Build ".count))
 		}
-		var ipa: Asset? { assets.first { $0.name.hasSuffix(".ipa") } }
+		var ipa: Asset? {
+			let all = assets.filter { $0.name.hasSuffix(".ipa") && !$0.name.contains("Updater") }
+			return all.first { $0.name == "Veather.ipa" } ?? all.first
+		}
+		var updaterIPA: Asset? { assets.first { $0.name == "Veather-Updater.ipa" } }
 	}
 	
 	static var currentBuild: Int {
@@ -70,7 +74,7 @@ struct BTBSelfUpdateView: View {
 	@State private var _release: BTBSelfUpdate.Release?
 	@State private var _error: String?
 	@State private var _loading = false
-	@State private var _started = false
+	@StateObject private var _launcher = BTBUpdaterLauncher()
 	
 	var body: some View {
 		List {
@@ -83,25 +87,35 @@ struct BTBSelfUpdateView: View {
 				if let _error { Text(_error).foregroundStyle(.red).font(.footnote) }
 			}
 			
-			if let release = _release, let ipa = release.ipa {
+			if let release = _release, release.ipa != nil {
 				Section {
 					if (release.build ?? 0) > BTBSelfUpdate.currentBuild {
 						Button {
-							_ = DownloadManager.shared.startDownload(from: ipa.browser_download_url)
-							_started = true
+							_launcher.start(release)
 						} label: {
-							Label(String.localized("Download update (%@)", arguments: btbFormatBytes(ipa.size)), systemImage: "arrow.down.circle")
+							Label(String.localized("Download new version"), systemImage: "arrow.down.circle")
 						}
-						.disabled(_started)
+						.disabled(_launcher.isWorking)
 					} else {
 						Label(.localized("You have the latest build"), systemImage: "checkmark.circle")
 					}
+					switch _launcher.phase {
+					case .working(let text):
+						HStack { ProgressView(); Text(text).font(.footnote).foregroundStyle(.secondary) }
+					case .failed(let message):
+						Text(message).foregroundStyle(.red).font(.footnote)
+					case .idle:
+						EmptyView()
+					}
 				} footer: {
-					Text(_started
-						 ? String.localized("Downloading into the Library. Sign it there and install over the current app (same bundle ID keeps your data).")
-						 : String.localized("Updates come from the nightly-dev release on GitHub."))
+					Text(.localized("Veather downloads a small Updater app, signs it with your certificate and installs it. Open the Updater and tap “Install new version”: it updates Veather and opens it. The Updater is not kept in the Library."))
 				}
 			}
+		}
+		.sheet(item: $_launcher.installApp) { app in
+			InstallPreviewView(app: app.base)
+				.presentationDetents([.height(200)])
+				.presentationDragIndicator(.visible)
 		}
 		.navigationTitle(.localized("Updates"))
 		.task { await _check() }

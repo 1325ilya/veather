@@ -28,38 +28,48 @@ struct FeatherApp: App {
 	
 	var body: some Scene {
 		WindowGroup {
-			VStack {
-				DownloadHeaderView(downloadManager: downloadManager)
-					.transition(.move(edge: .top).combined(with: .opacity))
-				VariedTabbarView()
+			if BTBUpdaterMode.isActive {
+				BTBUpdaterView()
 					.environment(\.managedObjectContext, storage.context)
-					.onOpenURL(perform: _handleURL)
-					.btbWelcomeOnFirstLaunch()
-					.transition(.move(edge: .top).combined(with: .opacity))
+			} else {
+				_mainContent
 			}
-			.animation(.smooth, value: downloadManager.manualDownloads.description)
-			.overlay { BTBAppLockOverlay() }
-			.onReceive(NotificationCenter.default.publisher(for: .heartbeatInvalidHost)) { _ in
-				DispatchQueue.main.async {
-					UIAlertController.showAlertWithOk(
-						title: "InvalidHostID",
-						message: .localized("Your pairing file is invalid and is incompatible with your device, please import a valid pairing file.")
-					)
-				}
+		}
+	}
+	
+	@ViewBuilder
+	private var _mainContent: some View {
+		VStack {
+			DownloadHeaderView(downloadManager: downloadManager)
+				.transition(.move(edge: .top).combined(with: .opacity))
+			VariedTabbarView()
+				.environment(\.managedObjectContext, storage.context)
+				.onOpenURL(perform: _handleURL)
+				.btbWelcomeOnFirstLaunch()
+				.transition(.move(edge: .top).combined(with: .opacity))
+		}
+		.animation(.smooth, value: downloadManager.manualDownloads.description)
+		.overlay { BTBAppLockOverlay() }
+		.onReceive(NotificationCenter.default.publisher(for: .heartbeatInvalidHost)) { _ in
+			DispatchQueue.main.async {
+				UIAlertController.showAlertWithOk(
+					title: "InvalidHostID",
+					message: .localized("Your pairing file is invalid and is incompatible with your device, please import a valid pairing file.")
+				)
 			}
-			// dear god help me
-			.onAppear {
-				// keep the on-device install server certificate fresh (it expires every ~90 days)
-				Task.detached(priority: .utility) {
-					await BTBServerCert.refreshIfNeeded()
-				}
-				
-				if let style = UIUserInterfaceStyle(rawValue: UserDefaults.standard.integer(forKey: "Feather.userInterfaceStyle")) {
-					UIApplication.topViewController()?.view.window?.overrideUserInterfaceStyle = style
-				}
-				
-				UIApplication.topViewController()?.view.window?.tintColor = UIColor(Color(hex: UserDefaults.standard.string(forKey: "Feather.userTintColor") ?? "#7C5CFF"))
+		}
+		// dear god help me
+		.onAppear {
+			// keep the on-device install server certificate fresh (it expires every ~90 days)
+			Task.detached(priority: .utility) {
+				await BTBServerCert.refreshIfNeeded()
 			}
+			
+			if let style = UIUserInterfaceStyle(rawValue: UserDefaults.standard.integer(forKey: "Feather.userInterfaceStyle")) {
+				UIApplication.topViewController()?.view.window?.overrideUserInterfaceStyle = style
+			}
+			
+			UIApplication.topViewController()?.view.window?.tintColor = UIColor(Color(hex: UserDefaults.standard.string(forKey: "Feather.userTintColor") ?? "#7C5CFF"))
 		}
 	}
 	
@@ -203,6 +213,13 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 	) -> Bool {
 		_createPipeline()
 		_createDocumentsDirectories()
+		if BTBUpdaterMode.isActive {
+			// Veather Updater: only its own screen, no background work
+			BTBUpdaterMode.cleanupTemp()
+			BTBUpdaterMode.importBundledCertificates()
+			return true
+		}
+		BTBUpdaterMode.cleanupTemp()
 		BTBBackgroundRefresh.register()
 		BTBBackgroundRefresh.schedule()
 		ResetView.clearWorkCache()

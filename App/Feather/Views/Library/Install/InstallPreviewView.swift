@@ -78,6 +78,7 @@ struct InstallPreviewView: View {
 			switch newStatus {
 			case .completed(.success):
 				BTBActivityLog.shared.add(.installed, name: app.name, version: app.version, bundleID: app.identifier)
+				NotificationCenter.default.post(name: BTBUpdaterMode.installedCompletedNotification, object: nil)
 				_showFirstInstallTipIfNeeded()
 			case .broken(let error):
 				BTBActivityLog.shared.add(.failed, name: app.name, version: app.version, bundleID: app.identifier, detail: error.localizedDescription)

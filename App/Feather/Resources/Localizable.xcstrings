@@ -24718,6 +24718,204 @@
           }
         }
       }
+    },
+    "Download new version" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скачать новую версию"
+          }
+        }
+      },
+      "extractionState" : "manual"
+    },
+    "Veather downloads a small Updater app, signs it with your certificate and installs it. Open the Updater and tap “Install new version”: it updates Veather and opens it. The Updater is not kept in the Library." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Veather скачает маленькое приложение-обновлятор, подпишет его вашим сертификатом и установит. Откройте его и нажмите «Установить новую версию»: оно обновит Veather и откроет его. В библиотеке обновлятор не хранится."
+          }
+        }
+      },
+      "extractionState" : "manual"
+    },
+    "This release has no Updater package yet. Wait for the next build." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В этом релизе пока нет обновлятора. Дождитесь следующей сборки."
+          }
+        }
+      },
+      "extractionState" : "manual"
+    },
+    "Downloading Updater…" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скачиваю обновлятор…"
+          }
+        }
+      },
+      "extractionState" : "manual"
+    },
+    "Preparing Updater…" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Готовлю обновлятор…"
+          }
+        }
+      },
+      "extractionState" : "manual"
+    },
+    "Signing Updater…" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подписываю обновлятор…"
+          }
+        }
+      },
+      "extractionState" : "manual"
+    },
+    "Download failed (HTTP %lld)" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось скачать (HTTP %lld)"
+          }
+        }
+      },
+      "extractionState" : "manual"
+    },
+    "The downloaded file could not be imported." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скачанный файл не удалось импортировать."
+          }
+        }
+      },
+      "extractionState" : "manual"
+    },
+    "The signed app was not found." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подписанное приложение не найдено."
+          }
+        }
+      },
+      "extractionState" : "manual"
+    },
+    "Open this app from Veather → Settings → Updates." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Откройте это приложение из Veather → Настройки → Обновления."
+          }
+        }
+      },
+      "extractionState" : "manual"
+    },
+    "Installed build: %lld" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Установлена сборка: %lld"
+          }
+        }
+      },
+      "extractionState" : "manual"
+    },
+    "You have the latest version" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "У вас последняя версия"
+          }
+        }
+      },
+      "extractionState" : "manual"
+    },
+    "New build available: %lld" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Доступна новая сборка: %lld"
+          }
+        }
+      },
+      "extractionState" : "manual"
+    },
+    "Install new version" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Установить новую версию"
+          }
+        }
+      },
+      "extractionState" : "manual"
+    },
+    "Check for updates" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Проверить обновление"
+          }
+        }
+      },
+      "extractionState" : "manual"
+    },
+    "Downloading Veather…" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скачиваю Veather…"
+          }
+        }
+      },
+      "extractionState" : "manual"
+    },
+    "Signing Veather…" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подписываю Veather…"
+          }
+        }
+      },
+      "extractionState" : "manual"
+    },
+    "Installing… Veather will open when it is done" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Устанавливаю… Veather откроется, когда закончу"
+          }
+        }
+      },
+      "extractionState" : "manual"
     }
   },
   "version" : "1.0"

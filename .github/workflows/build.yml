@@ -65,6 +65,25 @@ jobs:
           # old installs look for any .ipa asset; keep the former file name published too
           cp packages/Veather.ipa packages/BetterThanBox.ipa
 
+      # Veather Updater: the same app in "updater mode" (own bundle id, no URL schemes).
+      # It only checks for updates and installs the new Veather over the old one.
+      - name: Build Updater IPA
+        run: |
+          set -e
+          rm -rf upd && mkdir upd && cd upd
+          unzip -q ../packages/Veather.ipa
+          APP=$(ls -d Payload/*.app)
+          PLIST="$APP/Info.plist"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier com.veather.updater" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName Veather\ Updater" "$PLIST" || /usr/libexec/PlistBuddy -c "Add :CFBundleDisplayName string Veather\ Updater" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleName Updater" "$PLIST" || true
+          /usr/libexec/PlistBuddy -c "Add :BTBUpdaterMode bool true" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Delete :CFBundleURLTypes" "$PLIST" || true
+          rm -rf "$APP/PlugIns" "$APP/Watch"
+          zip -qry ../packages/Veather-Updater.ipa Payload
+          cd .. && rm -rf upd
+          ls -la packages
+
       - name: Show errors
         if: failure()
         run: |
@@ -90,6 +109,7 @@ jobs:
           files: |
             App/packages/Veather.ipa
             App/packages/BetterThanBox.ipa
+            App/packages/Veather-Updater.ipa
           overwrite_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
