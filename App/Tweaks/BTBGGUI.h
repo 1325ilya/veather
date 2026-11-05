@@ -50,7 +50,12 @@ BOOL BTBGGPanelIsOpen(void);
 void BTBGGSelectTab(NSInteger index);       // 0 search, 1 saved list, 2 scripts, 3 memory
 void BTBGGShowMemory(uint64_t address);
 void BTBGGRestoreKeyWindow(void);           // gives focus back to the panel (if open) or the game after a dialog
-void BTBGGApplyPanelAlpha(void);            // after the transparency setting changed
+void BTBGGApplyPanelAlpha(void);
+/// Puts a small "Max" button inside the text field: it types the biggest number that fits the type.
+void BTBGGAttachMaxButton(UITextField *field, BTBGGType type);
+/// Whether a four-finger long press opens the panel (a setting).
+BOOL BTBGGFourFingerEnabled(void);
+void BTBGGSetFourFingerEnabled(BOOL enabled);            // after the transparency setting changed
 void BTBGGRebuildPanel(BOOL openSettings);  // after the style changed
 void BTBGGHideFloatingButton(void);         // until the game is restarted
 BOOL BTBGGFloatingButtonHidden(void);

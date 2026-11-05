@@ -13,6 +13,23 @@ static NSString *FreezeMark(BTBGGEngine *e, uint64_t address) { return [e isFroz
 
 // MARK: - Value editor
 
+void BTBGGAttachMaxButton(UITextField *field, BTBGGType type) {
+	NSString *max = [BTBGGEngine maxValueText:type];
+	__weak UITextField *wf = field;
+	UIButton *b = [UIButton buttonWithType:UIButtonTypeSystem primaryAction:[UIAction actionWithTitle:BL(@"Max", @"Макс") image:nil identifier:nil handler:^(UIAction *x) {
+		wf.text = max;
+	}]];
+	b.titleLabel.font = [UIFont boldSystemFontOfSize:15];
+	[b setTitle:BL(@"Max", @"Макс") forState:UIControlStateNormal];
+	b.tintColor = BTBGGAccent();
+	[b sizeToFit];
+	CGRect r = b.frame;
+	r.size.width += 10;
+	b.frame = r;
+	field.rightView = b;
+	field.rightViewMode = UITextFieldViewModeAlways;
+}
+
 void BTBGGPresentValueEditor(UIViewController *host, uint64_t address, BTBGGType type, void (^changed)(void)) {
 	BTBGGEngine *e = [BTBGGEngine shared];
 	uint64_t now = 0;
@@ -24,6 +41,7 @@ void BTBGGPresentValueEditor(UIViewController *host, uint64_t address, BTBGGType
 	[a addTextFieldWithConfigurationHandler:^(UITextField *f) {
 		f.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
 		if (readable) f.text = [BTBGGEngine format:now type:type];
+		BTBGGAttachMaxButton(f, type);
 		field = f;
 	}];
 	void (^apply)(BOOL, BTBGGFreezeMode) = ^(BOOL freeze, BTBGGFreezeMode mode) {

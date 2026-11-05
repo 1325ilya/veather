@@ -240,6 +240,8 @@ static int HitCompare(const void *a, const void *b) {
 @implementation BTBGGEngine {
 	NSLock *_opLock;
 	BTBGGHit *_store;           // vm_allocate'd, so scans can skip it (it would find itself)
+	BTBGGHit *_undo;            // the results before the last refine, same reason
+	size_t _undoCount, _undoBytes;
 	size_t _maxHits;
 	size_t _count;
 	uint8_t *_readBuffer;       // same
@@ -504,7 +506,8 @@ typedef BOOL (^RegionBlock)(uint64_t start, uint64_t size, BTBGGRegion cls, uint
 	uint64_t end = start + length;
 	uint64_t s1 = (uint64_t)(uintptr_t)_store, e1 = s1 + (uint64_t)_maxHits * sizeof(BTBGGHit);
 	uint64_t s2 = (uint64_t)(uintptr_t)_readBuffer, e2 = s2 + _readBufferLength;
-	return (_store && start < e1 && end > s1) || (_readBuffer && start < e2 && end > s2);
+	uint64_t s3 = (uint64_t)(uintptr_t)_undo, e3 = s3 + _undoBytes;
+	return (_store && start < e1 && end > s1) || (_readBuffer && start < e2 && end > s2) || (_undo && start < e3 && end > s3);
 }
 
 typedef BOOL (^ChunkBlock)(uint64_t base, const uint8_t *buf, size_t n, size_t avail);
@@ -555,6 +558,57 @@ typedef BOOL (^ChunkBlock)(uint64_t base, const uint8_t *buf, size_t n, size_t a
 	_count = 0;
 	_stoppedEarly = NO;
 	[self freeStore];
+	[self dropUndo];
+}
+
+// MARK: Undo
+
+static const size_t kUndoMaxHits = (size_t)4 << 20;   // 64 MB of hits at most
+
+- (void)dropUndo {
+	if (_undo) vm_deallocate(mach_task_self(), (vm_address_t)_undo, _undoBytes);
+	_undo = NULL;
+	_undoCount = 0;
+	_undoBytes = 0;
+}
+
+- (void)snapshotForUndo {
+	[self dropUndo];
+	if (_count == 0 || !_store || _count > kUndoMaxHits) return;
+	size_t bytes = _count * sizeof(BTBGGHit);
+	vm_address_t a = 0;
+	if (vm_allocate(mach_task_self(), &a, bytes, VM_FLAGS_ANYWHERE) != KERN_SUCCESS) return;
+	memcpy((void *)a, _store, bytes);
+	_undo = (BTBGGHit *)a;
+	_undoCount = _count;
+	_undoBytes = bytes;
+}
+
+- (BOOL)canUndo { return _undo != NULL && _undoCount > 0; }
+
+- (BOOL)undoRefine {
+	if (![self canUndo] || ![self prepareStore]) return NO;
+	size_t n = MIN(_undoCount, _maxHits);
+	memcpy(_store, _undo, n * sizeof(BTBGGHit));
+	_count = n;
+	_stoppedEarly = NO;
+	[self dropUndo];
+	return YES;
+}
+
++ (NSString *)maxValueText:(BTBGGType)type {
+	switch (type) {
+		case BTBGGTypeByte: return @"127";
+		case BTBGGTypeUByte: return @"255";
+		case BTBGGTypeWord: return @"32767";
+		case BTBGGTypeUWord: return @"65535";
+		case BTBGGTypeUDword: return @"4294967295";
+		case BTBGGTypeQword: case BTBGGTypeNotQword: case BTBGGTypeNegQword: return @"9223372036854775807";
+		case BTBGGTypeUQword: return @"18446744073709551615";
+		case BTBGGTypeFloat: return @"3.4028234e38";
+		case BTBGGTypeDouble: return @"1.7976931348623157e308";
+		default: return @"2147483647"; // Dword, XOR, ~Dword, -Dword, Auto, Hidden
+	}
 }
 
 - (BTBGGHit)hitAtIndex:(size_t)index {
@@ -569,6 +623,7 @@ typedef BOOL (^ChunkBlock)(uint64_t base, const uint8_t *buf, size_t n, size_t a
 	count = MIN(count, _maxHits);
 	memcpy(_store, hits, count * sizeof(BTBGGHit));
 	_count = count;
+	[self dropUndo];
 }
 
 - (void)removeHitsWithAddresses:(NSSet<NSNumber *> *)addresses {
@@ -727,6 +782,7 @@ typedef BOOL (^ChunkBlock)(uint64_t base, const uint8_t *buf, size_t n, size_t a
 		if (!any) { if (error) *error = BTBGGL(@"That is not a number.", @"Это не число."); return NO; }
 	}
 
+	[self snapshotForUndo];
 	self.cancel = NO;
 	size_t total = _count, kept = 0;
 	BTBGGHit *src = _store; // filtered in place: the write index never passes the read index
@@ -776,7 +832,7 @@ typedef BOOL (^ChunkBlock)(uint64_t base, const uint8_t *buf, size_t n, size_t a
 		uintptr_t storeEnd = (uintptr_t)_store + _maxHits * sizeof(BTBGGHit);
 		if (keepEnd < storeEnd) madvise((void *)keepEnd, storeEnd - keepEnd, MADV_FREE_REUSABLE);
 	}
-	if (kept == 0) [self clearResults];
+	if (kept == 0) { _count = 0; _stoppedEarly = NO; [self freeStore]; } // the undo snapshot stays
 	return YES;
 }
 
@@ -1118,6 +1174,7 @@ static NSString *Str(id v) { return [v isKindOfClass:[NSString class]] ? v : @""
 
 - (NSArray<NSDictionary *> *)recipeSteps { return [_recipe copy]; }
 - (void)recipeReset { [_recipe removeAllObjects]; }
+- (void)recipeRemoveLast { if (_recipe.count) [_recipe removeLastObject]; }
 - (void)recipeAddStep:(NSDictionary *)step { if (step) [_recipe addObject:step]; }
 
 @end

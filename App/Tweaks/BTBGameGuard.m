@@ -216,7 +216,7 @@ void BTBGGShowMemory(uint64_t address) {
 }
 
 - (void)handle:(UILongPressGestureRecognizer *)g {
-	if (g.state == UIGestureRecognizerStateBegan) BTBGGOpenPanel();
+	if (g.state == UIGestureRecognizerStateBegan && BTBGGFourFingerEnabled()) BTBGGOpenPanel();
 }
 
 /// A round draggable button: works even where a multi-finger gesture can't be recognised.
@@ -334,7 +334,7 @@ static BOOL ModeNeedsField(BTBGGMode m) {
 	UIView *_header;
 	UIStackView *_stack;
 	UILabel *_step, *_hint, *_status;
-	UIButton *_typeButton, *_regionsButton, *_unknownButton, *_primary, *_reset, *_modeButton, *_refresh, *_more;
+	UIButton *_typeButton, *_regionsButton, *_unknownButton, *_primary, *_reset, *_undo, *_modeButton, *_refresh, *_more;
 	UIStackView *_optionsRow, *_secondaryRow, *_toolsRow;
 	UITextField *_field;
 	BTBGGType _type;
@@ -382,6 +382,7 @@ static BOOL ModeNeedsField(BTBGGMode m) {
 	_reset = BTBGGBigButton(BL(@"Start over", @"Сначала"), NO, self, @selector(startOver));
 	_modeButton = BTBGGBigButton(@"", NO, nil, nil);
 	[self buildModeMenu];
+	_undo = BTBGGBigButton(BL(@"↶ Undo the last step", @"↶ Отменить шаг"), NO, self, @selector(undoStep));
 	_secondaryRow = [[UIStackView alloc] initWithArrangedSubviews:@[_reset, _modeButton]];
 	_secondaryRow.spacing = 10;
 	_secondaryRow.distribution = UIStackViewDistributionFillEqually;
@@ -399,7 +400,7 @@ static BOOL ModeNeedsField(BTBGGMode m) {
 
 	_status = BTBGGLabel([UIFont systemFontOfSize:13], UIColor.secondaryLabelColor);
 
-	_stack = [[UIStackView alloc] initWithArrangedSubviews:@[warn, _step, _hint, _optionsRow, _field, _unknownButton, _primary, _secondaryRow, _toolsRow, _status]];
+	_stack = [[UIStackView alloc] initWithArrangedSubviews:@[warn, _step, _hint, _optionsRow, _field, _unknownButton, _primary, _secondaryRow, _undo, _toolsRow, _status]];
 	_stack.axis = UILayoutConstraintAxisVertical;
 	_stack.spacing = 10;
 	[_stack setCustomSpacing:14 afterView:warn];
@@ -524,6 +525,7 @@ static BOOL ModeNeedsField(BTBGGMode m) {
 	_secondaryRow.hidden = !refining;
 	_toolsRow.hidden = !refining;
 	_unknownButton.hidden = refining;
+	_undo.hidden = ![e canUndo];
 	_field.hidden = !fieldNeeded;
 	[_typeButton setTitle:[NSString stringWithFormat:BL(@"Type: %@ ▾", @"Тип: %@ ▾"), [self typeShortTitle]] forState:UIControlStateNormal];
 	[_regionsButton setTitle:[NSString stringWithFormat:BL(@"Regions: %@ ▾", @"Регионы: %@ ▾"), BTBGGRegionSummary(e.regions)] forState:UIControlStateNormal];
@@ -615,6 +617,24 @@ static BOOL ModeNeedsField(BTBGGMode m) {
 	[_table reloadData];
 }
 
+- (void)undoStep {
+	if (_busy) return;
+	BTBGGEngine *e = [BTBGGEngine shared];
+	if (![e tryLock]) { [self setStatus:BL(@"A script is using the memory right now.", @"Сейчас память занята скриптом.")]; return; }
+	BOOL ok = [e undoRefine];
+	size_t n = e.count;
+	[e unlock];
+	if (ok) {
+		[e recipeRemoveLast];
+		_field.text = @"";
+		[self setStatus:[NSString stringWithFormat:BL(@"Step undone. Places again: %lu.", @"Шаг отменён. Мест снова: %lu."), (unsigned long)n]];
+	} else {
+		[self setStatus:BL(@"Nothing to undo.", @"Отменять нечего.")];
+	}
+	[self refreshUI];
+	[_table reloadData];
+}
+
 - (void)refreshValues {
 	if (_busy) return;
 	[_table reloadData];
@@ -686,7 +706,7 @@ static BOOL ModeNeedsField(BTBGGMode m) {
 				[e recipeAddStep:@{@"op": @"refine", @"mode": @(mode), @"text": text}];
 					if (!keepMode) self->_mode = BTBGGModeExact;
 				self->_field.text = @"";
-				[self setStatus:left == 0 ? BL(@"Nothing left. Tap Start over and try again.", @"Ничего не осталось. Нажми «Сначала» и попробуй ещё раз.")
+				[self setStatus:left == 0 ? BL(@"Nothing left. Undo the step or tap Start over.", @"Ничего не осталось. Отмени шаг или нажми «Сначала».")
 					: [NSString stringWithFormat:BL(@"Left: %lu places.", @"Осталось мест: %lu."), (unsigned long)left]];
 			}
 			[self refreshUI];
@@ -702,7 +722,8 @@ static BOOL ModeNeedsField(BTBGGMode m) {
 	UIAlertController *a = [UIAlertController alertControllerWithTitle:freeze ? BL(@"Set all and freeze", @"Изменить все и заморозить") : BL(@"Set all", @"Изменить все")
 		message:[NSString stringWithFormat:BL(@"Every one of the %lu places gets this value.", @"Это значение получат все места: %lu."), (unsigned long)[BTBGGEngine shared].count]
 		preferredStyle:UIAlertControllerStyleAlert];
-	[a addTextFieldWithConfigurationHandler:^(UITextField *f) { f.keyboardType = UIKeyboardTypeNumbersAndPunctuation; }];
+	BTBGGType maxType = _type;
+	[a addTextFieldWithConfigurationHandler:^(UITextField *f) { f.keyboardType = UIKeyboardTypeNumbersAndPunctuation; BTBGGAttachMaxButton(f, maxType); }];
 	__weak UIAlertController *wa = a;
 	[a addAction:[UIAlertAction actionWithTitle:BL(@"Apply", @"Применить") style:UIAlertActionStyleDefault handler:^(UIAlertAction *x) {
 		[self applyAll:wa.textFields.firstObject.text freeze:freeze];

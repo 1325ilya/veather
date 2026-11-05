@@ -79,6 +79,12 @@ static inline BTBGGType BTBGGHitType(BTBGGHit h) { return (BTBGGType)(h.addrType
 - (BOOL)search:(NSString *)text type:(BTBGGType)type unknown:(BOOL)unknown error:(NSString **)error;
 - (BOOL)refine:(NSString *)text mode:(BTBGGMode)mode error:(NSString **)error;
 - (void)clearResults;
+/// One step back: restores the results from before the last refine (not kept for huge result sets).
+- (BOOL)canUndo;
+- (BOOL)undoRefine;
+/// The biggest number that fits the type, as text (for a "max" button).
++ (NSString *)maxValueText:(BTBGGType)type;
+- (void)recipeRemoveLast;
 - (BTBGGHit)hitAtIndex:(size_t)index;
 - (void)loadHits:(const BTBGGHit *)hits count:(size_t)count;           // replaces the results
 - (void)removeHitsWithAddresses:(NSSet<NSNumber *> *)addresses;
