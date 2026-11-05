@@ -75,6 +75,7 @@ static UITabBarController *Tabs(void) {
 		MakeNav(BTBGGMakeSavedListVC(), BL(@"List", @"Список"), @"list.bullet"),
 		MakeNav(BTBGGMakeScriptsVC(), BL(@"Scripts", @"Скрипты"), @"scroll"),
 		MakeNav(BTBGGMakeMemoryVC(), BL(@"Memory", @"Память"), @"memorychip"),
+		MakeNav(BTBGGMakeConverterVC(), BL(@"Convert", @"Конвертер"), @"arrow.left.arrow.right"),
 	];
 	t.view.tintColor = BTBGGAccent();
 	gTabs = t;

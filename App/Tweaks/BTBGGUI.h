@@ -74,6 +74,7 @@ void BTBGGPresentSaveItem(UIViewController *host, uint64_t address, BTBGGType ty
 void BTBGGPickFolder(UINavigationController *nav, NSString *current, void (^picked)(NSString *path));
 UIViewController *BTBGGMakeMemoryVC(void);
 UIViewController *BTBGGMakeScriptsVC(void);
+UIViewController *BTBGGMakeConverterVC(void);
 void BTBGGMemoryShowAddress(UIViewController *memoryVC, uint64_t address);
 
 // MARK: scripts (BTBGGLua.m)
