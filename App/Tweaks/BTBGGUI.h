@@ -13,6 +13,14 @@ UIImage *BTBGGTileImage(NSString *symbol, UIColor *color);
 /// The round button's shield with the letters GG.
 UIImage *BTBGGShieldImage(CGFloat size, UIColor *tint);
 
+BTBGGStyleKind BTBGGCurrentStyle(void);
+void BTBGGSetStyle(BTBGGStyleKind style);
+CGFloat BTBGGPanelAlpha(void);                 // 0.3 … 1
+void BTBGGSetPanelAlpha(CGFloat alpha);
+UIColor *BTBGGAccent(void);                    // main colour of the current style
+UIColor *BTBGGAccent2(void);                   // second colour of the gradient
+UIColor *BTBGGBackground(void);                // screen background of the current style
+
 /// A list-row icon: a coloured tile in the New style, a plain tinted symbol in the older ones.
 static inline void BTBGGSetRowIcon(UITableViewCell *cell, NSString *symbol, UIColor *tileColor, UIColor *plainTint) {
 	if (BTBGGCurrentStyle() == BTBGGStyleNew) {
@@ -23,13 +31,6 @@ static inline void BTBGGSetRowIcon(UITableViewCell *cell, NSString *symbol, UICo
 		cell.imageView.tintColor = plainTint;
 	}
 }
-BTBGGStyleKind BTBGGCurrentStyle(void);
-void BTBGGSetStyle(BTBGGStyleKind style);
-CGFloat BTBGGPanelAlpha(void);                 // 0.3 … 1
-void BTBGGSetPanelAlpha(CGFloat alpha);
-UIColor *BTBGGAccent(void);                    // main colour of the current style
-UIColor *BTBGGAccent2(void);                   // second colour of the gradient
-UIColor *BTBGGBackground(void);                // screen background of the current style
 UIViewController *BTBGGMakeSettingsVC(void);
 
 /// A button that draws a gradient in the new style and a flat colour in the legacy one.

@@ -67,9 +67,98 @@ static UINavigationController *MakeNav(UIViewController *vc, NSString *title, NS
 	return nav;
 }
 
+/// Portrait: the usual tab bar at the bottom. Landscape: a column of tabs on the left (like GameGuardian on Android),
+/// so the content gets the full height.
+@interface BTBGGTabsVC : UITabBarController
+@end
+
+@implementation BTBGGTabsVC {
+	UIView *_side;
+	NSArray<UIButton *> *_sideButtons;
+	BOOL _wide;
+}
+
+- (void)setSelectedIndex:(NSUInteger)selectedIndex {
+	[super setSelectedIndex:selectedIndex];
+	[self refreshSide];
+}
+
+- (void)buildSide {
+	_side = [UIView new];
+	_side.backgroundColor = BTBGGCurrentStyle() == BTBGGStyleNew ? UIColor.secondarySystemGroupedBackgroundColor : UIColor.secondarySystemBackgroundColor;
+	NSMutableArray *buttons = [NSMutableArray array];
+	for (NSUInteger i = 0; i < self.viewControllers.count; i++) {
+		UITabBarItem *item = self.viewControllers[i].tabBarItem;
+		UIButton *b = [UIButton buttonWithType:UIButtonTypeSystem];
+		UIButtonConfiguration *c = [UIButtonConfiguration plainButtonConfiguration];
+		c.image = item.image;
+		c.title = item.title;
+		c.imagePlacement = NSDirectionalRectEdgeTop;
+		c.imagePadding = 4;
+		c.contentInsets = NSDirectionalEdgeInsetsMake(8, 2, 8, 2);
+		c.titleTextAttributesTransformer = ^NSDictionary<NSAttributedStringKey, id> *(NSDictionary<NSAttributedStringKey, id> *a) {
+			NSMutableDictionary *d = [a mutableCopy];
+			d[NSFontAttributeName] = [UIFont systemFontOfSize:10 weight:UIFontWeightMedium];
+			return d;
+		};
+		b.configuration = c;
+		b.tag = (NSInteger)i;
+		b.titleLabel.adjustsFontSizeToFitWidth = YES;
+		[b addTarget:self action:@selector(sideTapped:) forControlEvents:UIControlEventTouchUpInside];
+		[buttons addObject:b];
+		[_side addSubview:b];
+	}
+	_sideButtons = buttons;
+	[self.view addSubview:_side];
+}
+
+- (void)sideTapped:(UIButton *)b { self.selectedIndex = (NSUInteger)b.tag; }
+
+- (void)refreshSide {
+	for (UIButton *b in _sideButtons) b.tintColor = (NSUInteger)b.tag == self.selectedIndex ? BTBGGAccent() : UIColor.secondaryLabelColor;
+}
+
+- (void)viewDidLayoutSubviews {
+	[super viewDidLayoutSubviews];
+	CGSize s = self.view.bounds.size;
+	BOOL wide = s.width > s.height && s.width >= 520;
+	const CGFloat kSide = 74;
+	if (wide) {
+		if (!_side) [self buildSide];
+		UIEdgeInsets safe = self.view.safeAreaInsets;
+		CGFloat left = safe.left;   // the extra inset is added to the children only, not to this view
+		CGFloat w = left + kSide;
+		_side.hidden = NO;
+		_side.frame = CGRectMake(0, 0, w, s.height);
+		[self.view bringSubviewToFront:_side];
+		CGFloat y = MAX(safe.top, 8), h = 58;
+		for (UIButton *b in _sideButtons) {
+			b.frame = CGRectMake(left, y, kSide, h);
+			y += h + 4;
+		}
+		self.tabBar.hidden = YES;
+		if (!_wide) {
+			_wide = YES;
+			for (UIViewController *c in self.viewControllers) c.additionalSafeAreaInsets = UIEdgeInsetsMake(0, kSide, 0, 0);
+			[self.view setNeedsLayout];
+		}
+		[self refreshSide];
+	} else {
+		_side.hidden = YES;
+		self.tabBar.hidden = NO;
+		if (_wide) {
+			_wide = NO;
+			for (UIViewController *c in self.viewControllers) c.additionalSafeAreaInsets = UIEdgeInsetsZero;
+			[self.view setNeedsLayout];
+		}
+	}
+}
+
+@end
+
 static UITabBarController *Tabs(void) {
 	if (gTabs) return gTabs;
-	UITabBarController *t = [UITabBarController new];
+	UITabBarController *t = [BTBGGTabsVC new];
 	t.viewControllers = @[
 		MakeNav([BTBGGSearchVC new], BL(@"Search", @"Поиск"), @"magnifyingglass"),
 		MakeNav(BTBGGMakeSavedListVC(), BL(@"List", @"Список"), @"list.bullet"),
@@ -366,6 +455,7 @@ static BOOL ModeNeedsField(BTBGGMode m) {
 	BOOL _unknown;
 	BOOL _busy;
 	CGFloat _headerWidth;
+	UIScrollView *_leftScroll;   // landscape: the inputs live in a column on the left, the results on the right
 }
 
 - (void)viewDidLoad {
@@ -461,11 +551,39 @@ static BOOL ModeNeedsField(BTBGGMode m) {
 
 - (void)viewDidLayoutSubviews {
 	[super viewDidLayoutSubviews];
+	CGRect b = self.view.bounds;
+	BOOL wide = b.size.width >= 520 && b.size.width > b.size.height * 1.15;
+	if (wide) {
+		if (!_leftScroll) {
+			_leftScroll = [UIScrollView new];
+			_leftScroll.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
+			_leftScroll.alwaysBounceVertical = YES;
+			[self.view addSubview:_leftScroll];
+		}
+		_leftScroll.hidden = NO;
+		CGFloat leftW = MIN(360, floor(b.size.width * 0.46));
+		_leftScroll.frame = CGRectMake(0, 0, leftW, b.size.height);
+		_table.frame = CGRectMake(leftW, 0, b.size.width - leftW, b.size.height);
+		if (_table.tableHeaderView == _header) _table.tableHeaderView = nil;
+		if (_header.superview != _leftScroll) [_leftScroll addSubview:_header];
+		CGFloat h = [_header systemLayoutSizeFittingSize:CGSizeMake(leftW, UILayoutFittingCompressedSize.height) withHorizontalFittingPriority:UILayoutPriorityRequired verticalFittingPriority:UILayoutPriorityFittingSizeLevel].height;
+		_header.frame = CGRectMake(0, 0, leftW, h);
+		_leftScroll.contentSize = CGSizeMake(leftW, h + 20);
+		_headerWidth = 0;
+		return;
+	}
+	if (_leftScroll && !_leftScroll.hidden) {
+		_leftScroll.hidden = YES;
+		if (_header.superview == _leftScroll) [_header removeFromSuperview];
+		_table.frame = b;
+		_headerWidth = 0;
+	}
 	[self updateHeaderHeight];
 }
 
 /// A table header does not size itself: measure it whenever the width or the content changes.
 - (void)updateHeaderHeight {
+	if (_leftScroll && !_leftScroll.hidden) { [self.view setNeedsLayout]; return; }
 	CGFloat w = _table.bounds.size.width;
 	if (w <= 0) return;
 	CGFloat h = [_header systemLayoutSizeFittingSize:CGSizeMake(w, UILayoutFittingCompressedSize.height) withHorizontalFittingPriority:UILayoutPriorityRequired verticalFittingPriority:UILayoutPriorityFittingSizeLevel].height;
