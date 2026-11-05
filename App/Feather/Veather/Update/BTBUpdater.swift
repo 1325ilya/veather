@@ -263,7 +263,10 @@ final class BTBUpdaterLauncher: ObservableObject {
 				let signingCert = Storage.shared.getCertificate(for: selected).flatMap { $0.revoked ? nil : $0 } ?? certificates[0]
 
 				phase = .working(String.localized("Downloading Updater…"))
-				let imported = try await BTBUpdaterMode.downloadAndImport(asset.browser_download_url)
+				let imported = try await BTBUpdaterMode.downloadAndImport(asset.browser_download_url, expectedSize: asset.size) { [weak self] in
+					self?.progress = $0
+				}
+				progress = nil
 
 				phase = .working(String.localized("Preparing Updater…"))
 				try _inject(into: imported, certificates: certificates)
@@ -278,6 +281,7 @@ final class BTBUpdaterLauncher: ObservableObject {
 				phase = .idle
 				installApp = AnyApp(base: signed)
 			} catch {
+				progress = nil
 				phase = .failed(error.localizedDescription)
 			}
 		}
