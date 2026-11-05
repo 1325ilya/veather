@@ -4,7 +4,9 @@
 #import "BTBGGUI.h"
 #import <QuartzCore/QuartzCore.h>
 
-static NSString *const kStyleKey = @"btb.gg.style";
+static NSString *const kStyleKey = @"btb.gg.style2";    // 0 new, 1 legacy
+static NSString *const kLegacyKey = @"btb.gg.legacy";    // 0 blue, 1 purple
+static NSString *const kOldStyleKey = @"btb.gg.style";   // first version: 1 meant the purple one
 static NSString *const kAlphaKey = @"btb.gg.alpha";
 static NSString *const kFingerKey = @"btb.gg.fourfinger.off";
 
@@ -13,12 +15,20 @@ BOOL BTBGGFourFingerEnabled(void) { return ![[NSUserDefaults standardUserDefault
 void BTBGGSetFourFingerEnabled(BOOL enabled) { [[NSUserDefaults standardUserDefaults] setBool:!enabled forKey:kFingerKey]; }
 
 BTBGGStyleKind BTBGGCurrentStyle(void) {
-	NSNumber *n = [[NSUserDefaults standardUserDefaults] objectForKey:kStyleKey];
-	return n ? (BTBGGStyleKind)n.integerValue : BTBGGStyleNew;
+	NSUserDefaults *d = [NSUserDefaults standardUserDefaults];
+	NSNumber *n = [d objectForKey:kStyleKey];
+	if (!n) {
+		NSNumber *old = [d objectForKey:kOldStyleKey];
+		return (old && old.integerValue == 1) ? BTBGGStyleLegacyPurple : BTBGGStyleNew;
+	}
+	if (n.integerValue == 0) return BTBGGStyleNew;
+	return [d integerForKey:kLegacyKey] == 1 ? BTBGGStyleLegacyPurple : BTBGGStyleLegacyBlue;
 }
 
 void BTBGGSetStyle(BTBGGStyleKind style) {
-	[[NSUserDefaults standardUserDefaults] setInteger:style forKey:kStyleKey];
+	NSUserDefaults *d = [NSUserDefaults standardUserDefaults];
+	[d setInteger:style == BTBGGStyleNew ? 0 : 1 forKey:kStyleKey];
+	if (style != BTBGGStyleNew) [d setInteger:style == BTBGGStyleLegacyPurple ? 1 : 0 forKey:kLegacyKey];
 }
 
 CGFloat BTBGGPanelAlpha(void) {
@@ -32,21 +42,83 @@ void BTBGGSetPanelAlpha(CGFloat alpha) {
 }
 
 UIColor *BTBGGAccent(void) {
-	if (BTBGGCurrentStyle() == BTBGGStyleLegacy) return [UIColor colorWithRed:0.49 green:0.36 blue:1 alpha:1];
-	return [UIColor colorWithRed:0.20 green:0.55 blue:0.98 alpha:1];
+	switch (BTBGGCurrentStyle()) {
+		case BTBGGStyleNew: return [UIColor colorWithRed:0.49 green:0.36 blue:1 alpha:1];          // Veather's brand colour
+		case BTBGGStyleLegacyPurple: return [UIColor colorWithRed:0.49 green:0.36 blue:1 alpha:1];
+		default: return [UIColor colorWithRed:0.20 green:0.55 blue:0.98 alpha:1];
+	}
 }
 
 UIColor *BTBGGAccent2(void) {
-	if (BTBGGCurrentStyle() == BTBGGStyleLegacy) return BTBGGAccent();
-	return [UIColor colorWithRed:0.35 green:0.80 blue:1.0 alpha:1];
+	switch (BTBGGCurrentStyle()) {
+		case BTBGGStyleNew: return [UIColor colorWithRed:0.36 green:0.55 blue:1.0 alpha:1];
+		case BTBGGStyleLegacyPurple: return BTBGGAccent();
+		default: return [UIColor colorWithRed:0.35 green:0.80 blue:1.0 alpha:1];
+	}
 }
 
 UIColor *BTBGGBackground(void) {
-	if (BTBGGCurrentStyle() == BTBGGStyleLegacy) return UIColor.systemBackgroundColor;
+	if (BTBGGCurrentStyle() == BTBGGStyleLegacyPurple) return UIColor.systemBackgroundColor;
+	if (BTBGGCurrentStyle() == BTBGGStyleNew) return UIColor.systemGroupedBackgroundColor;
 	return [UIColor colorWithDynamicProvider:^UIColor *(UITraitCollection *t) {
 		return t.userInterfaceStyle == UIUserInterfaceStyleDark
 			? [UIColor colorWithRed:0.06 green:0.09 blue:0.14 alpha:1]
 			: [UIColor colorWithRed:0.92 green:0.96 blue:1.0 alpha:1];
+	}];
+}
+
+// MARK: - Icons
+
+UIImage *BTBGGTileImage(NSString *symbol, UIColor *color) {
+	CGFloat size = 30;
+	UIGraphicsImageRenderer *r = [[UIGraphicsImageRenderer alloc] initWithSize:CGSizeMake(size, size)];
+	return [r imageWithActions:^(UIGraphicsImageRendererContext *ctx) {
+		CGRect rect = CGRectMake(0, 0, size, size);
+		UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:rect cornerRadius:size * 0.28];
+		[path addClip];
+		CGColorSpaceRef cs = CGColorSpaceCreateDeviceRGB();
+		CGFloat r1, g1, b1, a1;
+		[color getRed:&r1 green:&g1 blue:&b1 alpha:&a1];
+		CGFloat comps[8] = {MIN(1, r1 + 0.12), MIN(1, g1 + 0.12), MIN(1, b1 + 0.12), 1, r1, g1, b1, 1};
+		CGGradientRef g = CGGradientCreateWithColorComponents(cs, comps, NULL, 2);
+		CGContextDrawLinearGradient(ctx.CGContext, g, CGPointMake(0, 0), CGPointMake(0, size), 0);
+		CGGradientRelease(g);
+		CGColorSpaceRelease(cs);
+		UIImageSymbolConfiguration *cfg = [UIImageSymbolConfiguration configurationWithPointSize:size * 0.52 weight:UIImageSymbolWeightSemibold];
+		UIImage *sym = [[UIImage systemImageNamed:symbol withConfiguration:cfg] imageWithTintColor:UIColor.whiteColor renderingMode:UIImageRenderingModeAlwaysOriginal];
+		CGSize ss = sym.size;
+		[sym drawInRect:CGRectMake((size - ss.width) / 2, (size - ss.height) / 2, ss.width, ss.height)];
+	}];
+}
+
+/// A shield (own drawing) with the letters GG.
+UIImage *BTBGGShieldImage(CGFloat size, UIColor *tint) {
+	UIGraphicsImageRenderer *r = [[UIGraphicsImageRenderer alloc] initWithSize:CGSizeMake(size, size)];
+	return [r imageWithActions:^(UIGraphicsImageRendererContext *ctx) {
+		CGFloat w = size * 0.62, h = size * 0.72;
+		CGFloat x = (size - w) / 2, y = (size - h) / 2;
+		UIBezierPath *p = [UIBezierPath bezierPath];
+		[p moveToPoint:CGPointMake(x + w / 2, y)];
+		[p addLineToPoint:CGPointMake(x + w, y + h * 0.16)];
+		[p addLineToPoint:CGPointMake(x + w, y + h * 0.52)];
+		[p addQuadCurveToPoint:CGPointMake(x + w / 2, y + h) controlPoint:CGPointMake(x + w, y + h * 0.82)];
+		[p addQuadCurveToPoint:CGPointMake(x, y + h * 0.52) controlPoint:CGPointMake(x, y + h * 0.82)];
+		[p addLineToPoint:CGPointMake(x, y + h * 0.16)];
+		[p closePath];
+		[UIColor.whiteColor setFill];
+		[p fill];
+		// a seam down the middle, like a visor
+		UIBezierPath *seam = [UIBezierPath bezierPath];
+		[seam moveToPoint:CGPointMake(x + w / 2, y + h * 0.06)];
+		[seam addLineToPoint:CGPointMake(x + w / 2, y + h * 0.9)];
+		[[tint colorWithAlphaComponent:0.25] setStroke];
+		seam.lineWidth = 1.2;
+		[seam stroke];
+		NSString *gg = @"GG";
+		UIFont *font = [UIFont systemFontOfSize:size * 0.25 weight:UIFontWeightHeavy];
+		NSDictionary *attrs = @{NSFontAttributeName: font, NSForegroundColorAttributeName: tint, NSKernAttributeName: @(size * 0.01)};
+		CGSize ts = [gg sizeWithAttributes:attrs];
+		[gg drawAtPoint:CGPointMake(x + (w - ts.width) / 2, y + h * 0.26) withAttributes:attrs];
 	}];
 }
 
@@ -118,7 +190,8 @@ static NSUInteger CountFiles(NSString *dir) {
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tv { return 4; }
 
 - (NSInteger)tableView:(UITableView *)tv numberOfRowsInSection:(NSInteger)s {
-	return s == 0 ? 2 : (s == 2 ? 2 : 1);
+	if (s == 0) return BTBGGCurrentStyle() == BTBGGStyleNew ? 2 : 3;
+	return s == 2 ? 2 : 1;
 }
 
 - (NSString *)tableView:(UITableView *)tv titleForHeaderInSection:(NSInteger)s {
@@ -132,7 +205,7 @@ static NSUInteger CountFiles(NSString *dir) {
 
 - (NSString *)tableView:(UITableView *)tv titleForFooterInSection:(NSInteger)s {
 	switch (s) {
-		case 0: return BL(@"“Legacy” is the old purple look.", @"«Legacy» — прежний фиолетовый вид.");
+		case 0: return BL(@"“New” follows the look of the Veather app. “Legacy” keeps the two older looks: light blue and the first purple one.", @"«Новый» — вид приложения Veather. «Legacy» — два прежних вида: голубой и самый первый фиолетовый.");
 		case 1: return BL(@"Lower it to see the game behind the panel.", @"Уменьши, чтобы видеть игру за панелью.");
 		case 2: return BL(@"Four-finger long press: hold four fingers on the screen for about a second. Turn it off if it opens by accident in the game. The hidden button comes back when the game restarts. At least one way to open the panel always stays on.", @"Долгое нажатие четырьмя пальцами: удерживай четыре пальца на экране около секунды. Выключи, если панель случайно открывается в игре. Скрытая кнопка вернётся при перезапуске игры. Хотя бы один способ открыть панель всегда остаётся включённым.");
 		default: return BL(@"Shared scripts are added in Veather → Settings → GameGuardian (or in the Files app, folder Veather/GameGuardian/Scripts). Scripts are copied into the game when Veather signs it, so sign the game again after changing them.", @"Общие скрипты добавляются в Veather → Настройки → GameGuardian (или в приложении «Файлы», папка Veather/GameGuardian/Scripts). Скрипты копируются в игру при подписи, поэтому после изменений подпиши игру заново.");
@@ -142,10 +215,30 @@ static NSUInteger CountFiles(NSString *dir) {
 - (UITableViewCell *)tableView:(UITableView *)tv cellForRowAtIndexPath:(NSIndexPath *)ip {
 	UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
 	if (ip.section == 0) {
-		BTBGGStyleKind kind = ip.row == 0 ? BTBGGStyleNew : BTBGGStyleLegacy;
-		cell.textLabel.text = ip.row == 0 ? BL(@"New (light blue)", @"Новый (голубой)") : BL(@"Legacy (purple)", @"Legacy (фиолетовый)");
-		cell.accessoryType = BTBGGCurrentStyle() == kind ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
+		BOOL isNew = BTBGGCurrentStyle() == BTBGGStyleNew;
 		cell.tintColor = BTBGGAccent();
+		if (ip.row == 0) {
+			cell.textLabel.text = BL(@"New (like Veather)", @"Новый (как в Veather)");
+			cell.accessoryType = isNew ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
+		} else if (ip.row == 1) {
+			cell.textLabel.text = BL(@"Legacy (older looks)", @"Legacy (старые виды)");
+			cell.accessoryType = isNew ? UITableViewCellAccessoryNone : UITableViewCellAccessoryCheckmark;
+		} else {
+			UISegmentedControl *seg = [[UISegmentedControl alloc] initWithItems:@[BL(@"Light blue", @"Голубой"), BL(@"Purple", @"Фиолетовый")]];
+			seg.selectedSegmentIndex = BTBGGCurrentStyle() == BTBGGStyleLegacyPurple ? 1 : 0;
+			seg.selectedSegmentTintColor = BTBGGAccent();
+			[seg setTitleTextAttributes:@{NSForegroundColorAttributeName: UIColor.whiteColor} forState:UIControlStateSelected];
+			[seg addTarget:self action:@selector(legacyChanged:) forControlEvents:UIControlEventValueChanged];
+			seg.translatesAutoresizingMaskIntoConstraints = NO;
+			[cell.contentView addSubview:seg];
+			[NSLayoutConstraint activateConstraints:@[
+				[seg.leadingAnchor constraintEqualToAnchor:cell.contentView.layoutMarginsGuide.leadingAnchor],
+				[seg.trailingAnchor constraintEqualToAnchor:cell.contentView.layoutMarginsGuide.trailingAnchor],
+				[seg.topAnchor constraintEqualToAnchor:cell.contentView.topAnchor constant:8],
+				[seg.bottomAnchor constraintEqualToAnchor:cell.contentView.bottomAnchor constant:-8],
+			]];
+			cell.selectionStyle = UITableViewCellSelectionStyleNone;
+		}
 	} else if (ip.section == 1) {
 		UISlider *slider = [UISlider new];
 		slider.minimumValue = 0.35;
@@ -188,6 +281,11 @@ static NSUInteger CountFiles(NSString *dir) {
 	return cell;
 }
 
+- (void)legacyChanged:(UISegmentedControl *)seg {
+	BTBGGSetStyle(seg.selectedSegmentIndex == 1 ? BTBGGStyleLegacyPurple : BTBGGStyleLegacyBlue);
+	dispatch_async(dispatch_get_main_queue(), ^{ BTBGGRebuildPanel(YES); });
+}
+
 - (void)fingerChanged:(UISwitch *)sw {
 	if (!sw.on && BTBGGFloatingButtonHidden()) {
 		sw.on = YES;
@@ -208,9 +306,10 @@ static NSUInteger CountFiles(NSString *dir) {
 - (void)tableView:(UITableView *)tv didSelectRowAtIndexPath:(NSIndexPath *)ip {
 	[tv deselectRowAtIndexPath:ip animated:YES];
 	if (ip.section == 0) {
-		BTBGGStyleKind kind = ip.row == 0 ? BTBGGStyleNew : BTBGGStyleLegacy;
-		if (kind == BTBGGCurrentStyle()) return;
-		BTBGGSetStyle(kind);
+		if (ip.row == 2) return;
+		BOOL isNew = BTBGGCurrentStyle() == BTBGGStyleNew;
+		if ((ip.row == 0) == isNew) return;
+		BTBGGSetStyle(ip.row == 0 ? BTBGGStyleNew : BTBGGStyleLegacyBlue);
 		dispatch_async(dispatch_get_main_queue(), ^{ BTBGGRebuildPanel(YES); });
 	} else if (ip.section == 2 && ip.row == 1) {
 		if (!BTBGGFourFingerEnabled()) {

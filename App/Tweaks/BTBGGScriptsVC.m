@@ -397,13 +397,12 @@ static NSInteger gKind = 0;    // 0 GG scripts, 1 plain Lua
 
 - (UITableViewCell *)tableView:(UITableView *)tv cellForRowAtIndexPath:(NSIndexPath *)ip {
 	UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:nil];
-	cell.backgroundColor = BTBGGCurrentStyle() == BTBGGStyleNew ? [UIColor.secondarySystemGroupedBackgroundColor colorWithAlphaComponent:0.85] : UIColor.secondarySystemGroupedBackgroundColor;
+	cell.backgroundColor = UIColor.secondarySystemGroupedBackgroundColor;
 	cell.detailTextLabel.textColor = UIColor.secondaryLabelColor;
 	if (ip.section == 0) {
 		NSString *name = _folders[ip.row];
 		cell.textLabel.text = name;
-		cell.imageView.image = [UIImage systemImageNamed:@"folder.fill"];
-		cell.imageView.tintColor = BTBGGAccent();
+		BTBGGSetRowIcon(cell, @"folder.fill", UIColor.systemOrangeColor, BTBGGAccent());
 		NSInteger n = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:[self pathFor:name] error:nil].count;
 		cell.detailTextLabel.text = [NSString stringWithFormat:BL(@"%ld items", @"элементов: %ld"), (long)n];
 		cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -411,8 +410,7 @@ static NSInteger gKind = 0;    // 0 GG scripts, 1 plain Lua
 	}
 	NSString *file = _files[ip.row];
 	cell.textLabel.text = file;
-	cell.imageView.image = [UIImage systemImageNamed:@"doc.text"];
-	cell.imageView.tintColor = UIColor.secondaryLabelColor;
+	BTBGGSetRowIcon(cell, @"doc.text.fill", BTBGGAccent(), UIColor.secondaryLabelColor);
 	NSDictionary *attrs = [[NSFileManager defaultManager] attributesOfItemAtPath:[self pathFor:file] error:nil];
 	cell.detailTextLabel.text = [NSByteCountFormatter stringFromByteCount:[attrs[NSFileSize] longLongValue] countStyle:NSByteCountFormatterCountStyleFile];
 	BOOL running = [BTBGGScriptRunner shared].running && [[BTBGGScriptRunner shared].runningName isEqualToString:file];

@@ -258,8 +258,7 @@ UIViewController *BTBGGMakeRegionsVC(void) { return [BTBGGRegionsVC new]; }
 - (UITableViewCell *)tableView:(UITableView *)tv cellForRowAtIndexPath:(NSIndexPath *)ip {
 	UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
 	cell.textLabel.text = _subs[ip.row].lastPathComponent;
-	cell.imageView.image = [UIImage systemImageNamed:@"folder.fill"];
-	cell.imageView.tintColor = BTBGGAccent();
+	BTBGGSetRowIcon(cell, @"folder.fill", UIColor.systemOrangeColor, BTBGGAccent());
 	cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 	return cell;
 }
@@ -498,8 +497,7 @@ void BTBGGPresentSaveItem(UIViewController *host, uint64_t address, BTBGGType ty
 	if (ip.section == 0) {
 		NSString *path = _subs[ip.row];
 		cell.textLabel.text = path.lastPathComponent;
-		cell.imageView.image = [UIImage systemImageNamed:@"folder.fill"];
-		cell.imageView.tintColor = BTBGGAccent();
+		BTBGGSetRowIcon(cell, @"folder.fill", UIColor.systemOrangeColor, BTBGGAccent());
 		cell.detailTextLabel.text = [NSString stringWithFormat:BL(@"%lu values", @"значений: %lu"), (unsigned long)[e countInFolder:path]];
 		cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 		return cell;

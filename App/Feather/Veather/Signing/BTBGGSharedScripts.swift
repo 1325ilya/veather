@@ -10,6 +10,7 @@
 //
 
 import Foundation
+import UIKit
 
 enum BTBGGSharedScripts {
 	static let subfolders = ["GG", "Lua"]
@@ -113,6 +114,52 @@ enum BTBGGSharedScripts {
 				}
 			}
 		}
+		BTBGGFloatingIcon.copy(into: app)
 		BTBLiveLog.log("GameGuardian: \(copied) shared script(s) added", .step)
+	}
+}
+
+/// The picture of the floating GameGuardian button, chosen in Veather's settings.
+/// It is kept in Documents/GameGuardian/Icon.png and copied into the game when Veather signs it.
+enum BTBGGFloatingIcon {
+	static var url: URL {
+		FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+			.appendingPathComponent("GameGuardian", isDirectory: true)
+			.appendingPathComponent("Icon.png")
+	}
+
+	static var image: UIImage? {
+		guard let data = try? Data(contentsOf: url) else { return nil }
+		return UIImage(data: data)
+	}
+
+	/// Decodes the picture, shrinks it (the button is small) and stores it as PNG.
+	@discardableResult
+	static func set(_ data: Data) -> Bool {
+		guard let source = UIImage(data: data) else { return false }
+		let maxSide: CGFloat = 256
+		let scale = min(1, maxSide / max(source.size.width, source.size.height))
+		let size = CGSize(width: max(1, (source.size.width * scale).rounded()), height: max(1, (source.size.height * scale).rounded()))
+		let format = UIGraphicsImageRendererFormat()
+		format.scale = 1
+		let resized = UIGraphicsImageRenderer(size: size, format: format).image { _ in
+			source.draw(in: CGRect(origin: .zero, size: size))
+		}
+		guard let png = resized.pngData() else { return false }
+		try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+		return (try? png.write(to: url, options: .atomic)) != nil
+	}
+
+	static func reset() {
+		try? FileManager.default.removeItem(at: url)
+	}
+
+	static func copy(into app: URL) {
+		let fm = FileManager.default
+		let target = app.appendingPathComponent("BTBGGShared", isDirectory: true)
+		try? fm.createDirectory(at: target, withIntermediateDirectories: true)
+		let dest = target.appendingPathComponent("icon.png")
+		try? fm.removeItem(at: dest)
+		if fm.fileExists(atPath: url.path) { try? fm.copyItem(at: url, to: dest) }
 	}
 }

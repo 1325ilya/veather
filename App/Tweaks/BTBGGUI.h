@@ -6,7 +6,23 @@
 #define BL(en, ru) BTBGGL(en, ru)
 
 // MARK: style (BTBGGSettings.m)
-typedef NS_ENUM(NSInteger, BTBGGStyleKind) { BTBGGStyleNew = 0, BTBGGStyleLegacy = 1 };
+/// New: the look of the Veather app. Legacy: the two older looks (light blue, and the first purple one).
+typedef NS_ENUM(NSInteger, BTBGGStyleKind) { BTBGGStyleNew = 0, BTBGGStyleLegacyBlue = 1, BTBGGStyleLegacyPurple = 2 };
+/// A rounded coloured square with a white symbol, like the icons in iOS Settings (New style).
+UIImage *BTBGGTileImage(NSString *symbol, UIColor *color);
+/// The round button's shield with the letters GG.
+UIImage *BTBGGShieldImage(CGFloat size, UIColor *tint);
+
+/// A list-row icon: a coloured tile in the New style, a plain tinted symbol in the older ones.
+static inline void BTBGGSetRowIcon(UITableViewCell *cell, NSString *symbol, UIColor *tileColor, UIColor *plainTint) {
+	if (BTBGGCurrentStyle() == BTBGGStyleNew) {
+		cell.imageView.image = BTBGGTileImage(symbol, tileColor);
+		cell.imageView.tintColor = nil;
+	} else {
+		cell.imageView.image = [UIImage systemImageNamed:symbol];
+		cell.imageView.tintColor = plainTint;
+	}
+}
 BTBGGStyleKind BTBGGCurrentStyle(void);
 void BTBGGSetStyle(BTBGGStyleKind style);
 CGFloat BTBGGPanelAlpha(void);                 // 0.3 … 1

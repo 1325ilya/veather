@@ -269,29 +269,52 @@ void BTBGGShowMemory(uint64_t address) {
 
 @end
 
+/// The picture chosen in Veather's settings (copied into the app when it was signed), if any.
+static UIImage *CustomButtonIcon(CGFloat size) {
+	static UIImage *cached;
+	static dispatch_once_t once;
+	dispatch_once(&once, ^{
+		NSString *path = [NSBundle.mainBundle.bundlePath stringByAppendingPathComponent:@"BTBGGShared/icon.png"];
+		cached = [UIImage imageWithContentsOfFile:path];
+	});
+	if (!cached) return nil;
+	UIGraphicsImageRenderer *r = [[UIGraphicsImageRenderer alloc] initWithSize:CGSizeMake(size, size)];
+	return [r imageWithActions:^(UIGraphicsImageRendererContext *ctx) {
+		CGFloat k = MIN(size / cached.size.width, size / cached.size.height);
+		CGSize s = CGSizeMake(cached.size.width * k, cached.size.height * k);
+		[cached drawInRect:CGRectMake((size - s.width) / 2, (size - s.height) / 2, s.width, s.height)];
+	}];
+}
+
 /// Draws the button for the current style: a flat "GG" disc in the legacy style, a gradient disc with a target in the new one.
 static void RestyleFloatingButton(void) {
 	BTBGGGradientButton *button = (BTBGGGradientButton *)gOverlay.button;
 	if (![button isKindOfClass:[BTBGGGradientButton class]]) return;
-	BOOL legacy = BTBGGCurrentStyle() == BTBGGStyleLegacy;
-	CGFloat size = legacy ? 46 : 54;
+	BOOL purple = BTBGGCurrentStyle() == BTBGGStyleLegacyPurple;
+	CGFloat size = purple ? 46 : 56;
 	CGPoint center = gButtonCenter.x >= 0 ? gButtonCenter : CGPointMake(12 + size / 2, 140 + size / 2);
 	button.bounds = CGRectMake(0, 0, size, size);
 	button.center = center;
 	button.layer.cornerRadius = size / 2;
 	button.clipsToBounds = NO;
 	[button applyStyle];
-	if (legacy) {
+	UIImage *custom = CustomButtonIcon(size);
+	if (custom) {
+		((CAGradientLayer *)button.layer).colors = nil;
+		button.layer.shadowOpacity = 0;
+		[button setTitle:nil forState:UIControlStateNormal];
+		[button setImage:[custom imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] forState:UIControlStateNormal];
+		return;
+	}
+	button.layer.shadowOpacity = 0.35;
+	if (purple) {
 		[button setImage:nil forState:UIControlStateNormal];
 		[button setTitle:@"GG" forState:UIControlStateNormal];
 		button.titleLabel.font = [UIFont boldSystemFontOfSize:15];
 		[button setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
 	} else {
 		[button setTitle:nil forState:UIControlStateNormal];
-		UIImageSymbolConfiguration *cfg = [UIImageSymbolConfiguration configurationWithPointSize:24 weight:UIImageSymbolWeightSemibold];
-		UIImage *icon = [UIImage systemImageNamed:@"scope" withConfiguration:cfg] ?: [UIImage systemImageNamed:@"magnifyingglass" withConfiguration:cfg];
-		[button setImage:icon forState:UIControlStateNormal];
-		button.tintColor = UIColor.whiteColor;
+		[button setImage:[BTBGGShieldImage(size, BTBGGAccent()) imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] forState:UIControlStateNormal];
 	}
 }
 

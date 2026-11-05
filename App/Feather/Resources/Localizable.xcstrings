@@ -24619,6 +24619,105 @@
           }
         }
       }
+    },
+    "Floating button icon" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Иконка плавающей кнопки"
+          }
+        }
+      }
+    },
+    "Standard icon" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Стандартная иконка"
+          }
+        }
+      }
+    },
+    "Your picture" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Твоя картинка"
+          }
+        }
+      }
+    },
+    "Choose from Photos…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выбрать из «Фото»…"
+          }
+        }
+      }
+    },
+    "Choose from Files…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выбрать из «Файлов»…"
+          }
+        }
+      }
+    },
+    "Back to the standard icon" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вернуть стандартную иконку"
+          }
+        }
+      }
+    },
+    "The picture is remembered and put on the floating GameGuardian button. It is copied into the game when Veather signs it, so sign the game again after changing it. A PNG with a transparent background looks best." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Картинка запоминается и ставится на плавающую кнопку GameGuardian. Она копируется в игру при подписи в Veather, поэтому после смены подпиши игру заново. Лучше всего подходит PNG с прозрачным фоном."
+          }
+        }
+      }
+    },
+    "Could not read the picture." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось прочитать картинку."
+          }
+        }
+      }
+    },
+    "Saved. Sign the game again to see it." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сохранено. Подпиши игру заново, чтобы увидеть её."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
