@@ -24916,6 +24916,17 @@
         }
       },
       "extractionState" : "manual"
+    },
+    "Install without internet (LocalDevVPN)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Установка без интернета (LocalDevVPN)"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

@@ -17,6 +17,7 @@
 
 // micro-update marker (build bump to test the updater)
 import CoreData
+import IDeviceSwift
 import SwiftUI
 import UIKit
 
@@ -35,10 +36,15 @@ enum BTBUpdaterMode {
 		var installedBuild: Int
 		/// bundle id the installed Veather has (may be changed by signing options)
 		var bundleID: String
+		/// Veather's installation type (0 = local server, 1 = IDevice over LocalDevVPN, works offline)
+		var installationMethod: Int?
+		/// the pairing file travels inside the Updater (BTBUpdaterPairing.plist)
+		var hasPairing: Bool?
 	}
 
 	static let configName = "BTBUpdaterConfig.json"
 	static let assetsName = "BTBUpdaterCerts"
+	static let pairingName = "BTBUpdaterPairing"
 	static let stampKey = "BTB.updater.certStamp"
 	static let tempKey = "BTB.updater.tempUUIDs"
 	static let installedCompletedNotification = Notification.Name("Veather.installCompleted")
@@ -80,6 +86,14 @@ enum BTBUpdaterMode {
 				p12Password: password,
 				certificateName: name
 			) { _ in }
+		}
+		
+		// installation type and pairing file (IDevice method: install without internet)
+		if let method = config.installationMethod {
+			UserDefaults.standard.set(method, forKey: "Feather.installationMethod")
+		}
+		if config.hasPairing == true, let pairing = Bundle.main.url(forResource: pairingName, withExtension: "plist") {
+			FR.movePairing(pairing)
 		}
 		UserDefaults.standard.set(config.stamp, forKey: stampKey)
 	}
@@ -309,10 +323,19 @@ final class BTBUpdaterLauncher: ObservableObject {
 			try (cert.nickname ?? "").write(to: folder.appendingPathComponent("name.txt"), atomically: true, encoding: .utf8)
 		}
 
+		var hasPairing = false
+		let pairing = URL(fileURLWithPath: HeartbeatManager.pairingFile())
+		if fm.fileExists(atPath: pairing.path) {
+			try? fm.removeItem(at: appURL.appendingPathComponent("\(BTBUpdaterMode.pairingName).plist"))
+			hasPairing = (try? fm.copyItem(at: pairing, to: appURL.appendingPathComponent("\(BTBUpdaterMode.pairingName).plist"))) != nil
+		}
+		
 		let config = BTBUpdaterMode.Config(
 			stamp: UUID().uuidString,
 			installedBuild: BTBSelfUpdate.currentBuild,
-			bundleID: Bundle.main.bundleIdentifier ?? "com.veather.app"
+			bundleID: Bundle.main.bundleIdentifier ?? "com.veather.app",
+			installationMethod: UserDefaults.standard.integer(forKey: "Feather.installationMethod"),
+			hasPairing: hasPairing
 		)
 		try JSONEncoder().encode(config).write(to: appURL.appendingPathComponent(BTBUpdaterMode.configName))
 	}
@@ -370,6 +393,12 @@ struct BTBUpdaterView: View {
 					.pickerStyle(.menu)
 				}
 				_buttons()
+				if FileManager.default.fileExists(atPath: HeartbeatManager.pairingFile()) {
+					Toggle(isOn: Binding(get: { _installationMethod == 1 }, set: { _installationMethod = $0 ? 1 : 0 })) {
+						Text(.localized("Install without internet (LocalDevVPN)"))
+					}
+					.font(.footnote)
+				}
 			}
 			Spacer()
 		}
