@@ -255,9 +255,11 @@ static NSArray<NSArray<NSString *> *> *Describe(NSData *le) {
 	for (NSInteger i = 0; i < ConvFormatCount; i++) {
 		ConvFormat f = (ConvFormat)i;
 		UIAction *a = [UIAction actionWithTitle:FormatTitle(f) image:nil identifier:nil handler:^(UIAction *x) {
-			weak->_format = f;
-			[weak buildMenus];
-			[weak convert];
+			__strong typeof(self) me = weak;
+			if (!me) return;
+			me->_format = f;
+			[me buildMenus];
+			[me convert];
 		}];
 		a.state = f == _format ? UIMenuElementStateOn : UIMenuElementStateOff;
 		[formats addObject:a];
@@ -272,9 +274,11 @@ static NSArray<NSArray<NSString *> *> *Describe(NSData *le) {
 		NSInteger w = n.integerValue;
 		NSString *title = w == 0 ? BL(@"Automatic", @"Автоматически") : [NSString stringWithFormat:BL(@"%ld byte(s) (%ld bit)", @"%ld байт (%ld бит)"), (long)w, (long)w * 8];
 		UIAction *a = [UIAction actionWithTitle:title image:nil identifier:nil handler:^(UIAction *x) {
-			weak->_width = w;
-			[weak buildMenus];
-			[weak convert];
+			__strong typeof(self) me = weak;
+			if (!me) return;
+			me->_width = w;
+			[me buildMenus];
+			[me convert];
 		}];
 		a.state = w == _width ? UIMenuElementStateOn : UIMenuElementStateOff;
 		[widths addObject:a];
@@ -323,8 +327,10 @@ static NSArray<NSArray<NSString *> *> *Describe(NSData *le) {
 	[self updateHeaderHeight];
 	__weak typeof(self) weak = self;
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-		if ([weak->_status.text hasPrefix:BL(@"Copied", @"Скопировано")]) { weak->_status.text = @""; [weak updateHeaderHeight]; }
-		weak->_status.textColor = UIColor.systemRedColor;
+		__strong typeof(self) me = weak;
+		if (!me) return;
+		if ([me->_status.text hasPrefix:BL(@"Copied", @"Скопировано")]) { me->_status.text = @""; [me updateHeaderHeight]; }
+		me->_status.textColor = UIColor.systemRedColor;
 	});
 }
 
