@@ -101,7 +101,14 @@ struct BTBSelfUpdateView: View {
 					}
 					switch _launcher.phase {
 					case .working(let text):
-						HStack { ProgressView(); Text(text).font(.footnote).foregroundStyle(.secondary) }
+						if let progress = _launcher.progress {
+							VStack(alignment: .leading, spacing: 6) {
+								ProgressView(value: progress)
+								Text("\(text) \(Int(progress * 100))%").font(.footnote).foregroundStyle(.secondary)
+							}
+						} else {
+							HStack { ProgressView(); Text(text).font(.footnote).foregroundStyle(.secondary) }
+						}
 					case .failed(let message):
 						Text(message).foregroundStyle(.red).font(.footnote)
 					case .idle:

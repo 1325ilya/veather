@@ -124,9 +124,11 @@ enum BTBUpdaterMode {
 	}
 
 	/// Downloads an .ipa to a temp file and imports it into the Library.
+	/// `progress` gets 0...1 (on the main thread).
 	@MainActor
-	static func downloadAndImport(_ url: URL) async throws -> Imported {
-		let (tmp, response) = try await URLSession.shared.download(from: url)
+	static func downloadAndImport(_ url: URL, expectedSize: Int64 = 0, progress: @escaping (Double) -> Void = { _ in }) async throws -> Imported {
+		progress(0)
+		let (tmp, response) = try await BTBFileDownloader(expectedSize: expectedSize, onProgress: progress).download(url)
 		if let http = response as? HTTPURLResponse, http.statusCode != 200 {
 			throw StepError(message: String.localized("Download failed (HTTP %lld)", arguments: http.statusCode))
 		}
@@ -169,6 +171,61 @@ enum BTBUpdaterMode {
 	}
 }
 
+/// URLSession download with a progress callback.
+final class BTBFileDownloader: NSObject, URLSessionDownloadDelegate {
+	private let _expected: Int64
+	private let _onProgress: (Double) -> Void
+	private var _continuation: CheckedContinuation<(URL, URLResponse), Error>?
+	private var _lastReported = -1.0
+	
+	init(expectedSize: Int64, onProgress: @escaping (Double) -> Void) {
+		_expected = expectedSize
+		_onProgress = onProgress
+	}
+	
+	func download(_ url: URL) async throws -> (URL, URLResponse) {
+		let session = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
+		defer { session.finishTasksAndInvalidate() }
+		return try await withCheckedThrowingContinuation { continuation in
+			_continuation = continuation
+			session.downloadTask(with: url).resume()
+		}
+	}
+	
+	func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+		let total = totalBytesExpectedToWrite > 0 ? totalBytesExpectedToWrite : _expected
+		guard total > 0 else { return }
+		let value = min(1, Double(totalBytesWritten) / Double(total))
+		// not more than ~100 UI updates
+		guard value - _lastReported >= 0.01 || value >= 1 else { return }
+		_lastReported = value
+		DispatchQueue.main.async { self._onProgress(value) }
+	}
+	
+	func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+		// the system deletes `location` after this method: move it first
+		let kept = FileManager.default.temporaryDirectory.appendingPathComponent("btb-\(UUID().uuidString).download")
+		do {
+			try FileManager.default.moveItem(at: location, to: kept)
+			if let response = downloadTask.response {
+				_continuation?.resume(returning: (kept, response))
+			} else {
+				_continuation?.resume(throwing: URLError(.badServerResponse))
+			}
+		} catch {
+			_continuation?.resume(throwing: error)
+		}
+		_continuation = nil
+	}
+	
+	func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+		if let error {
+			_continuation?.resume(throwing: error)
+			_continuation = nil
+		}
+	}
+}
+
 // MARK: - Veather side
 
 @MainActor
@@ -180,6 +237,8 @@ final class BTBUpdaterLauncher: ObservableObject {
 	}
 
 	@Published var phase: Phase = .idle
+	/// 0...1 while the Updater is being downloaded
+	@Published var progress: Double?
 	@Published var installApp: AnyApp?
 
 	var isWorking: Bool {
@@ -272,6 +331,7 @@ struct BTBUpdaterView: View {
 	@State private var _release: BTBSelfUpdate.Release?
 	@State private var _certificates: [CertificatePair] = []
 	@State private var _installApp: AnyApp?
+	@State private var _progress: Double?
 	@AppStorage("feather.selectedCert") private var _selectedCert = 0
 
 	private let _config = BTBUpdaterMode.config
@@ -336,8 +396,13 @@ struct BTBUpdaterView: View {
 			Label(String.localized("New build available: %lld", arguments: build), systemImage: "sparkles")
 		case .working(let text):
 			VStack(spacing: 8) {
-				ProgressView()
-				Text(text).font(.footnote).foregroundStyle(.secondary)
+				if let _progress {
+					ProgressView(value: _progress)
+					Text("\(text) \(Int(_progress * 100))%").font(.footnote).foregroundStyle(.secondary)
+				} else {
+					ProgressView()
+					Text(text).font(.footnote).foregroundStyle(.secondary)
+				}
 			}
 		case .failed(let message):
 			Text(message).font(.footnote).foregroundStyle(.red).multilineTextAlignment(.center)
@@ -410,7 +475,8 @@ struct BTBUpdaterView: View {
 			do {
 				BTBUpdaterMode.cleanupTemp()
 				_phase = .working(String.localized("Downloading Veather…"))
-				let imported = try await BTBUpdaterMode.downloadAndImport(ipa.browser_download_url)
+				let imported = try await BTBUpdaterMode.downloadAndImport(ipa.browser_download_url, expectedSize: ipa.size) { _progress = $0 }
+				_progress = nil
 				_phase = .working(String.localized("Signing Veather…"))
 				let signed = try await BTBUpdaterMode.sign(imported, certificate: chosen, bundleID: _config?.bundleID)
 				_phase = .finished
