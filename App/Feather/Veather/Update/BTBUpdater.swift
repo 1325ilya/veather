@@ -360,6 +360,7 @@ struct BTBUpdaterView: View {
 	@State private var _installApp: AnyApp?
 	@State private var _progress: Double?
 	@AppStorage("feather.selectedCert") private var _selectedCert = 0
+	@AppStorage("Feather.installationMethod") private var _installationMethod = 0
 
 	private let _config = BTBUpdaterMode.config
 
